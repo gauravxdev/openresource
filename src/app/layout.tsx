@@ -4,12 +4,13 @@ import { type Metadata } from "next";
 import localFont from "next/font/local";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import type { CSSProperties } from "react";
 import { ThemeProvider } from "@/components/theme-provider"
 
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
-  title: "Openstore",
+  title: "Openresource",
   description: "By Gaurav Sharma",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
@@ -30,6 +31,15 @@ const lexendFont = localFont({
   variable: "--font-lexend",
 });
 
+const dottedBackgroundStyle: CSSProperties = {
+  backgroundImage: `
+    radial-gradient(circle at 25% 25%, var(--dot-color-1) 0.3px, transparent 1px),
+    radial-gradient(circle at 75% 75%, var(--dot-color-2) 0.3px, transparent 1px)
+  `,
+  backgroundSize: "10px 10px",
+  imageRendering: "pixelated",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -44,33 +54,15 @@ export default function RootLayout({
         >
           {/* Dynamic Background */}
           <div className="min-h-screen w-full relative">
-            {/* Dark Theme Background */}
-            <div className="dark:block hidden">
-              <div
-                className="absolute inset-0 z-0"
-                style={{
-                  backgroundColor: '#0a0a0a',
-                  backgroundImage: `
-                    radial-gradient(circle at 25% 25%, #222222 0.3px, transparent 1px),
-                    radial-gradient(circle at 75% 75%, #111111 0.3px, transparent 1px)
-                  `,
-                  backgroundSize: '10px 10px',
-                  imageRendering: 'pixelated',
-                }}
-              />
-            </div>
-            
-            {/* Light Theme Background */}
-            <div className="dark:hidden">
-              <div
-                className="absolute inset-0 z-0"
-                style={{
-                  backgroundColor: '#ffffff',
-                  backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.35) 1px, transparent 0)',
-                  backgroundSize: '20px 20px',
-                }}
-              />
-            </div>
+            <div
+              className="
+                absolute inset-0 z-0
+                bg-white dark:bg-[#0a0a0a]
+                [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
+                dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
+              "
+              style={dottedBackgroundStyle}
+            />
 
             <div className="relative z-10">
               <TRPCReactProvider>{children}</TRPCReactProvider>

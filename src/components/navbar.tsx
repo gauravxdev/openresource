@@ -115,16 +115,15 @@ const Navbar = () => {
       return !open
     })
   }
-
   const browseHandlers = {
     onPointerEnter: () => setActiveItem("browse"),
     onPointerMove: () => setActiveItem("browse"),
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-transparent backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm">
+    <header className="sticky top-0 z-50 w-full bg-transparent">
       <div className="flex w-full items-center justify-center px-4 py-1.5">
-        <div className="relative flex w-full max-w-[1180px] items-center justify-between gap-3 rounded-[22px] border border-border/50 bg-background/95 px-4 py-1.5 shadow-sm transition-colors dark:border-neutral-800/70 dark:bg-neutral-950/90" style={{ minWidth: 'fit-content' }}>
+        <div className="relative flex w-full max-w-[1180px] items-center justify-between gap-3 rounded-[22px] border border-border/50 bg-background/95 px-4 py-1.5 shadow-sm transition-colors backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm dark:border-neutral-800/70 dark:bg-neutral-950/90" style={{ minWidth: 'fit-content' }}>
           {/* Dotted background pattern - only within navbar */}
           <div
             className="absolute inset-0 rounded-[22px] opacity-20 dark:opacity-10 pointer-events-none"

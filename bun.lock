@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "OpenStore",
+      "name": "Openresource",
       "dependencies": {
         "@prisma/client": "^6.5.0",
         "@radix-ui/react-navigation-menu": "^1.2.14",

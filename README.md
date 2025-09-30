@@ -1,29 +1,157 @@
-# Create T3 App
+# Openresource - Open Source Resources Hub
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+🚀 **Open-source apps & resources at your fingertips**
 
-## What's next? How do I make an app with this?
+OpenResource is a modern, open-source web platform designed to help developers and users discover, explore, and share free open-source alternatives for web applications, tools, and resources.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## ✨ Features
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- **Resource Discovery**: Browse and search through a curated collection of open-source alternatives
+- **Newsletter Subscription**: Stay updated with the latest open-source resources
+- **Modern UI**: Beautiful, responsive design built with Tailwind CSS
+- **Real-time Notifications**: Get notified about new resources and updates
+- **Type-Safe**: Built with TypeScript for better development experience
+- **Fast & Optimized**: Powered by Next.js 15 with Turbo mode for lightning-fast development
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## 🛠 Tech Stack
 
-## Learn More
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **React 19** - Latest React with concurrent features
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Radix UI** - Accessible component library
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Backend & Database
+- **tRPC** - End-to-end typesafe APIs
+- **Prisma** - Next-generation ORM
+- **PostgreSQL** - Robust relational database
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### Development Tools
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **Turbo** - Fast development builds
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## How do I deploy this?
+### Prerequisites
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Node.js 18+
+- PostgreSQL database
+- Package manager (npm, yarn, or bun)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd Openresource
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+
+   Fill in your `.env` file with the required values:
+   ```env
+   DATABASE_URL="your-postgresql-connection-string"
+   NEXTAUTH_SECRET="your-secret-key"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
+
+4. **Set up the database**
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+
+   # Push database schema
+   npm run db:push
+
+   # (Optional) Open Prisma Studio to view your database
+   npm run db:studio
+   ```
+
+5. **Start development server**
+   ```bash
+   npm run dev
+   # or
+   bun dev
+   ```
+
+6. **Open your browser**
+
+   Navigate to [http://localhost:3000](http://localhost:3000) to see Openresource in action!
+
+## 📜 Available Scripts
+
+- `npm run dev` - Start development server with Turbo
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint errors
+- `npm run format:write` - Format code with Prettier
+- `npm run format:check` - Check code formatting
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run db:studio` - Open Prisma Studio
+- `npm run db:push` - Push database schema changes
+- `npm run db:generate` - Regenerate Prisma client
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Run tests**: `npm run check`
+5. **Commit changes**: `git commit -m 'Add amazing feature'`
+6. **Push to branch**: `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow the existing code style and conventions
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation as needed
+- Ensure all checks pass before submitting PR
+
+## 🌟 Roadmap
+
+- [ ] Advanced search and filtering
+- [ ] User authentication and profiles
+- [ ] Resource submission system
+- [ ] Categories and tags
+- [ ] API endpoints for third-party integrations
+- [ ] Mobile app development
+- [ ] Advanced analytics and insights
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Acknowledgments
+
+- Built with the amazing [T3 Stack](https://create.t3.gg/)
+- UI components powered by [Radix UI](https://www.radix-ui.com/)
+- Icons from [Lucide React](https://lucide.dev/)
+- Fonts from [Google Fonts](https://fonts.google.com/)
+
+## 📞 Support
+
+If you have any questions, feel free to:
+- Open an issue on GitHub
+- Join our community discussions
+- Follow us for updates on new open-source resources
+
+---
+
+**Made with ❤️ for the open-source community**
