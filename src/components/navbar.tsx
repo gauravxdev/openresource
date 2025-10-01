@@ -15,40 +15,11 @@ import {
   FileText,
   Ticket,
   Sparkles,
+  ChevronDown,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  NavigationMenuViewport,
-  NavigationMenuIndicator,
-} from "@/components/ui/navigation-menu"
 import { cn } from "@/lib/utils"
-
-type NavLink = {
-  label: string
-  href: string
-  hideOnSearch?: boolean
-}
-
-const navLinks: NavLink[] = [
-  { label: "Alternatives", href: "#" },
-  { label: "Categories", href: "#" },
-  { label: "Tech Stacks", href: "#", },
-  { label: "Self-hosted", href: "#" },
-  { label: "Sponsor", href: "#", hideOnSearch: true },
-]
-
-const themeOptions = [
-  { label: "Light", value: "light" as const },
-  { label: "Dark", value: "dark" as const },
-  { label: "System", value: "system" as const },
-]
 
 const browseItems = [
   { label: "Latest", description: "Fresh arrivals added recently.", icon: Clock3 },
@@ -60,14 +31,22 @@ const browseItems = [
   { label: "Licenses", description: "Filter by software licenses.", icon: Ticket },
 ]
 
+const themeOptions = [
+  { label: "Light", value: "light" as const },
+  { label: "Dark", value: "dark" as const },
+  { label: "System", value: "system" as const },
+]
+
 const Navbar = () => {
   const { setTheme, theme } = useTheme()
-  const [activeItem, setActiveItem] = React.useState<string | undefined>(undefined)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
+  const [isBrowseOpen, setIsBrowseOpen] = React.useState(false)
+  const [isBrowseHovered, setIsBrowseHovered] = React.useState(false)
   const [isThemeMenuOpen, setIsThemeMenuOpen] = React.useState(false)
   const searchInputRef = React.useRef<HTMLInputElement>(null)
   const searchContainerRef = React.useRef<HTMLDivElement>(null)
   const themeMenuRef = React.useRef<HTMLDivElement>(null)
+  const browseMenuRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     if (isSearchOpen) {
@@ -84,12 +63,18 @@ const Navbar = () => {
       if (!themeMenuRef.current?.contains(target)) {
         setIsThemeMenuOpen(false)
       }
+      if (!browseMenuRef.current?.contains(target)) {
+        setIsBrowseOpen(false)
+        setIsBrowseHovered(false)
+      }
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsSearchOpen(false)
         setIsThemeMenuOpen(false)
+        setIsBrowseOpen(false)
+        setIsBrowseHovered(false)
       }
     }
 
@@ -102,11 +87,6 @@ const Navbar = () => {
     }
   }, [])
 
-  const visibleNavLinks = React.useMemo(() => {
-    if (!isSearchOpen) return navLinks
-    return navLinks.filter((link) => !link.hideOnSearch)
-  }, [isSearchOpen])
-
   const toggleSearch = () => {
     setIsSearchOpen((open) => {
       if (open) {
@@ -115,15 +95,11 @@ const Navbar = () => {
       return !open
     })
   }
-  const browseHandlers = {
-    onPointerEnter: () => setActiveItem("browse"),
-    onPointerMove: () => setActiveItem("browse"),
-  }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-transparent">
       <div className="flex w-full items-center justify-center px-4 py-1.5">
-        <div className="relative flex w-full max-w-[1180px] items-center justify-between gap-3 rounded-[22px] border border-border/50 bg-background/95 px-4 py-1.5 shadow-sm transition-colors backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm dark:border-neutral-800/70 dark:bg-neutral-950/90" style={{ minWidth: 'fit-content' }}>
+        <div className="relative flex w-full max-w-[1152px] items-center justify-between gap-1 rounded-[22px] border border-border/50 bg-background/95 px-4 py-1.5 shadow-sm transition-colors backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm dark:border-neutral-800/70 dark:bg-neutral-950/90" style={{ minWidth: 'fit-content' }}>
           {/* Dotted background pattern - only within navbar */}
           <div
             className="absolute inset-0 rounded-[22px] opacity-20 dark:opacity-10 pointer-events-none"
@@ -146,83 +122,83 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <div className="relative hidden md:block" style={{ width: '650px', flexShrink: 0 }}>
-            <NavigationMenu
-              value={activeItem}
-              onValueChange={setActiveItem}
-              onMouseLeave={() => setActiveItem(undefined)}
-              viewport={false}
-              className="absolute inset-0 flex-1 justify-center"
-            >
-              <NavigationMenuList className="rounded-full bg-transparent text-sm">
-                <NavigationMenuItem value="browse">
-                  <NavigationMenuTrigger
-                    {...browseHandlers}
-                    className="rounded-full bg-transparent px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors duration-150 hover:bg-neutral-100 hover:text-neutral-900 data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50 data-[state=open]:dark:bg-neutral-800/70"
-                  >
-                    Browse
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent
-                    onPointerLeave={() => setActiveItem(undefined)}
-                    className="z-50 rounded-lg border border-neutral-200 bg-background/95 p-2 shadow-lg md:w-[260px] dark:border-neutral-700 dark:bg-neutral-900/95"
-                  >
-                    <ul className="grid gap-1 p-2">
-                      {browseItems.map((item) => {
-                        const Icon = item.icon
-                        return (
-                          <li key={item.label}>
-                            <NavigationMenuLink asChild>
-                              <a
-                                href="#"
-                                className="flex items-start gap-3 rounded-md px-3 py-2 text-sm transition hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-                              >
-                                <Icon className="mt-0.5 size-4 text-neutral-400 dark:text-neutral-500" />
-                                <span>
-                                  <span className="block font-medium text-neutral-700 dark:text-neutral-200">
-                                    {item.label}
-                                  </span>
-                                  <span className="block text-xs text-neutral-500 dark:text-neutral-400">
-                                    {item.description}
-                                  </span>
-                                </span>
-                              </a>
-                            </NavigationMenuLink>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                {visibleNavLinks.map((link, index) => (
-                  <NavigationMenuItem
-                    key={link.label}
-                    className={cn(
-                      "transition-all duration-800 ease-out",
-                      isSearchOpen && link.hideOnSearch && "opacity-0 transform translate-y-1"
-                    )}
-                    style={{
-                      transitionDelay: isSearchOpen && link.hideOnSearch ? `${index * 150}ms` : '300ms'
-                    }}
-                  >
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={link.href}
-                        className={cn(
-                          "rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-all duration-300 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50",
-                          isSearchOpen && link.hideOnSearch && "pointer-events-none"
-                        )}
+          <div className="relative hidden md:flex -ml-10">
+            {/* Browse Dropdown - First Position */}
+            <div ref={browseMenuRef} className="relative">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setIsBrowseOpen(!isBrowseOpen)
+                  setIsBrowseHovered(false)
+                }}
+                onMouseEnter={() => setIsBrowseHovered(true)}
+                onMouseLeave={() => setIsBrowseHovered(false)}
+                className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50 h-auto"
+              >
+                Browse
+                <ChevronDown className={cn("ml-1 h-3 w-3 transition-transform duration-200", (isBrowseOpen || isBrowseHovered) && "rotate-180")} />
+              </Button>
+              {(isBrowseOpen || isBrowseHovered) && (
+                <div 
+                  className="absolute left-1/2 top-full mt-1 -translate-x-1/2 w-56 rounded-md border border-neutral-200 bg-background p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 z-50"
+                  onMouseEnter={() => setIsBrowseHovered(true)}
+                  onMouseLeave={() => setIsBrowseHovered(false)}
+                >
+                  {browseItems.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <button
+                        key={item.label}
+                        className="flex w-full items-start gap-3 rounded-sm px-3 py-2 text-sm transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
                       >
-                        {link.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+                        <Icon className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                        <div className="text-left">
+                          <div className="font-medium">{item.label}</div>
+                          <div className="text-xs text-muted-foreground">{item.description}</div>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
 
-                <NavigationMenuIndicator className="hidden" />
-              </NavigationMenuList>
-              <NavigationMenuViewport className="hidden" />
-            </NavigationMenu>
+            <Link
+              href="#"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
+            >
+              Alternatives
+            </Link>
+            <Link
+              href="#"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
+            >
+              Categories
+            </Link>
+            <Link
+              href="#"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
+            >
+              Tech Stacks
+            </Link>
+            <Link
+              href="#"
+              className={cn(
+                "rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-all duration-300 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50",
+                isSearchOpen && "opacity-0 pointer-events-none"
+              )}
+            >
+              Self-hosted
+            </Link> 
+            <Link
+              href="#"
+              className={cn(
+                "rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-all duration-300 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50",
+                isSearchOpen && "opacity-0 pointer-events-none"
+              )}
+            >
+              Sponsor
+            </Link>
           </div>
 
           <div className="relative flex items-center gap-2" style={{ width: 'fit-content', flexShrink: 0 }}>
@@ -231,7 +207,7 @@ const Navbar = () => {
               className={cn(
                 "absolute flex mr-2 flex-row-reverse items-center overflow-hidden rounded-full border transition-all duration-500 ease-in-out",
                 isSearchOpen
-                  ? "right-56 w-[190px] gap-1 bg-background/95 pl-3 border-neutral-200 dark:bg-neutral-900/85 dark:border-neutral-700"
+                  ? "right-56 w-[240px] gap-1 bg-background/95 pl-3 border-neutral-200 dark:bg-neutral-900/85 dark:border-neutral-700"
                   : "right-56 w-10 gap-1.5 bg-transparent px-0 border-transparent"
               )}
             >
@@ -252,7 +228,7 @@ const Navbar = () => {
                 placeholder="Search resources..."
                 className={cn(
                   "flex-1 min-w-0 bg-transparent text-sm text-neutral-700 outline-none transition-[max-width,opacity] duration-600 ease-out placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500",
-                  isSearchOpen ? "max-w-[160px] opacity-100" : "pointer-events-none max-w-0 opacity-0"
+                  isSearchOpen ? "max-w-[200px] opacity-100" : "pointer-events-none max-w-0 opacity-0"
                 )}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {

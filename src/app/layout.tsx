@@ -57,7 +57,7 @@ export default function RootLayout({
             <div
               className="
                 absolute inset-0 z-0
-                bg-white dark:bg-[#0a0a0a]
+                bg-background
                 [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
                 dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
               "
