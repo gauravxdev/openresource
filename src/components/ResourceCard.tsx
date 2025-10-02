@@ -42,8 +42,8 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
   ] as const
 
   return (
-    <Card className="group relative h-full overflow-hidden rounded-[12px] border border-neutral-100 bg-transparent transition-all duration-200 hover:outline-[3px] hover:outline-neutral-400 dark:border-neutral-800/50 dark:hover:outline-neutral-800/60">
-      <div className="pointer-events-none absolute inset-y-[2%] inset-x-[1%] rounded-[9px] bg-neutral-50 dark:bg-[#141417]" />
+    <Card className="group relative h-full overflow-hidden rounded-[12px] border border-neutral-150 bg-transparent transition-all duration-200 hover:outline-[3px] hover:outline-neutral-200 dark:border-neutral-800 dark:hover:outline-neutral-800">
+      <div className="pointer-events-none absolute inset-y-[2%] inset-x-[1%] rounded-[9px] bg-neutral-50 dark:bg-[#141414]" />
       <CardContent className="relative flex h-full flex-col px-5 py-1.5">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 text-sm font-semibold text-white uppercase">
@@ -56,7 +56,7 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
           </div>
         </div>
 
-        <p className="mt-1 text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground mt-3">
+        <p className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground mt-3">
           {resource.description}
         </p>
 
