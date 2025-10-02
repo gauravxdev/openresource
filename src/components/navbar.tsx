@@ -244,14 +244,14 @@ const Navbar = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsThemeMenuOpen((open) => !open)}
-                className="size-9 rounded-full text-neutral-500 transition hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100"
+                className="size-9 rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 hover:text-neutral-800 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
               >
                 <Sun className="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" aria-hidden="true" />
                 <Moon className="absolute h-[1.1rem] w-[1.1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" aria-hidden="true" />
                 <span className="sr-only">Toggle theme</span>
               </Button>
               {isThemeMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 min-w-[8rem] rounded-md border border-neutral-200 bg-background/95 p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900/90">
+                <div className="absolute right-0 top-full mt-2 min-w-[8rem] rounded-md border border-neutral-200 bg-background p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
                   <ul className="grid gap-1">
                     {themeOptions.map((option) => (
                       <li key={option.value}>
