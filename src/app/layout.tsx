@@ -6,6 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import type { CSSProperties } from "react";
 import { ThemeProvider } from "@/components/theme-provider"
+import Navbar from "@/components/Navbar";
 
 import { TRPCReactProvider } from "@/trpc/react";
 
@@ -65,6 +66,7 @@ export default function RootLayout({
             />
 
             <div className="relative z-10">
+              <Navbar />
               <TRPCReactProvider>{children}</TRPCReactProvider>
             </div>
           </div>
