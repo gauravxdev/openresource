@@ -3,7 +3,7 @@
 import { Search, Filter } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SortOption } from "@/lib/android-apps-data"
+import { type SortOption } from "@/lib/android-apps-data"
 
 interface AndroidAppFiltersProps {
   searchTerm: string

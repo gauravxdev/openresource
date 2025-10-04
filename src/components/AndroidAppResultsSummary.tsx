@@ -1,7 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { SortOption } from "@/lib/android-apps-data"
+import { type SortOption } from "@/lib/android-apps-data"
 
 interface AndroidAppResultsSummaryProps {
   filteredCount: number

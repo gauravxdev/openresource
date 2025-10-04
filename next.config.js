@@ -7,6 +7,11 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
   async rewrites() {
+    // Skip PostHog proxy if environment variable is set (for build troubleshooting)
+    if (process.env.SKIP_POSTHOG_PROXY === 'true') {
+      return [];
+    }
+
     return [
       {
         source: "/ingest/static/:path*",

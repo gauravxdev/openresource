@@ -16,7 +16,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Pagination } from "@/components/ui/pagination-wrapper"
-import { mockAndroidApps, SortOption, AndroidApp } from "@/lib/android-apps-data"
+import { mockAndroidApps, type SortOption, type AndroidApp } from "@/lib/android-apps-data"
 
 export default function AndroidApps() {
   const [searchTerm, setSearchTerm] = useState("")

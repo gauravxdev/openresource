@@ -104,10 +104,7 @@ const Navbar = () => {
           <div
             className="absolute inset-0 rounded-[22px] opacity-20 dark:opacity-10 pointer-events-none"
             style={{
-              backgroundImage: `
-                radial-gradient(circle at 25% 25%, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)'} 0.3px, transparent 1px),
-                radial-gradient(circle at 75% 75%, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'} 0.3px, transparent 1px)
-              `,
+              backgroundImage: `radial-gradient(circle at 25% 25%, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)'} 0.3px, transparent 1px), radial-gradient(circle at 75% 75%, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'} 0.3px, transparent 1px)`,
               backgroundSize: '8px 8px',
               imageRendering: 'pixelated',
             }}
@@ -196,7 +193,7 @@ const Navbar = () => {
             >
               Self-hosted
             </Link> 
-            <Link
+            {/* <Link
               href="#"
               className={cn(
                 "rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-all duration-300 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50",
@@ -204,7 +201,7 @@ const Navbar = () => {
               )}
             >
               Sponsor
-            </Link>
+            </Link> */}
           </div>
 
           <div className="relative flex items-center gap-2" style={{ width: 'fit-content', flexShrink: 0 }}>
