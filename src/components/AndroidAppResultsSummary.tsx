@@ -14,7 +14,7 @@ export const AndroidAppResultsSummary = ({
   filteredCount,
   totalCount,
   sortBy,
-  searchTerm
+  searchTerm,
 }: AndroidAppResultsSummaryProps) => {
   return (
     <div className="flex items-center justify-between mb-4">
@@ -27,7 +27,7 @@ export const AndroidAppResultsSummary = ({
         </Badge>
         {searchTerm && (
           <Badge variant="outline" className="border-gray-700/50 text-gray-400">
-            "{searchTerm}"
+            &ldquo;{searchTerm}&rdquo;
           </Badge>
         )}
       </div>

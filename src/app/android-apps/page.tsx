@@ -4,7 +4,6 @@ import React, { useState, useMemo } from "react"
 import { AndroidAppCard } from "@/components/AndroidAppCard"
 import { AndroidAppFilters } from "@/components/AndroidAppFilters"
 import { AndroidAppResultsSummary } from "@/components/AndroidAppResultsSummary"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,7 +15,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Pagination } from "@/components/ui/pagination-wrapper"
-import { mockAndroidApps, type SortOption, type AndroidApp } from "@/lib/android-apps-data"
+import { mockAndroidApps, type SortOption } from "@/lib/android-apps-data"
 
 export default function AndroidApps() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -25,7 +24,7 @@ export default function AndroidApps() {
   const itemsPerPage = 6
 
   const filteredAndSortedApps = useMemo(() => {
-    let filtered = mockAndroidApps.filter(app =>
+    const filtered = mockAndroidApps.filter(app =>
       app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.category.toLowerCase().includes(searchTerm.toLowerCase()) ||

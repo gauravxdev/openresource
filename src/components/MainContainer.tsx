@@ -190,7 +190,7 @@ const MainContainer = () => {
             </Badge>
             {searchTerm && (
               <Badge variant="outline" className="border-gray-700/50 text-gray-400">
-                "{searchTerm}"
+                &ldquo;{searchTerm}&rdquo;
               </Badge>
             )}
           </div>

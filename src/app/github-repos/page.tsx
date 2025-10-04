@@ -127,7 +127,7 @@ export default function GitHubRepos() {
   const itemsPerPage = 3 // Show 3 items per page to demonstrate pagination
 
   const filteredAndSortedRepos = useMemo(() => {
-    let filtered = mockRepos.filter(repo =>
+    const filtered = mockRepos.filter(repo =>
       repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       repo.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       repo.language.toLowerCase().includes(searchTerm.toLowerCase())
@@ -235,12 +235,19 @@ export default function GitHubRepos() {
             Showing {paginatedRepos.length} of {filteredAndSortedRepos.length} repositories
           </p>
           <div className="flex gap-2">
-            <Badge variant="secondary" className="bg-gray-800/80 text-gray-300 border-gray-700/50">
-              {sortBy === "trending" ? "Trending" : sortBy}
-            </Badge>
+            {sortBy !== "trending" && (
+              <Badge variant="secondary" className="bg-gray-800/80 text-gray-300 border-gray-700/50">
+                {sortBy}
+              </Badge>
+            )}
+            {sortBy === "trending" && (
+              <Badge variant="secondary" className="bg-gray-800/80 text-gray-300 border-gray-700/50">
+                Trending
+              </Badge>
+            )}
             {searchTerm && (
               <Badge variant="outline" className="border-gray-700/50 text-gray-400">
-                "{searchTerm}"
+                &ldquo;{searchTerm ?? ''}&rdquo;
               </Badge>
             )}
           </div>

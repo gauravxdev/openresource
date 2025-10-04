@@ -9,7 +9,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     // Only initialize PostHog if we have a valid key and are not in build mode
     if (process.env.NEXT_PUBLIC_POSTHOG_KEY && typeof window !== 'undefined') {
       try {
-        posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+        posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
           api_host: "/ingest",
           ui_host: "https://eu.posthog.com",
           capture_exceptions: true,
@@ -18,7 +18,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
           loaded: (posthogInstance) => {
             // Override capture method to handle network errors
             const originalCapture = posthogInstance.capture.bind(posthogInstance)
-            posthogInstance.capture = function(event: any, properties?: any, options?: any) {
+            posthogInstance.capture = function(event: string, properties?: Record<string, unknown>, options?: Record<string, unknown>) {
               try {
                 return originalCapture(event, properties, options)
               } catch (error) {
