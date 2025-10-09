@@ -1,9 +1,7 @@
-"use client"
-
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Github, Star, Download, Clock } from "lucide-react"
+import { Github, Star, Download, Clock, Bookmark } from "lucide-react"
 import type { AndroidApp } from "@/lib/android-apps-data"
 
 interface AndroidAppCardProps {
@@ -11,6 +9,47 @@ interface AndroidAppCardProps {
 }
 
 export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
+  const [isBookmarked, setIsBookmarked] = React.useState(false)
+
+  // Check if app is already bookmarked on component mount
+  React.useEffect(() => {
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
+    setIsBookmarked(bookmarks.some((item: any) => item.id === app.id))
+  }, [app.id])
+
+  const handleBookmarkClick = () => {
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
+
+    if (isBookmarked) {
+      // Remove bookmark
+      const updatedBookmarks = bookmarks.filter((item: any) => item.id !== app.id)
+      localStorage.setItem('openstore-bookmarks', JSON.stringify(updatedBookmarks))
+      setIsBookmarked(false)
+    } else {
+      // Add bookmark (check limit first)
+      if (bookmarks.length >= 10) {
+        alert('You can only bookmark up to 10 items. Please remove some bookmarks before adding more.')
+        return
+      }
+
+      const bookmarkData = {
+        id: app.id,
+        title: app.title,
+        description: app.description,
+        category: app.category,
+        stars: app.stars,
+        forks: app.downloads,
+        lastCommit: app.lastUpdated,
+        bookmarkedAt: new Date().toISOString(),
+        type: 'android-app',
+        rating: app.rating
+      }
+
+      bookmarks.push(bookmarkData)
+      localStorage.setItem('openstore-bookmarks', JSON.stringify(bookmarks))
+      setIsBookmarked(true)
+    }
+  }
   return (
     <Card className="group relative h-full overflow-hidden rounded-[12px] border border-neutral-150 bg-transparent transition-all duration-200 hover:outline-[3px] hover:outline-neutral-200 dark:border-neutral-800 dark:hover:outline-neutral-800">
       <div className="pointer-events-none absolute inset-y-[1%] inset-x-[1%] rounded-[9px] bg-neutral-50 dark:bg-[#141414]" />
@@ -29,7 +68,23 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
               </p>
             </div>
           </div>
-          <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                handleBookmarkClick()
+              }}
+              className={`flex h-8 w-8 items-center justify-center rounded-full transition-all ${
+                isBookmarked
+                  ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                  : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700'
+              }`}
+              title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+            >
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+            </button>
+            <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+          </div>
         </div>
 
         <p className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground">

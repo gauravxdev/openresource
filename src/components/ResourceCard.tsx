@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Star, GitFork, Clock } from "lucide-react"
+import { Star, GitFork, Clock, Bookmark } from "lucide-react"
 
 interface Resource {
   id: number
@@ -20,6 +20,46 @@ interface ResourceCardProps {
 }
 
 export const ResourceCard = ({ resource }: ResourceCardProps) => {
+  const [isBookmarked, setIsBookmarked] = React.useState(false)
+
+  // Check if resource is already bookmarked on component mount
+  React.useEffect(() => {
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
+    setIsBookmarked(bookmarks.some((item: any) => item.id === resource.id))
+  }, [resource.id])
+
+  const handleBookmarkClick = () => {
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
+
+    if (isBookmarked) {
+      // Remove bookmark
+      const updatedBookmarks = bookmarks.filter((item: any) => item.id !== resource.id)
+      localStorage.setItem('openstore-bookmarks', JSON.stringify(updatedBookmarks))
+      setIsBookmarked(false)
+    } else {
+      // Add bookmark (check limit first)
+      if (bookmarks.length >= 10) {
+        alert('You can only bookmark up to 10 items. Please remove some bookmarks before adding more.')
+        return
+      }
+
+      const bookmarkData = {
+        id: resource.id,
+        title: resource.title,
+        description: resource.description,
+        category: resource.category,
+        stars: resource.stars,
+        forks: resource.forks,
+        lastCommit: resource.lastCommit,
+        bookmarkedAt: new Date().toISOString()
+      }
+
+      bookmarks.push(bookmarkData)
+      localStorage.setItem('openstore-bookmarks', JSON.stringify(bookmarks))
+      setIsBookmarked(true)
+    }
+  }
+
   const stats = [
     {
       label: "Stars",
@@ -54,6 +94,20 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
               {resource.title}
             </h3>
           </div>
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              handleBookmarkClick()
+            }}
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-all ${
+              isBookmarked
+                ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700'
+            }`}
+            title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+          >
+            <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+          </button>
         </div>
 
         <p className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground mt-3">
