@@ -69,21 +69,19 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
             </div>
           </div>
           <div className="flex gap-2 items-center">
-            <button
+            <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+            <Button
+              variant="outline"
+              size="sm"
+              className={`shrink-0 border-border hover:bg-accent ${isBookmarked ? 'bg-yellow-500 text-white hover:bg-yellow-600 border-yellow-500' : ''}`}
               onClick={(e) => {
                 e.preventDefault()
                 handleBookmarkClick()
               }}
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition-all ${
-                isBookmarked
-                  ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                  : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700'
-              }`}
               title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-            </button>
-            <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+            </Button>
           </div>
         </div>
 

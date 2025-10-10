@@ -11,6 +11,8 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "next dev --turbo",
+    "dev:clean": "node -e \"require('child_process').execSync('Get-Process node | Stop-Process -Force', {stdio: 'inherit'}); setTimeout(() => require('child_process').execSync('next dev --turbo', {stdio: 'inherit'}), 2000)\"",
+    "dev:safe": "next dev",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "postinstall": "prisma generate",

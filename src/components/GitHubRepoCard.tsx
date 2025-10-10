@@ -75,20 +75,18 @@ export function GitHubRepoCard({
             </CardDescription>
           </div>
           <div className="flex gap-2 shrink-0">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
+              className={`shrink-0 border-border hover:bg-accent mt-1 ${isBookmarked ? 'bg-yellow-500 text-white hover:bg-yellow-600 border-yellow-500' : ''}`}
               onClick={(e) => {
                 e.preventDefault()
                 handleBookmarkClick()
               }}
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition-all ${
-                isBookmarked
-                  ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                  : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700'
-              }`}
               title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-            </button>
+            </Button>
             <Button
               variant="outline"
               size="sm"
