@@ -1,128 +1,122 @@
-// src/app/sign-in/page.tsx
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import * as React from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { authClient } from "@/lib/auth-client"
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+    const router = useRouter()
+    const [email, setEmail] = React.useState("")
+    const [password, setPassword] = React.useState("")
+    const [showPassword, setShowPassword] = React.useState(false)
+    const [isLoading, setIsLoading] = React.useState(false)
+    const [error, setError] = React.useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setError(null)
+        setIsLoading(true)
 
-    setIsLoading(true);
+        try {
+            const result = await authClient.signIn.email({
+                email,
+                password,
+            })
 
-    try {
-      const response = await fetch('/api/auth/sign-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      if (response.ok) {
-        // Success - redirect to dashboard
-        window.location.href = '/dashboard';
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Sign in failed');
-      }
-    } catch (error) {
-      setError('Network error. Please try again.');
-    } finally {
-      setIsLoading(false);
+            if (result.error) {
+                setError(result.error.message || "Failed to sign in")
+            } else {
+                router.push("/")
+                router.refresh()
+            }
+        } catch (err) {
+            setError("An unexpected error occurred")
+        } finally {
+            setIsLoading(false)
+        }
     }
-  };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center py-8 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-          <CardDescription className="text-center">
-            Welcome back! Please sign in to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded">
-              {error}
-            </div>
-          )}
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-
-          {/* OAuth Social Login */}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              <a 
-                href="/api/auth/github"
-                className="w-full bg-gray-900 text-white py-2 px-4 rounded-md hover:bg-gray-800 flex items-center justify-center"
-              >
-                Continue with GitHub
-              </a>
-              <a 
-                href="/api/auth/google" 
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500 flex items-center justify-center"
-              >
-                Continue with Google
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <a href="/sign-up" className="text-primary hover:underline">
-              Sign up
-            </a>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    return (
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
+            <Card className="w-full max-w-md border-border/50 bg-card/50 backdrop-blur">
+                <CardHeader className="space-y-1 text-center">
+                    <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+                    <CardDescription>
+                        Enter your credentials to sign in to your account
+                    </CardDescription>
+                </CardHeader>
+                <form onSubmit={handleSubmit}>
+                    <CardContent className="space-y-4">
+                        {error && (
+                            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+                                {error}
+                            </div>
+                        )}
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    disabled={isLoading}
+                                    className="pr-10"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    disabled={isLoading}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                    ) : (
+                                        <Eye className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                    <span className="sr-only">
+                                        {showPassword ? "Hide password" : "Show password"}
+                                    </span>
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex flex-col space-y-4">
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Sign In
+                        </Button>
+                        <p className="text-sm text-muted-foreground text-center">
+                            Don&apos;t have an account?{" "}
+                            <Link href="/sign-up" className="text-primary hover:underline">
+                                Sign up
+                            </Link>
+                        </p>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
+    )
 }

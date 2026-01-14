@@ -2,303 +2,362 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
-  Search,
-  Plus,
-  Sun,
-  Moon,
-  Clock3,
-  Server,
-  Layers,
-  Tag,
-  FileText,
-  Ticket,
-  Sparkles,
-  ChevronDown,
+    Moon, Sun, Menu, X, LogIn, LogOut, User, Search, Plus, ChevronDown,
+    Clock, Server, Rocket, ArrowLeftRight, FolderOpen, Layers, Scale
 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { authClient } from "@/lib/auth-client"
 
-const browseItems = [
-  { label: "Latest", description: "Fresh arrivals added recently.", icon: Clock3 },
-  { label: "Self-hosted", description: "Deploy on your own infra.", icon: Server },
-  { label: "Coming Soon", description: "Projects launching soon.", icon: Sparkles },
-  { label: "Alternatives", description: "Explore replacements for tools.", icon: Layers },
-  { label: "Categories", description: "Browse curated categories.", icon: Tag },
-  { label: "Tech Stacks", description: "Discover stacks from top teams.", icon: FileText },
-  { label: "Licenses", description: "Filter by software licenses.", icon: Ticket },
+const browseOptions = [
+    { href: "/browse/latest", label: "Latest", description: "Fresh arrivals added recently.", icon: Clock },
+    { href: "/browse/self-hosted", label: "Self-hosted", description: "Deploy on your own infra.", icon: Server },
+    { href: "/browse/coming-soon", label: "Coming Soon", description: "Projects launching soon.", icon: Rocket },
+    { href: "/browse/alternatives", label: "Alternatives", description: "Explore replacements for tools.", icon: ArrowLeftRight },
+    { href: "/categories", label: "Categories", description: "Browse curated categories.", icon: FolderOpen },
+    { href: "/browse/tech-stacks", label: "Tech Stacks", description: "Discover stacks from top teams.", icon: Layers },
+    { href: "/browse/licenses", label: "Licenses", description: "Filter by software licenses.", icon: Scale },
 ]
 
-const themeOptions = [
-  { label: "Light", value: "light" as const },
-  { label: "Dark", value: "dark" as const },
-  { label: "System", value: "system" as const },
+const navLinks = [
+    { href: "/browse/alternatives", label: "Alternatives" },
+    { href: "/github-repos", label: "GitHub Repos" },
+    { href: "/categories", label: "Categories" },
+    { href: "/browse/tech-stacks", label: "Tech Stacks" },
+    { href: "/browse/self-hosted", label: "Self-hosted" },
 ]
 
-const Navbar = () => {
-  const { setTheme, theme } = useTheme()
-  const [isSearchOpen, setIsSearchOpen] = React.useState(false)
-  const [isBrowseOpen, setIsBrowseOpen] = React.useState(false)
-  const [isBrowseHovered, setIsBrowseHovered] = React.useState(false)
-  const [isThemeMenuOpen, setIsThemeMenuOpen] = React.useState(false)
-  const searchInputRef = React.useRef<HTMLInputElement>(null)
-  const searchContainerRef = React.useRef<HTMLDivElement>(null)
-  const themeMenuRef = React.useRef<HTMLDivElement>(null)
-  const browseMenuRef = React.useRef<HTMLDivElement>(null)
+// Mock search data - replace with actual data source
+const mockSearchData = [
+    { id: 1, title: "React", category: "Framework", href: "/" },
+    { id: 2, title: "Next.js", category: "Framework", href: "/" },
+    { id: 3, title: "Tailwind CSS", category: "Styling", href: "/" },
+    { id: 4, title: "Prisma", category: "Database", href: "/" },
+    { id: 5, title: "tRPC", category: "API", href: "/" },
+    { id: 6, title: "Supabase", category: "Backend", href: "/" },
+    { id: 7, title: "Vercel", category: "Deployment", href: "/" },
+    { id: 8, title: "Docker", category: "DevOps", href: "/" },
+]
 
-  React.useEffect(() => {
-    if (isSearchOpen) {
-      searchInputRef.current?.focus()
-    }
-  }, [isSearchOpen])
+export default function Navbar() {
+    const router = useRouter()
+    const { theme, setTheme } = useTheme()
+    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+    const [searchOpen, setSearchOpen] = React.useState(false)
+    const [searchQuery, setSearchQuery] = React.useState("")
+    const [browseOpen, setBrowseOpen] = React.useState(false)
+    const { data: session, isPending } = authClient.useSession()
 
-  React.useEffect(() => {
-    const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target as Node
-      if (!searchContainerRef.current?.contains(target)) {
-        setIsSearchOpen(false)
-      }
-      if (!themeMenuRef.current?.contains(target)) {
-        setIsThemeMenuOpen(false)
-      }
-      if (!browseMenuRef.current?.contains(target)) {
-        setIsBrowseOpen(false)
-        setIsBrowseHovered(false)
-      }
+    const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+
+    const toggleTheme = () => {
+        setTheme(theme === "dark" ? "light" : "dark")
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsSearchOpen(false)
-        setIsThemeMenuOpen(false)
-        setIsBrowseOpen(false)
-        setIsBrowseHovered(false)
-      }
+    // Filter search results based on query
+    const filteredResults = React.useMemo(() => {
+        if (!searchQuery.trim()) return []
+        const query = searchQuery.toLowerCase()
+        return mockSearchData.filter(
+            item =>
+                item.title.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query)
+        )
+    }, [searchQuery])
+
+    const handleSearchSelect = (href: string) => {
+        setSearchOpen(false)
+        setSearchQuery("")
+        router.push(href)
     }
 
-    document.addEventListener("mousedown", handlePointerDown)
-    document.addEventListener("keydown", handleKeyDown)
-
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown)
-      document.removeEventListener("keydown", handleKeyDown)
+    // Hover handlers for Browse dropdown
+    const handleBrowseMouseEnter = () => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current)
+        }
+        setBrowseOpen(true)
     }
-  }, [])
 
-  const toggleSearch = () => {
-    setIsSearchOpen((open) => {
-      if (open) {
-        searchInputRef.current?.blur()
-      }
-      return !open
-    })
-  }
+    const handleBrowseMouseLeave = () => {
+        hoverTimeoutRef.current = setTimeout(() => {
+            setBrowseOpen(false)
+        }, 150) // Small delay to allow moving to dropdown content
+    }
 
-  return (
-    <header className="sticky top-0 z-50 w-full bg-transparent">
-      <div className="flex w-full items-center justify-center px-4 py-1.5">
-        <div className="relative flex w-full max-w-[1152px] items-center justify-between gap-1 rounded-[22px] border border-border/50 bg-background/95 px-4 py-1.5 shadow-sm transition-colors backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm dark:border-neutral-800/70 dark:bg-neutral-950/90" style={{ minWidth: 'fit-content' }}>
-          {/* Dotted background pattern - only within navbar */}
-          <div
-            className="absolute inset-0 rounded-[22px] opacity-20 dark:opacity-10 pointer-events-none"
-            style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)'} 0.3px, transparent 1px), radial-gradient(circle at 75% 75%, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'} 0.3px, transparent 1px)`,
-              backgroundSize: '8px 8px',
-              imageRendering: 'pixelated',
-            }}
-          />
+    return (
+        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="mx-auto max-w-[1152px] px-5 md:px-6">
+                <div className="flex h-14 items-center justify-between gap-4">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center space-x-2 shrink-0">
+                        <span className="text-lg font-bold font-[family-name:var(--font-righteous)] bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            OpenResource
+                        </span>
+                    </Link>
 
-          <Link href="#" className="relative z-10 flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary dark:border-primary/35 dark:bg-primary/15">
-              <span className="text-base font-semibold">◎</span>
-            </div>
-            <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-              OpenResource
-            </span>
-          </Link>
-
-          <div className="relative hidden md:flex -ml-10">
-            {/* Browse Dropdown - First Position */}
-            <div ref={browseMenuRef} className="relative">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setIsBrowseOpen(!isBrowseOpen)
-                  setIsBrowseHovered(false)
-                }}
-                onMouseEnter={() => setIsBrowseHovered(true)}
-                onMouseLeave={() => setIsBrowseHovered(false)}
-                className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50 h-auto"
-              >
-                Browse
-                <ChevronDown className={cn("ml-1 h-3 w-3 transition-transform duration-200", (isBrowseOpen || isBrowseHovered) && "rotate-180")} />
-              </Button>
-              {(isBrowseOpen || isBrowseHovered) && (
-                <div 
-                  className="absolute left-1/2 top-full mt-1 -translate-x-1/2 w-56 rounded-md border border-neutral-200 bg-background p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 z-50"
-                  onMouseEnter={() => setIsBrowseHovered(true)}
-                  onMouseLeave={() => setIsBrowseHovered(false)}
-                >
-                  {browseItems.map((item) => {
-                    const Icon = item.icon
-                    return (
-                      <button
-                        key={item.label}
-                        className="flex w-full items-start gap-3 rounded-sm px-3 py-2 text-sm transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-                      >
-                        <Icon className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                        <div className="text-left">
-                          <div className="font-medium">{item.label}</div>
-                          <div className="text-xs text-muted-foreground">{item.description}</div>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-
-            <Link
-              href="#"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-            >
-              Alternatives
-            </Link>
-            <Link
-              href="/github-repos"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-            >
-              GitHub Repos
-            </Link>
-            <Link
-              href="#"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-            >
-              Categories
-            </Link>
-            <Link
-              href="#"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-            >
-              Tech Stacks
-            </Link>
-            <Link
-              href="#"
-              className={cn(
-                "rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-all duration-300 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50",
-                isSearchOpen && "opacity-0 pointer-events-none"
-              )}
-            >
-              Self-hosted
-            </Link> 
-            {/* <Link
-              href="#"
-              className={cn(
-                "rounded-full px-3 py-1.5 text-sm font-medium text-neutral-600 transition-all duration-300 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50",
-                isSearchOpen && "opacity-0 pointer-events-none"
-              )}
-            >
-              Sponsor
-            </Link> */}
-          </div>
-
-          <div className="relative flex items-center gap-2" style={{ width: 'fit-content', flexShrink: 0 }}>
-            <div
-              ref={searchContainerRef}
-              className={cn(
-                "absolute flex mr-2 flex-row-reverse items-center overflow-hidden rounded-full border transition-all duration-500 ease-in-out",
-                isSearchOpen
-                  ? "right-56 w-[240px] gap-1 bg-background/95 pl-3 border-neutral-200 dark:bg-neutral-900/85 dark:border-neutral-700"
-                  : "right-56 w-10 gap-1.5 bg-transparent px-0 border-transparent"
-              )}
-            >
-              <button
-                type="button"
-                onClick={toggleSearch}
-                className={cn(
-                  "flex size-8 items-center justify-center rounded-full text-neutral-500 transition-all duration-500 ease-in-out hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100",
-                  isSearchOpen && "bg-neutral-100 text-neutral-800 dark:bg-neutral-800/70 dark:text-neutral-100"
-                )}
-                aria-label={isSearchOpen ? "Close search" : "Open search"}
-              >
-                <Search className="size-4" aria-hidden="true" />
-              </button>
-              <input
-                ref={searchInputRef}
-                type="search"
-                placeholder="Search resources..."
-                className={cn(
-                  "flex-1 min-w-0 bg-transparent text-sm text-neutral-700 outline-none transition-[max-width,opacity] duration-600 ease-out placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500",
-                  isSearchOpen ? "max-w-[200px] opacity-100" : "pointer-events-none max-w-0 opacity-0"
-                )}
-                onKeyDown={(event) => {
-                  if (event.key === "Escape") {
-                    event.stopPropagation()
-                    setIsSearchOpen(false)
-                  }
-                }}
-              />
-            </div>
-
-            <div ref={themeMenuRef} className="relative hidden md:flex">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsThemeMenuOpen((open) => !open)}
-                className="size-9 rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 hover:text-neutral-800 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
-              >
-                <Sun className="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" aria-hidden="true" />
-                <Moon className="absolute h-[1.1rem] w-[1.1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" aria-hidden="true" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-              {isThemeMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 min-w-[8rem] rounded-md border border-neutral-200 bg-background p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
-                  <ul className="grid gap-1">
-                    {themeOptions.map((option) => (
-                      <li key={option.value}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setTheme(option.value)
-                            setIsThemeMenuOpen(false)
-                          }}
-                          className={cn(
-                            "flex w-full items-center justify-between rounded-sm px-3 py-1.5 text-sm transition",
-                            theme === option.value
-                              ? "bg-neutral-900/5 text-neutral-900 dark:bg-neutral-100/10 dark:text-neutral-100"
-                              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-50"
-                          )}
+                    {/* Desktop Navigation */}
+                    <div className="hidden lg:flex lg:items-center lg:space-x-1">
+                        {/* Browse Dropdown - Opens on Hover */}
+                        <div
+                            onMouseEnter={handleBrowseMouseEnter}
+                            onMouseLeave={handleBrowseMouseLeave}
                         >
-                          {option.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                            <DropdownMenu open={browseOpen} onOpenChange={setBrowseOpen}>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
+                                        Browse
+                                        <ChevronDown className="h-3.5 w-3.5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="start"
+                                    className="w-64"
+                                    onMouseEnter={handleBrowseMouseEnter}
+                                    onMouseLeave={handleBrowseMouseLeave}
+                                >
+                                    {browseOptions.map((option) => (
+                                        <DropdownMenuItem key={option.href} asChild>
+                                            <Link href={option.href} className="flex items-start gap-3 p-2">
+                                                <option.icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                                                <div>
+                                                    <p className="font-medium">{option.label}</p>
+                                                    <p className="text-xs text-muted-foreground">{option.description}</p>
+                                                </div>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+
+                        {/* Nav Links */}
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className="px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Right side: Search, Theme, Submit, Auth */}
+                    <div className="flex items-center space-x-1">
+                        {/* Search Button with Filtered Results */}
+                        <Dialog open={searchOpen} onOpenChange={(open) => {
+                            setSearchOpen(open)
+                            if (!open) setSearchQuery("")
+                        }}>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-9 w-9">
+                                    <Search className="h-4 w-4" />
+                                    <span className="sr-only">Search</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Search Resources</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-3">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Search open-source resources..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="pl-10"
+                                            autoFocus
+                                        />
+                                    </div>
+
+                                    {/* Filtered Results */}
+                                    {searchQuery.trim() && (
+                                        <div className="max-h-64 overflow-y-auto rounded-md border border-border">
+                                            {filteredResults.length > 0 ? (
+                                                <div className="divide-y divide-border">
+                                                    {filteredResults.map((result) => (
+                                                        <button
+                                                            key={result.id}
+                                                            onClick={() => handleSearchSelect(result.href)}
+                                                            className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors"
+                                                        >
+                                                            <span className="font-medium">{result.title}</span>
+                                                            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                                                                {result.category}
+                                                            </span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-4 text-center text-sm text-muted-foreground">
+                                                    No results found for &ldquo;{searchQuery}&rdquo;
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {!searchQuery.trim() && (
+                                        <p className="text-xs text-muted-foreground text-center">
+                                            Start typing to search resources...
+                                        </p>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+
+                        {/* Theme Toggle */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleTheme}
+                            className="h-9 w-9"
+                        >
+                            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                            <span className="sr-only">Toggle theme</span>
+                        </Button>
+
+                        {/* Submit Button */}
+                        <Button size="sm" variant="outline" asChild className="hidden sm:flex gap-1.5">
+                            <Link href="/submit">
+                                <Plus className="h-4 w-4" />
+                                Submit
+                            </Link>
+                        </Button>
+
+                        {/* Auth Buttons */}
+                        {isPending ? (
+                            <div className="h-9 w-16 animate-pulse rounded-md bg-muted" />
+                        ) : session ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="gap-2">
+                                        <User className="h-4 w-4" />
+                                        <span className="hidden sm:inline-block max-w-[80px] truncate">
+                                            {session.user?.name || session.user?.email?.split("@")[0]}
+                                        </span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile" className="flex items-center gap-2">
+                                            <User className="h-4 w-4" />
+                                            Profile
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => authClient.signOut()}
+                                        className="flex items-center gap-2 text-destructive focus:text-destructive"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                        Sign Out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <Button size="sm" asChild className="hidden sm:flex">
+                                <Link href="/sign-in">Sign In</Link>
+                            </Button>
+                        )}
+
+                        {/* Mobile Menu Button */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="lg:hidden h-9 w-9"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        >
+                            {mobileMenuOpen ? (
+                                <X className="h-5 w-5" />
+                            ) : (
+                                <Menu className="h-5 w-5" />
+                            )}
+                            <span className="sr-only">Toggle menu</span>
+                        </Button>
+                    </div>
                 </div>
-              )}
+
+                {/* Mobile Menu */}
+                {mobileMenuOpen && (
+                    <div className="lg:hidden border-t border-border/40 py-4">
+                        <div className="flex flex-col space-y-1">
+                            {/* Browse Section */}
+                            <p className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Browse
+                            </p>
+                            {browseOptions.map((option) => (
+                                <Link
+                                    key={option.href}
+                                    href={option.href}
+                                    className="flex items-center gap-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground px-2 py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <option.icon className="h-4 w-4" />
+                                    {option.label}
+                                </Link>
+                            ))}
+
+                            <div className="border-t border-border/40 my-2" />
+
+                            {/* Quick Links */}
+                            <p className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Quick Links
+                            </p>
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground px-2 py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+
+                            <div className="border-t border-border/40 my-2" />
+
+                            {/* Submit & Auth */}
+                            <Link
+                                href="/submit"
+                                className="flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80 px-2 py-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <Plus className="h-4 w-4" />
+                                Submit Resource
+                            </Link>
+
+                            {!session && (
+                                <Link
+                                    href="/sign-in"
+                                    className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground px-2 py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <LogIn className="h-4 w-4" />
+                                    Sign In
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
-
-            <Button
-              variant="outline"
-              className="hidden items-center gap-2 rounded-full border-neutral-200 bg-white/80 px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900/70 dark:text-neutral-200 dark:hover:bg-neutral-800 md:inline-flex"
-            >
-              <Plus className="size-4" aria-hidden="true" />
-              Submit
-            </Button>
-
-            <Button
-              variant="outline"
-              className="rounded-full border-neutral-200 bg-white/80 px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900/70 dark:text-neutral-200 dark:hover:bg-neutral-800"
-            >
-              Sign In
-            </Button>
-          </div>
-        </div>
-      </div>
-    </header>
-  )
+        </nav>
+    )
 }
-
-export default Navbar;
