@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Star, GitFork, ExternalLink, Bookmark } from "lucide-react"
 import * as React from "react"
 
+interface BookmarkItem {
+  id: string | number
+}
+
 interface GitHubRepoCardProps {
   name: string
   description: string
@@ -25,16 +29,16 @@ export function GitHubRepoCard({
 
   // Check if repo is already bookmarked on component mount
   React.useEffect(() => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
-    setIsBookmarked(bookmarks.some((item: any) => item.id === name))
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
+    setIsBookmarked(bookmarks.some((item) => item.id === name))
   }, [name])
 
   const handleBookmarkClick = () => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
 
     if (isBookmarked) {
       // Remove bookmark
-      const updatedBookmarks = bookmarks.filter((item: any) => item.id !== name)
+      const updatedBookmarks = bookmarks.filter((item) => item.id !== name)
       localStorage.setItem('openstore-bookmarks', JSON.stringify(updatedBookmarks))
       setIsBookmarked(false)
     } else {

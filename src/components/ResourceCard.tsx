@@ -5,6 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, Clock, Bookmark } from "lucide-react"
 
+interface BookmarkItem {
+  id: string | number
+}
+
 interface Resource {
   id: number
   title: string
@@ -25,16 +29,16 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
 
   // Check if resource is already bookmarked on component mount
   React.useEffect(() => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
-    setIsBookmarked(bookmarks.some((item: any) => item.id === resource.id))
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
+    setIsBookmarked(bookmarks.some((item) => item.id === resource.id))
   }, [resource.id])
 
   const handleBookmarkClick = () => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') || '[]')
+    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
 
     if (isBookmarked) {
       // Remove bookmark
-      const updatedBookmarks = bookmarks.filter((item: any) => item.id !== resource.id)
+      const updatedBookmarks = bookmarks.filter((item) => item.id !== resource.id)
       localStorage.setItem('openstore-bookmarks', JSON.stringify(updatedBookmarks))
       setIsBookmarked(false)
     } else {

@@ -30,12 +30,12 @@ export default function SignInPage() {
             })
 
             if (result.error) {
-                setError(result.error.message || "Failed to sign in")
+                setError(result.error.message ?? "Failed to sign in")
             } else {
                 router.push("/")
                 router.refresh()
             }
-        } catch (err) {
+        } catch (_err) {
             setError("An unexpected error occurred")
         } finally {
             setIsLoading(false)

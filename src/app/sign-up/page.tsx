@@ -44,12 +44,12 @@ export default function SignUpPage() {
             })
 
             if (result.error) {
-                setError(result.error.message || "Failed to create account")
+                setError(result.error.message ?? "Failed to create account")
             } else {
                 router.push("/")
                 router.refresh()
             }
-        } catch (err) {
+        } catch (_err) {
             setError("An unexpected error occurred")
         } finally {
             setIsLoading(false)

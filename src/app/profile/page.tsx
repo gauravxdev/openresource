@@ -18,7 +18,7 @@ export default async function ProfilePage() {
 
     const { user } = session
 
-    const getInitials = (name: string | null | undefined, email: string) => {
+    const getInitials = (name: string | null | undefined, email: string | undefined) => {
         if (name) {
             return name
                 .split(" ")
@@ -27,7 +27,7 @@ export default async function ProfilePage() {
                 .toUpperCase()
                 .slice(0, 2)
         }
-        return email[0].toUpperCase()
+        return email?.[0]?.toUpperCase() ?? "U"
     }
 
     const formatDate = (date: Date) => {
@@ -45,7 +45,7 @@ export default async function ProfilePage() {
                     <CardHeader className="text-center pb-2">
                         <div className="flex justify-center mb-4">
                             <Avatar className="h-24 w-24">
-                                <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
+                                <AvatarImage src={user.image ?? undefined} alt={user.name ?? "User"} />
                                 <AvatarFallback className="text-2xl bg-primary/10 text-primary">
                                     {getInitials(user.name, user.email)}
                                 </AvatarFallback>
