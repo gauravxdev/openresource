@@ -35,7 +35,8 @@ export default function SignInPage() {
                 router.push("/")
                 router.refresh()
             }
-        } catch (_err) {
+        } catch (error) {
+            console.error("Error signing in:", error)
             setError("An unexpected error occurred")
         } finally {
             setIsLoading(false)

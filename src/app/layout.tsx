@@ -6,8 +6,6 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import type { CSSProperties } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
-import Navbar from "@/components/Navbar";
-import { TRPCReactProvider } from "@/trpc/react";
 import { PostHogProvider } from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
@@ -54,7 +52,7 @@ export default function RootLayout({
         <PostHogProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
@@ -71,8 +69,7 @@ export default function RootLayout({
               />
 
               <div className="relative z-10">
-                <Navbar />
-                <TRPCReactProvider>{children}</TRPCReactProvider>
+                {children}
               </div>
             </div>
           </ThemeProvider>

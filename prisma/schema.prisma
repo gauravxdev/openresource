@@ -71,3 +71,12 @@ model Verification {
 
   @@map("verification")
 }
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("waitlist")
+}
