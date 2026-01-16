@@ -26,7 +26,7 @@ export default async function middleware(request: NextRequest) {
     try {
         const response = await fetch(`${request.nextUrl.origin}/api/auth/get-session`, {
             headers: {
-                cookie: request.headers.get("cookie") || "",
+                cookie: request.headers.get("cookie") ?? "",
             },
             cache: "no-store",
         });
@@ -36,7 +36,7 @@ export default async function middleware(request: NextRequest) {
         }
 
         // redirect to sign in if not authenticated
-        const sessionData: SessionData = await response.json();
+        const sessionData = await response.json() as SessionData;
         if (!sessionData?.user) {
             const signInUrl = new URL('sign-in', request.url);
             signInUrl.searchParams.set("callbackUrl", pathname);
@@ -45,7 +45,7 @@ export default async function middleware(request: NextRequest) {
 
         const allowedRoles = roleBasedRoutes[pathname];
         if (allowedRoles) {
-            const userRole = sessionData.user.role as string
+            const userRole = sessionData.user.role!
             if (!allowedRoles.includes(userRole)) {
                 return NextResponse.redirect(new URL('/unauthorized', request.url));
             }
