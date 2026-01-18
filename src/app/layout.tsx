@@ -7,6 +7,7 @@ import { GeistMono } from "geist/font/mono";
 import type { CSSProperties } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Openresource",
@@ -71,6 +72,7 @@ export default function RootLayout({
               <div className="relative z-10">
                 {children}
               </div>
+              <Toaster />
             </div>
           </ThemeProvider>
         </PostHogProvider>

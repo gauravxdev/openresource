@@ -99,10 +99,10 @@ export default function CategoriesPage() {
         <div className="mb-12">
           <div className="text-sm text-muted-foreground">Categories</div>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            Open Source Software Categories
+            Open Source Resource Categories
           </h1>
           <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">
-            Browse top categories to find your best Open Source software options.
+            Browse top categories to find your best Open Source resource options.
           </p>
         </div>
 

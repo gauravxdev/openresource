@@ -124,7 +124,7 @@ export default function TagsPage() {
             Browse Open Source Tags
           </h1>
           <p className="max-w-2xl text-lg text-muted-foreground md:text-xl">
-            Discover topics to find your best Open Source software options.
+            Discover topics to find your best Open Source resource options.
           </p>
         </div>
 
@@ -175,11 +175,10 @@ export default function TagsPage() {
                   variant={isActive ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedLetter(letter)}
-                  className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide min-w-[32px] ${
-                    isActive
+                  className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide min-w-[32px] ${isActive
                       ? "bg-foreground text-background hover:bg-foreground"
                       : "border-border/60 text-muted-foreground hover:border-border hover:bg-neutral-100/40 hover:text-foreground dark:hover:bg-neutral-800/40"
-                  }`}
+                    }`}
                 >
                   {letter}
                 </Button>
