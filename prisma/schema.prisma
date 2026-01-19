@@ -80,3 +80,24 @@ model Waitlist {
   @@index([email])
   @@map("waitlist")
 }
+
+model Resource {
+  id            String   @id @default(cuid())
+  name          String
+  description   String
+  category      String
+  websiteUrl    String
+  repositoryUrl String
+  alternative   String?
+  stars         Int      @default(0)
+  forks         Int      @default(0)
+  lastCommit    DateTime?
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  addedBy       String?  // User ID or "ADMIN"
+  image         String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("resource")
+}

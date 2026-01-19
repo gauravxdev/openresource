@@ -10,7 +10,6 @@ import {
     Zap,
     ArrowRightLeft,
     Grid2X2,
-    Github
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -44,7 +43,7 @@ export default function SubmitPage() {
             } else {
                 toast.error(result.message)
             }
-        } catch (error) {
+        } catch {
             toast.error("An unexpected error occurred. Please try again.")
         } finally {
             setIsLoading(false)
@@ -202,7 +201,7 @@ export default function SubmitPage() {
                                 </div>
                                 <div>
                                     <p className="font-semibold text-gray-100">Available Now</p>
-                                    <p className="text-gray-500">No waitlist or "coming soon" products.</p>
+                                    <p className="text-gray-500">No waitlist or &quot;coming soon&quot; products.</p>
                                 </div>
                             </div>
 
