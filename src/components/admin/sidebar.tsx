@@ -66,6 +66,7 @@ const navItems = [
     { title: "Documents", icon: FileText },
     { title: "Teams", icon: Users },
     { title: "Company", icon: Building },
+    { title: "Settings", icon: Settings },
 ];
 
 const workgroups = [

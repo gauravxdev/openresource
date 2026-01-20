@@ -4,6 +4,7 @@ import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, Clock, Bookmark } from "lucide-react"
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 interface BookmarkItem {
   id: string | number
@@ -113,9 +114,12 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
           </Button>
         </div>
 
-        <p className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground mt-3">
-          {resource.description}
-        </p>
+        <div className="mt-3">
+          <MarkdownRenderer
+            content={resource.description}
+            className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground"
+          />
+        </div>
 
         <div className="mt-2 flex flex-col gap-2 text-sm">
           {stats.map(({ label, value, Icon, iconClassName }) => (

@@ -24,6 +24,7 @@ import {
     Users,
 } from "lucide-react";
 import Link from "next/link";
+import { useDashboardStore } from "@/store/dashboard-store";
 
 export function DashboardHeader() {
     return (
@@ -157,6 +158,8 @@ export function DashboardHeader() {
 }
 
 export function WelcomeSection() {
+    const { setView } = useDashboardStore();
+
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -172,9 +175,10 @@ export function WelcomeSection() {
                 <Button
                     variant="outline"
                     className="h-9 gap-1.5 bg-card hover:bg-card/80 border-border/50"
+                    onClick={() => setView("submit")}
                 >
                     <FilePlus className="size-4" />
-                    <span className="hidden sm:inline">Add Project</span>
+                    <span className="hidden sm:inline">Add Resource</span>
                 </Button>
                 <Button className="h-9 gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-white border border-border/50">
                     <UserPlus className="size-4" />

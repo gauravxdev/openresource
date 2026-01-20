@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useTheme } from "next-themes";
+import MDEditor from "@uiw/react-md-editor";
 import {
     Select,
     SelectContent,
@@ -27,6 +28,16 @@ import {
 } from "@/components/ui/card";
 
 import { submitResource } from "@/actions/submit";
+import { getCategories, addCategory, deleteCategory } from "@/actions/categories";
+import { Plus, Trash2, Settings2, Sparkles } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -39,21 +50,47 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const CATEGORIES = [
-    "Components",
-    "Templates",
-    "Icons",
-    "Colors",
-    "Animations",
-    "Illustrations",
-    "Typography",
-    "Tools",
-    "Libraries",
-    "Other",
-];
+// CATEGORIES removed as it is now dynamic
 
 export function SubmitForm() {
+    const { theme } = useTheme();
     const [isPending, startTransition] = useTransition();
+    const [categories, setCategories] = React.useState<{ id: string; name: string }[]>([]);
+    const [newCategoryName, setNewCategoryName] = React.useState("");
+    const [isManagingCategories, setIsManagingCategories] = React.useState(false);
+
+    const fetchCategories = React.useCallback(async () => {
+        const result = await getCategories();
+        if (result.success && result.data) {
+            setCategories(result.data);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        void fetchCategories();
+    }, [fetchCategories]);
+
+    const handleAddCategory = async () => {
+        if (!newCategoryName.trim()) return;
+        const result = await addCategory(newCategoryName);
+        if (result.success) {
+            toast.success(result.message);
+            setNewCategoryName("");
+            void fetchCategories();
+        } else {
+            toast.error(result.message ?? "Failed to add category");
+        }
+    };
+
+    const handleDeleteCategory = async (id: string) => {
+        const result = await deleteCategory(id);
+        if (result.success) {
+            toast.success(result.message);
+            void fetchCategories();
+        } else {
+            toast.error(result.message ?? "Failed to delete category");
+        }
+    };
 
     const {
         register,
@@ -111,7 +148,9 @@ export function SubmitForm() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
+                                <div className="h-8 flex items-center">
+                                    <Label htmlFor="name">Name</Label>
+                                </div>
                                 <Input
                                     id="name"
                                     placeholder="Resource Name"
@@ -124,28 +163,93 @@ export function SubmitForm() {
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="category">Category</Label>
-                                <Controller
-                                    control={control}
-                                    name="category"
-                                    render={({ field }) => (
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {CATEGORIES.map((category) => (
-                                                    <SelectItem key={category} value={category}>
-                                                        {category}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
+                                <div className="h-8 flex items-center">
+                                    <Label htmlFor="category">Category</Label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1">
+                                        <Controller
+                                            control={control}
+                                            name="category"
+                                            render={({ field }) => (
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    value={field.value}
+                                                >
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Select a category" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {categories.map((category) => (
+                                                            <SelectItem key={category.id} value={category.name}>
+                                                                {category.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                        />
+                                    </div>
+                                    <Dialog open={isManagingCategories} onOpenChange={setIsManagingCategories}>
+                                        <DialogTrigger asChild>
+                                            <Button type="button" variant="outline" className="h-10 px-3 shrink-0 gap-2">
+                                                <Settings2 className="h-4 w-4" />
+                                                Manage
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-md">
+                                            <DialogHeader>
+                                                <DialogTitle>Manage Categories</DialogTitle>
+                                                <DialogDescription>
+                                                    Add or remove resource categories.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="space-y-4 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <Input
+                                                        placeholder="New category name..."
+                                                        value={newCategoryName}
+                                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault();
+                                                                void handleAddCategory();
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Button onClick={() => void handleAddCategory()} size="sm">
+                                                        <Plus className="h-4 w-4 mr-1" />
+                                                        Add
+                                                    </Button>
+                                                </div>
+                                                <div className="max-h-[300px] overflow-auto space-y-2 pr-1">
+                                                    {categories.length === 0 ? (
+                                                        <p className="text-sm text-center text-muted-foreground py-4">
+                                                            No categories found.
+                                                        </p>
+                                                    ) : (
+                                                        categories.map((cat) => (
+                                                            <div
+                                                                key={cat.id}
+                                                                className="flex items-center justify-between p-2 rounded-md bg-muted/50"
+                                                            >
+                                                                <span className="text-sm font-medium">{cat.name}</span>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                                    onClick={() => void handleDeleteCategory(cat.id)}
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
                                 {errors.category && (
                                     <p className="text-sm font-medium text-destructive">
                                         {errors.category.message}
@@ -154,23 +258,45 @@ export function SubmitForm() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Brief description of the resource"
-                                {...register("description")}
+                        <div className="space-y-2" data-color-mode={theme === "dark" ? "dark" : "light"}>
+                            <div className="h-8 flex items-center">
+                                <Label htmlFor="description">Description</Label>
+                            </div>
+                            <Controller
+                                control={control}
+                                name="description"
+                                render={({ field }) => (
+                                    <MDEditor
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        preview="edit"
+                                        height={300}
+                                        className="w-full"
+                                    />
+                                )}
                             />
                             {errors.description && (
                                 <p className="text-sm font-medium text-destructive">
                                     {errors.description.message}
                                 </p>
                             )}
+                            <div className="flex justify-start">
+                                <Button
+                                    type="button"
+                                    className="gap-2"
+                                    onClick={() => toast.info("AI Generation coming soon!")}
+                                >
+                                    <Sparkles className="h-4 w-4" />
+                                    Generate Description
+                                </Button>
+                            </div>
                         </div>
 
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="websiteUrl">Website URL</Label>
+                                <div className="h-8 flex items-center">
+                                    <Label htmlFor="websiteUrl">Website URL</Label>
+                                </div>
                                 <Input
                                     id="websiteUrl"
                                     placeholder="https://"
@@ -183,7 +309,9 @@ export function SubmitForm() {
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="repositoryUrl">Repository URL</Label>
+                                <div className="h-8 flex items-center">
+                                    <Label htmlFor="repositoryUrl">Repository URL</Label>
+                                </div>
                                 <Input
                                     id="repositoryUrl"
                                     placeholder="https://github.com/..."
@@ -198,7 +326,9 @@ export function SubmitForm() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="alternative">Alternative To (Optional)</Label>
+                            <div className="h-8 flex items-center">
+                                <Label htmlFor="alternative">Alternative To (Optional)</Label>
+                            </div>
                             <Input
                                 id="alternative"
                                 placeholder="e.g. Vercel, Algolia"

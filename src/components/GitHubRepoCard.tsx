@@ -1,8 +1,9 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, ExternalLink, Bookmark } from "lucide-react"
 import * as React from "react"
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 interface BookmarkItem {
   id: string | number
@@ -74,9 +75,11 @@ export function GitHubRepoCard({
             <CardTitle className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors mb-2 break-words">
               {name}
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground line-clamp-3">
-              {description || "A comprehensive open source project with modern development practices and community contributions."}
-            </CardDescription>
+            <div className="text-sm text-muted-foreground line-clamp-3">
+              <MarkdownRenderer
+                content={description || "A comprehensive open source project with modern development practices and community contributions."}
+              />
+            </div>
           </div>
           <div className="flex gap-2 shrink-0">
             <Button
