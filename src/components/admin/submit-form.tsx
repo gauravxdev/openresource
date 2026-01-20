@@ -1,22 +1,16 @@
 "use client";
 
+import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTransition } from "react";
-import { toast } from "sonner"; // Assuming sonner is used based on package.json
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import {
     Select,
     SelectContent,
@@ -24,10 +18,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 
 import { submitResource } from "@/actions/submit";
 
-// Define the schema here on client side for form validation, matching server side
 const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     description: z.string().min(10, "Description must be at least 10 characters"),
@@ -52,10 +52,9 @@ const CATEGORIES = [
     "Other",
 ];
 
-export default function Submit() {
+export function SubmitForm() {
     const [isPending, startTransition] = useTransition();
 
-    // Using vanilla react-hook-form since shadcn Form component is missing
     const {
         register,
         handleSubmit,
@@ -93,15 +92,15 @@ export default function Submit() {
     };
 
     return (
-        <div className="flex max-w-2xl flex-col gap-6 p-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">Admin Submit</h1>
+        <div className="flex-1 overflow-auto p-4 sm:p-6 space-y-6 bg-background w-full flex flex-col items-center">
+            <div className="space-y-0.5 w-full">
+                <h2 className="text-2xl font-bold tracking-tight">Admin Submit</h2>
                 <p className="text-muted-foreground">
                     Add a new resource directly to the database.
                 </p>
             </div>
 
-            <Card>
+            <Card className="w-full">
                 <CardHeader>
                     <CardTitle>Resource Details</CardTitle>
                     <CardDescription>

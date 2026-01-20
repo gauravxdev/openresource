@@ -53,11 +53,13 @@ import {
     LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDashboardStore } from "@/store/dashboard-store";
 
 const navItems = [
     { title: "Search", icon: Search, shortcut: "/" },
     { title: "Inbox", icon: Inbox },
-    { title: "Dashboard", icon: BarChart3, isActive: true },
+    { title: "Dashboard", icon: BarChart3, view: "dashboard" as const },
+    { title: "Submit Resource", icon: Plus, view: "submit" as const },
     { title: "My Tasks", icon: CheckSquare },
     { title: "Projects", icon: Layers },
     { title: "Calendar", icon: Calendar },
@@ -93,6 +95,7 @@ const workgroups = [
 export function DashboardSidebar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
+    const { currentView, setView } = useDashboardStore();
     const [expandedItems, setExpandedItems] = React.useState<string[]>([
         "all-work",
         "website-copy",
@@ -204,12 +207,12 @@ export function DashboardSidebar({
                         <SidebarMenu>
                             {navItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={item.isActive}
-                                        className="h-7"
-                                    >
-                                        <Link href="#">
+                                    {item.view ? (
+                                        <SidebarMenuButton
+                                            isActive={currentView === item.view}
+                                            onClick={() => setView(item.view)}
+                                            className="h-7"
+                                        >
                                             <item.icon className="size-3.5" />
                                             <span className="text-sm">{item.title}</span>
                                             {item.shortcut && (
@@ -217,8 +220,24 @@ export function DashboardSidebar({
                                                     {item.shortcut}
                                                 </span>
                                             )}
-                                        </Link>
-                                    </SidebarMenuButton>
+                                        </SidebarMenuButton>
+                                    ) : (
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={false}
+                                            className="h-7"
+                                        >
+                                            <Link href="#">
+                                                <item.icon className="size-3.5" />
+                                                <span className="text-sm">{item.title}</span>
+                                                {item.shortcut && (
+                                                    <span className="ml-auto flex size-5 items-center justify-center rounded bg-muted text-[10px] font-medium text-muted-foreground">
+                                                        {item.shortcut}
+                                                    </span>
+                                                )}
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    )}
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
@@ -254,31 +273,13 @@ export function DashboardSidebar({
             </SidebarContent>
 
             <SidebarFooter className="px-2.5 pb-3 group-data-[collapsible=icon]:hidden">
-                <div className="group/sidebar relative flex flex-col gap-2 rounded-lg border p-4 text-sm w-full bg-background">
-                    <div className="text-balance text-lg font-semibold leading-tight group-hover/sidebar:underline">
-                        Open-source layouts by lndev-ui
+                <div className="flex flex-col gap-2 rounded-lg border p-4 text-sm w-full bg-background">
+                    <div className="text-balance text-lg font-semibold leading-tight">
+                        OpenResource
                     </div>
                     <div className="text-muted-foreground">
-                        Collection of beautifully crafted open-source layouts UI built with
-                        shadcn/ui.
+                        Manage your open source resources and projects efficiently.
                     </div>
-                    <Link
-                        target="_blank"
-                        rel="noreferrer"
-                        className="absolute inset-0"
-                        href="https://square.lndev.me"
-                    >
-                        <span className="sr-only">Square by lndev-ui</span>
-                    </Link>
-                    <Button size="sm" className="w-full" asChild>
-                        <Link
-                            href="https://square.lndev.me"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            square.lndev.me
-                        </Link>
-                    </Button>
                 </div>
             </SidebarFooter>
         </Sidebar>

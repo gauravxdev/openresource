@@ -6,7 +6,16 @@ import { LeadsChart } from "./leads-chart";
 import { TopPerformers } from "./top-performers";
 import { LeadsTable } from "./leads-table";
 
+import { useDashboardStore } from "@/store/dashboard-store";
+import { SubmitForm } from "./submit-form";
+
 export function DashboardContent() {
+    const { currentView } = useDashboardStore();
+
+    if (currentView === "submit") {
+        return <SubmitForm />;
+    }
+
     return (
         <main className="flex-1 overflow-auto p-4 sm:p-6 space-y-6 bg-background w-full">
             <WelcomeSection />

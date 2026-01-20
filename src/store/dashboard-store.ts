@@ -9,6 +9,7 @@ interface DashboardStore {
     sortBy: "name" | "email" | "followUp" | "status" | "score";
     sortOrder: "asc" | "desc";
     chartPeriod: "last_week" | "last_month" | "last_quarter";
+    currentView: "dashboard" | "submit";
     setSearchQuery: (query: string) => void;
     setTypeFilter: (filter: LeadType | "all") => void;
     setStatusFilter: (filter: LeadStatus | "all") => void;
@@ -16,6 +17,7 @@ interface DashboardStore {
     setSortBy: (sort: "name" | "email" | "followUp" | "status" | "score") => void;
     setSortOrder: (order: "asc" | "desc") => void;
     setChartPeriod: (period: "last_week" | "last_month" | "last_quarter") => void;
+    setView: (view: "dashboard" | "submit") => void;
     clearFilters: () => void;
 }
 
@@ -27,6 +29,7 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
     sortBy: "name",
     sortOrder: "asc",
     chartPeriod: "last_month",
+    currentView: "dashboard",
     setSearchQuery: (query) => set({ searchQuery: query }),
     setTypeFilter: (filter) => set({ typeFilter: filter }),
     setStatusFilter: (filter) => set({ statusFilter: filter }),
@@ -34,6 +37,7 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
     setSortBy: (sort) => set({ sortBy: sort }),
     setSortOrder: (order) => set({ sortOrder: order }),
     setChartPeriod: (period) => set({ chartPeriod: period }),
+    setView: (view) => set({ currentView: view }),
     clearFilters: () =>
         set({
             searchQuery: "",
