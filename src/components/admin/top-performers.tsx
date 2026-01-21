@@ -145,7 +145,7 @@ export function TopPerformers() {
             </div>
             <div className="p-4 space-y-4">
                 {sortedPerformers.map((performer, index) => {
-                    const style = barStyles[index % barStyles.length];
+                    const style = barStyles[index % barStyles.length] ?? { borderColor: "", bgGradient: "", isDashed: false };
                     const progressWidth = (performer.score / maxScore) * 100;
                     const isFirst = index === 0;
 

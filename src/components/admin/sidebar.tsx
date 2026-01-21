@@ -55,7 +55,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { useDashboardStore } from "@/store/dashboard-store";
 
-const navItems = [
+type NavItem = {
+    title: string;
+    icon: React.ElementType;
+    shortcut?: string;
+    view?: "dashboard" | "submit";
+};
+
+const navItems: NavItem[] = [
     { title: "Search", icon: Search, shortcut: "/" },
     { title: "Inbox", icon: Inbox },
     { title: "Dashboard", icon: BarChart3, view: "dashboard" as const },
@@ -211,7 +218,7 @@ export function DashboardSidebar({
                                     {item.view ? (
                                         <SidebarMenuButton
                                             isActive={currentView === item.view}
-                                            onClick={() => setView(item.view)}
+                                            onClick={() => item.view && setView(item.view)}
                                             className="h-7"
                                         >
                                             <item.icon className="size-3.5" />
