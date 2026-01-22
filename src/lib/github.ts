@@ -65,3 +65,40 @@ export async function getReadmeFile(owner: string, repo: string): Promise<string
         throw error
     }
 }
+
+/**
+ * Represents a file or directory entry in the repo root.
+ */
+export interface RepoFileEntry {
+    name: string;
+    type: 'file' | 'dir';
+}
+
+/**
+ * Fetches the root-level file/directory structure of a repository.
+ * Used for classification signals (e.g., detecting Dockerfile, packages/, etc.)
+ * 
+ * @param owner - Repository owner
+ * @param repo - Repository name
+ * @returns Array of file entries or undefined on error
+ */
+export async function getRepoStructure(owner: string, repo: string): Promise<RepoFileEntry[] | undefined> {
+    try {
+        const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents', {
+            owner,
+            repo,
+        });
+
+        // GitHub returns an array for directory contents
+        if (Array.isArray(data)) {
+            return data.map((item: { name: string; type: string }) => ({
+                name: item.name,
+                type: item.type === 'dir' ? 'dir' : 'file',
+            }));
+        }
+        return undefined;
+    } catch (error) {
+        console.error('Failed to fetch repo structure:', error);
+        return undefined;
+    }
+}
