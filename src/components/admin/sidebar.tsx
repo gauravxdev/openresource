@@ -124,56 +124,63 @@ export function DashboardSidebar({
         const Icon = item.icon;
         const paddingLeft = level * 12;
 
+        const trigger = (
+            <SidebarMenuButton
+                className="h-7 text-sm"
+                style={{ paddingLeft: `${8 + paddingLeft}px` }}
+            >
+                <Icon className="size-3.5" />
+                <span className="flex-1">{item.name}</span>
+                {hasChildren && (
+                    isExpanded ? (
+                        <ChevronDown className="size-3" />
+                    ) : (
+                        <ChevronRight className="size-3" />
+                    )
+                )}
+            </SidebarMenuButton>
+        );
+
         if (hasChildren) {
-            return (
+            const content = (
                 <Collapsible
                     key={item.id}
                     open={isExpanded}
                     onOpenChange={() => toggleItem(item.id)}
                 >
-                    <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                                className="h-7 text-sm"
-                                style={{ paddingLeft: `${8 + paddingLeft}px` }}
-                            >
-                                <Icon className="size-3.5" />
-                                <span className="flex-1">{item.name}</span>
-                                {isExpanded ? (
-                                    <ChevronDown className="size-3" />
-                                ) : (
-                                    <ChevronRight className="size-3" />
-                                )}
-                            </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            <SidebarMenuSub className="mr-0 pr-0">
-                                {item.children?.map((child) => (
-                                    <SidebarMenuSubItem key={child.id}>
-                                        {renderWorkgroupItem(
-                                            child as (typeof workgroups)[0],
-                                            level + 1
-                                        )}
-                                    </SidebarMenuSubItem>
-                                ))}
-                            </SidebarMenuSub>
-                        </CollapsibleContent>
-                    </SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                        {trigger}
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub className="mr-0 pr-0">
+                            {item.children?.map((child) => (
+                                <SidebarMenuSubItem key={child.id}>
+                                    {renderWorkgroupItem(
+                                        child as (typeof workgroups)[0],
+                                        level + 1
+                                    )}
+                                </SidebarMenuSubItem>
+                            ))}
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
                 </Collapsible>
+            );
+
+            if (level === 0) {
+                return <SidebarMenuItem key={item.id}>{content}</SidebarMenuItem>;
+            }
+            return content;
+        }
+
+        if (level === 0) {
+            return (
+                <SidebarMenuItem key={item.id}>
+                    {trigger}
+                </SidebarMenuItem>
             );
         }
 
-        return (
-            <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton
-                    className="h-7 text-sm"
-                    style={{ paddingLeft: `${8 + paddingLeft}px` }}
-                >
-                    <Icon className="size-3.5" />
-                    <span>{item.name}</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        );
+        return trigger;
     };
 
     return (

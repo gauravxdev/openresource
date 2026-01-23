@@ -8,6 +8,7 @@ import type { CSSProperties } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
   title: "Openresource",
@@ -51,30 +52,32 @@ export default function RootLayout({
     >
       <body className="bg-transparent">
         <PostHogProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* Dynamic Background */}
-            <div className="min-h-screen w-full relative">
-              <div
-                className="
-                  absolute inset-0 z-0
-                  bg-background
-                  [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
-                  dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
-                "
-                style={dottedBackgroundStyle}
-              />
+          <TRPCReactProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {/* Dynamic Background */}
+              <div className="min-h-screen w-full relative">
+                <div
+                  className="
+                    absolute inset-0 z-0
+                    bg-background
+                    [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
+                    dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
+                  "
+                  style={dottedBackgroundStyle}
+                />
 
-              <div className="relative z-10">
-                {children}
+                <div className="relative z-10">
+                  {children}
+                </div>
+                <Toaster />
               </div>
-              <Toaster />
-            </div>
-          </ThemeProvider>
+            </ThemeProvider>
+          </TRPCReactProvider>
         </PostHogProvider>
       </body>
     </html>

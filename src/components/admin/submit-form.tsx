@@ -26,9 +26,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 import { submitResource } from "@/actions/submit";
 import { getCategories, addCategory, deleteCategory } from "@/actions/categories";
+import { api } from "@/trpc/react";
 import { Plus, Trash2, Settings2, Sparkles } from "lucide-react";
 import {
     Dialog,
@@ -58,6 +60,22 @@ export function SubmitForm() {
     const [categories, setCategories] = React.useState<{ id: string; name: string }[]>([]);
     const [newCategoryName, setNewCategoryName] = React.useState("");
     const [isManagingCategories, setIsManagingCategories] = React.useState(false);
+    const [isAiGenerated, setIsAiGenerated] = React.useState(false);
+
+    const generateDescriptionMutation = api.ai.generateDescription.useMutation({
+        onSuccess: (data) => {
+            setValue("description", data.description);
+            setIsAiGenerated(true);
+            toast.success(
+                data.cached
+                    ? "Description loaded from cache"
+                    : `Description generated (${data.confidence} confidence)`
+            );
+        },
+        onError: (error) => {
+            toast.error(error.message || "Failed to generate description");
+        },
+    });
 
     const fetchCategories = React.useCallback(async () => {
         const result = await getCategories();
@@ -97,6 +115,8 @@ export function SubmitForm() {
         handleSubmit,
         control,
         reset,
+        setValue,
+        watch,
         formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(formSchema),
@@ -109,6 +129,17 @@ export function SubmitForm() {
             alternative: "",
         },
     });
+
+    const repositoryUrl = watch("repositoryUrl");
+
+    const handleGenerateDescription = () => {
+        if (!repositoryUrl) {
+            toast.error("Please enter a Repository URL first");
+            return;
+        }
+        setIsAiGenerated(false);
+        generateDescriptionMutation.mutate({ repoUrl: repositoryUrl });
+    };
 
     const onSubmit = (data: FormData) => {
         startTransition(async () => {
@@ -259,8 +290,14 @@ export function SubmitForm() {
                         </div>
 
                         <div className="space-y-2" data-color-mode={theme === "dark" ? "dark" : "light"}>
-                            <div className="h-8 flex items-center">
+                            <div className="h-8 flex items-center gap-2">
                                 <Label htmlFor="description">Description</Label>
+                                {isAiGenerated && (
+                                    <Badge variant="secondary" className="gap-1 text-xs">
+                                        <Sparkles className="h-3 w-3" />
+                                        AI-written
+                                    </Badge>
+                                )}
                             </div>
                             <Controller
                                 control={control}
@@ -268,7 +305,13 @@ export function SubmitForm() {
                                 render={({ field }) => (
                                     <MDEditor
                                         value={field.value}
-                                        onChange={field.onChange}
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            // If user edits the AI content, remove the AI badge
+                                            if (isAiGenerated && value !== field.value) {
+                                                setIsAiGenerated(false);
+                                            }
+                                        }}
                                         preview="edit"
                                         height={300}
                                         className="w-full"
@@ -284,10 +327,13 @@ export function SubmitForm() {
                                 <Button
                                     type="button"
                                     className="gap-2"
-                                    onClick={() => toast.info("AI Generation coming soon!")}
+                                    onClick={handleGenerateDescription}
+                                    disabled={generateDescriptionMutation.isPending}
                                 >
                                     <Sparkles className="h-4 w-4" />
-                                    Generate Description
+                                    {generateDescriptionMutation.isPending
+                                        ? "Generating..."
+                                        : "Generate Description"}
                                 </Button>
                             </div>
                         </div>
