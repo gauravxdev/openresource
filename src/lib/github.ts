@@ -102,3 +102,55 @@ export async function getRepoStructure(owner: string, repo: string): Promise<Rep
         return undefined;
     }
 }
+
+/**
+ * Fetches the languages used in the repository.
+ * Returns a map of language names to bytes of code.
+ */
+export async function getLanguages(owner: string, repo: string): Promise<Record<string, number>> {
+    try {
+        const { data } = await octokit.request('GET /repos/{owner}/{repo}/languages', {
+            owner,
+            repo,
+        });
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch languages:', error);
+        return {};
+    }
+}
+
+/**
+ * Fetches the number of releases for the repository.
+ * Returns the total count of releases.
+ */
+export async function getReleaseCount(owner: string, repo: string): Promise<number> {
+    try {
+        // Fetch just one item to get the headers/stats
+        const response: any = await octokit.request('GET /repos/{owner}/{repo}/releases', {
+            owner,
+            repo,
+            per_page: 1,
+        });
+
+        // If there's a Link header, parse it to find the last page number
+        const linkHeader = response.headers.link;
+        if (linkHeader) {
+            const match = linkHeader.match(/page=(\d+)>; rel="last"/);
+            if (match) {
+                return parseInt(match[1], 10);
+            }
+        }
+
+        // If no Link header, the count is just the length of the data on the first page
+        if (Array.isArray(response.data)) {
+            return response.data.length;
+        }
+
+        return 0;
+    } catch (error) {
+        // 404 means no releases usually, or just return 0 on error to be safe
+        return 0;
+    }
+}
+
