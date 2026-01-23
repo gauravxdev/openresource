@@ -87,6 +87,8 @@ export const aiRouter = createTRPCRouter({
             if (cached) {
                 return {
                     description: cached.descriptionMdx,
+                    shortDescription: cached.shortDescription,
+                    categories: cached.categories,
                     repoType: cached.repoType,
                     confidence: cached.aiConfidence,
                     model: cached.model,
@@ -146,7 +148,7 @@ export const aiRouter = createTRPCRouter({
 
             // Step 6: Validate AI output
             const validation = validateDescription({
-                mdx: llmOutput.description,
+                mdx: llmOutput.longDescription,
                 techStack: signals.techStack,
             });
 
@@ -160,7 +162,9 @@ export const aiRouter = createTRPCRouter({
             // Step 7: Persist description and metadata
             const record = createAiDescriptionRecord({
                 repoUrl,
-                descriptionMdx: llmOutput.description,
+                descriptionMdx: llmOutput.longDescription,
+                shortDescription: llmOutput.shortDescription,
+                categories: llmOutput.categories,
                 repoType: classification.type,
                 signals,
                 model: llmOutput.model,
@@ -169,7 +173,9 @@ export const aiRouter = createTRPCRouter({
 
             // Step 8: Return result to frontend
             return {
-                description: llmOutput.description,
+                description: llmOutput.longDescription,
+                shortDescription: llmOutput.shortDescription,
+                categories: llmOutput.categories,
                 repoType: classification.type,
                 confidence: record.aiConfidence,
                 model: llmOutput.model,

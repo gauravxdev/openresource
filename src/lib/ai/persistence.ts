@@ -19,6 +19,8 @@ export type AiConfidence = "low" | "medium" | "high";
 export interface AiDescriptionRecord {
     repoUrl: string;
     descriptionMdx: string;
+    shortDescription: string;
+    categories: string[];
     repoType: RepoType;
     signals: RepoSignals;
     model: string;
@@ -140,6 +142,8 @@ export function getRepository(): AiDescriptionRepository {
 export function createAiDescriptionRecord(params: {
     repoUrl: string;
     descriptionMdx: string;
+    shortDescription: string;
+    categories: string[];
     repoType: RepoType;
     signals: RepoSignals;
     model: string;
@@ -147,6 +151,8 @@ export function createAiDescriptionRecord(params: {
     return {
         repoUrl: params.repoUrl,
         descriptionMdx: params.descriptionMdx,
+        shortDescription: params.shortDescription,
+        categories: params.categories,
         repoType: params.repoType,
         signals: params.signals,
         model: params.model,

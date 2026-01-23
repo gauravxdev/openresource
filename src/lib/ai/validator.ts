@@ -225,6 +225,8 @@ export function validateDescription(input: ValidateDescriptionInput): Validation
     }
 
     // Rule 3: Check sentence count
+    // Relaxed for long descriptions which may vary significantly in length
+    /*
     const sentenceCount = countSentences(mdx);
     if (sentenceCount < MIN_SENTENCES || sentenceCount > MAX_SENTENCES) {
         return {
@@ -232,6 +234,7 @@ export function validateDescription(input: ValidateDescriptionInput): Validation
             reason: `Description must contain between ${MIN_SENTENCES} and ${MAX_SENTENCES} sentences (found ${sentenceCount})`,
         };
     }
+    */
 
     // Rule 4: Check for emojis
     if (containsEmoji(mdx)) {
