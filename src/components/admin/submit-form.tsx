@@ -339,17 +339,6 @@ export function SubmitForm() {
                         <div className="space-y-2">
                             <div className="h-8 flex items-center justify-between">
                                 <Label htmlFor="shortDescription">Short Description</Label>
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="ghost"
-                                    className="gap-2 h-7 text-xs"
-                                    onClick={handleGenerateDescription}
-                                    disabled={generateDescriptionMutation.isPending}
-                                >
-                                    <Sparkles className="h-3 w-3" />
-                                    {generateDescriptionMutation.isPending ? "Generating..." : "Generate with AI"}
-                                </Button>
                             </div>
                             <Input
                                 id="shortDescription"
