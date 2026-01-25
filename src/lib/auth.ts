@@ -10,6 +10,15 @@ export const auth = betterAuth({
     database: prismaAdapter(db, {
         provider: "postgresql",
     }),
+    user: {
+        additionalFields: {
+            image: {
+                type: "string",
+                required: false,
+                fieldName: "image",
+            },
+        },
+    },
     session: {
         cookieCache: {
             enabled: true,

@@ -12,9 +12,17 @@ interface ImageUploadProps {
     value?: string;
     onChange: (url: string) => void;
     onRemove: () => void;
+    title?: string;
+    description?: string;
 }
 
-export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
+export function ImageUpload({
+    value,
+    onChange,
+    onRemove,
+    title = "Resource Banner/Icon",
+    description = "Recommended size: 1200x630px. Max 5MB."
+}: ImageUploadProps) {
     const [isUploading, setIsUploading] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -94,9 +102,9 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
                 )}
 
                 <div className="flex flex-col gap-1">
-                    <p className="text-sm font-medium">Resource Banner/Icon</p>
+                    <p className="text-sm font-medium">{title}</p>
                     <p className="text-xs text-muted-foreground">
-                        Recommended size: 1200x630px. Max 5MB.
+                        {description}
                     </p>
                 </div>
             </div>

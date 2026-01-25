@@ -23,6 +23,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { authClient } from "@/lib/auth-client"
 
 const browseOptions = [
@@ -62,7 +63,32 @@ export default function Navbar() {
     const [searchOpen, setSearchOpen] = React.useState(false)
     const [searchQuery, setSearchQuery] = React.useState("")
     const [browseOpen, setBrowseOpen] = React.useState(false)
-    const { data: session, isPending } = authClient.useSession()
+    const { data: session, isPending, refetch: refetchSession } = authClient.useSession()
+
+    // Local state for avatar image to enable instant updates
+    const [avatarImage, setAvatarImage] = React.useState<string | null | undefined>(session?.user?.image)
+
+    // Sync avatarImage with session when session changes (e.g., on initial load)
+    React.useEffect(() => {
+        if (session?.user?.image !== undefined) {
+            setAvatarImage(session.user.image)
+        }
+    }, [session?.user?.image])
+
+    // Listen for session refresh events with optional image URL payload
+    React.useEffect(() => {
+        const handleSessionRefresh = (event: Event) => {
+            const customEvent = event as CustomEvent<{ imageUrl?: string | null }>
+            if (customEvent.detail?.imageUrl !== undefined) {
+                // Direct update with new image URL
+                setAvatarImage(customEvent.detail.imageUrl)
+            }
+            // Also refetch session for other data
+            refetchSession()
+        }
+        window.addEventListener('session-refresh', handleSessionRefresh)
+        return () => window.removeEventListener('session-refresh', handleSessionRefresh)
+    }, [refetchSession])
 
     const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -99,6 +125,12 @@ export default function Navbar() {
         hoverTimeoutRef.current = setTimeout(() => {
             setBrowseOpen(false)
         }, 150) // Small delay to allow moving to dropdown content
+    }
+
+    const handleSignOut = async () => {
+        await authClient.signOut()
+        router.refresh()
+        router.push("/")
     }
 
     return (
@@ -249,11 +281,17 @@ export default function Navbar() {
                         ) : session ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="gap-2">
-                                        <User className="h-4 w-4" />
-                                        <span className="hidden sm:inline-block max-w-[80px] truncate">
-                                            {session.user?.name || session.user?.email?.split("@")[0]}
-                                        </span>
+                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage
+                                                src={avatarImage || undefined}
+                                                alt={session.user?.name || "User"}
+                                                className="object-cover"
+                                            />
+                                            <AvatarFallback>
+                                                {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
+                                            </AvatarFallback>
+                                        </Avatar>
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48">
@@ -264,7 +302,7 @@ export default function Navbar() {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onClick={() => authClient.signOut()}
+                                        onClick={handleSignOut}
                                         className="flex items-center gap-2 text-destructive focus:text-destructive"
                                     >
                                         <LogOut className="h-4 w-4" />
@@ -358,6 +396,6 @@ export default function Navbar() {
                     </div>
                 )}
             </div>
-        </nav>
+        </nav >
     )
 }
