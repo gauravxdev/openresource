@@ -31,7 +31,8 @@ import { Badge } from "@/components/ui/badge";
 import { submitResource } from "@/actions/submit";
 import { getCategories, addCategory, deleteCategory } from "@/actions/categories";
 import { api } from "@/trpc/react";
-import { Plus, Trash2, Settings2, Sparkles } from "lucide-react";
+import { Plus, Trash2, Settings2, Sparkles, Image as ImageIcon } from "lucide-react";
+import { ImageUpload } from "./image-upload";
 import {
     Dialog,
     DialogContent,
@@ -49,6 +50,7 @@ const formSchema = z.object({
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
     category: z.string().min(1, "Please select a category"),
     alternative: z.string().optional(),
+    image: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -133,6 +135,7 @@ export function SubmitForm() {
             repositoryUrl: "",
             category: "",
             alternative: "",
+            image: "",
         },
     });
 
@@ -186,6 +189,25 @@ export function SubmitForm() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    <div className="mb-8">
+                        <Label className="block mb-4">Resource Image</Label>
+                        <Controller
+                            control={control}
+                            name="image"
+                            render={({ field }) => (
+                                <ImageUpload
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    onRemove={() => field.onChange("")}
+                                />
+                            )}
+                        />
+                        {errors.image && (
+                            <p className="text-sm font-medium text-destructive mt-2">
+                                {errors.image.message}
+                            </p>
+                        )}
+                    </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">

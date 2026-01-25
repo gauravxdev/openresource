@@ -10,7 +10,9 @@ import {
     Zap,
     ArrowRightLeft,
     Grid2X2,
+    Image as ImageIcon,
 } from "lucide-react"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -27,18 +29,23 @@ import {
 export default function SubmitPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = React.useState(false)
+    const [imageUrl, setImageUrl] = React.useState("")
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         setIsLoading(true)
 
         const formData = new FormData(event.currentTarget)
+        if (imageUrl) {
+            formData.append("image", imageUrl)
+        }
 
         try {
             const result = await submitResource(formData)
 
             if (result.success) {
                 toast.success(result.message)
+                setImageUrl("")
                 router.push("/")
             } else {
                 toast.error(result.message)
@@ -80,6 +87,17 @@ export default function SubmitPage() {
                     {/* Left Column: Form */}
                     <div className="space-y-8">
                         <form onSubmit={handleSubmit} className="space-y-8">
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-200 block mb-4">
+                                    Resource Image:
+                                </Label>
+                                <ImageUpload
+                                    value={imageUrl}
+                                    onChange={setImageUrl}
+                                    onRemove={() => setImageUrl("")}
+                                />
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="name" className="text-sm font-medium text-gray-200">

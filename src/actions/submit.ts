@@ -10,6 +10,7 @@ const submissionSchema = z.object({
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
     category: z.string().min(1, "Please select a category"),
     alternative: z.string().optional(),
+    image: z.string().url("Invalid image URL").optional().or(z.literal("")),
 });
 
 export type SubmissionResult = {
@@ -25,6 +26,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
         repositoryUrl: formData.get("repositoryUrl") as string,
         category: formData.get("category") as string,
         alternative: formData.get("alternative") as string,
+        image: formData.get("image") as string,
     };
 
     try {

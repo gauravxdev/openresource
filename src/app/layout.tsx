@@ -50,7 +50,7 @@ export default function RootLayout({
       className={`${fontSans.variable} ${fontMono.variable} ${righteousFont.variable} ${lexendFont.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-transparent">
+      <body className="bg-transparent" suppressHydrationWarning>
         <PostHogProvider>
           <TRPCReactProvider>
             <ThemeProvider
