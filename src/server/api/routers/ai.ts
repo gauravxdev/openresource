@@ -93,6 +93,8 @@ export const aiRouter = createTRPCRouter({
                     confidence: cached.aiConfidence,
                     model: cached.model,
                     cached: true,
+                    // GitHub stats are not cached, so they will be null
+                    githubStats: null,
                 };
             }
 
@@ -180,6 +182,13 @@ export const aiRouter = createTRPCRouter({
                 confidence: record.aiConfidence,
                 model: llmOutput.model,
                 cached: false,
+                githubStats: {
+                    stars: repoDetails.stargazers_count,
+                    forks: repoDetails.forks_count,
+                    lastCommit: repoDetails.updated_at,
+                    repositoryCreatedAt: repoDetails.created_at,
+                    license: repoDetails.license?.spdx_id ?? repoDetails.license?.name ?? null,
+                },
             };
         }),
 });

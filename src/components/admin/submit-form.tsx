@@ -31,8 +31,9 @@ import { Badge } from "@/components/ui/badge";
 import { submitResource } from "@/actions/submit";
 import { getCategories, addCategory, deleteCategory } from "@/actions/categories";
 import { api } from "@/trpc/react";
-import { Plus, Trash2, Settings2, Sparkles, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Settings2, Sparkles } from "lucide-react";
 import { ImageUpload } from "./image-upload";
+import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
 import {
     Dialog,
     DialogContent,
@@ -65,6 +66,7 @@ export function SubmitForm() {
     const [isManagingCategories, setIsManagingCategories] = React.useState(false);
     const [isAiGenerated, setIsAiGenerated] = React.useState(false);
     const [suggestedCategories, setSuggestedCategories] = React.useState<string[]>([]);
+    const [githubStatsPreview, setGithubStatsPreview] = React.useState<GitHubStats | null>(null);
 
     const generateDescriptionMutation = api.ai.generateDescription.useMutation({
         onSuccess: (data) => {
@@ -72,6 +74,10 @@ export function SubmitForm() {
             setValue("shortDescription", data.shortDescription);
             setSuggestedCategories(data.categories);
             setIsAiGenerated(true);
+            // Set GitHub stats preview if available
+            if (data.githubStats) {
+                setGithubStatsPreview(data.githubStats);
+            }
             toast.success(
                 data.cached
                     ? "Description loaded from cache"
@@ -159,6 +165,15 @@ export function SubmitForm() {
                 if (value) formData.append(key, value);
             });
 
+            // Add GitHub stats if available from AI generation
+            if (githubStatsPreview) {
+                formData.append("stars", String(githubStatsPreview.stars));
+                formData.append("forks", String(githubStatsPreview.forks));
+                if (githubStatsPreview.lastCommit) formData.append("lastCommit", githubStatsPreview.lastCommit);
+                if (githubStatsPreview.repositoryCreatedAt) formData.append("repositoryCreatedAt", githubStatsPreview.repositoryCreatedAt);
+                if (githubStatsPreview.license) formData.append("license", githubStatsPreview.license);
+            }
+
             const result = await submitResource(formData);
 
             if (result.success) {
@@ -166,6 +181,7 @@ export function SubmitForm() {
                 reset();
                 setSuggestedCategories([]);
                 setIsAiGenerated(false);
+                setGithubStatsPreview(null);
             } else {
                 toast.error(result.message);
             }
@@ -476,6 +492,14 @@ export function SubmitForm() {
                             {isPending ? "Submitting..." : "Submit Resource"}
                         </Button>
                     </form>
+
+                    {/* GitHub Stats Preview */}
+                    {githubStatsPreview && (
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold mb-4">GitHub Stats Preview</h3>
+                            <GitHubStatsSidebar stats={githubStatsPreview} />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

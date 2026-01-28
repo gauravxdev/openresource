@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 const mockResources = [
   {
     id: 1,
+    slug: "tolgee",
     title: "Tolgee",
     description: "Effortless localization for modern web applications",
     category: "in seconds",
@@ -22,6 +23,7 @@ const mockResources = [
   },
   {
     id: 2,
+    slug: "postiz",
     title: "Postiz",
     description: "AI-powered social media management platform",
     category: "user insights",
@@ -32,6 +34,7 @@ const mockResources = [
   },
   {
     id: 3,
+    slug: "n8n",
     title: "n8n",
     description: "AI-powered workflow automation for technical teams",
     category: "notification platform",
@@ -42,6 +45,7 @@ const mockResources = [
   },
   {
     id: 4,
+    slug: "open-webui",
     title: "Open WebUI",
     description: "Extensible, self-hosted AI interface for your workflow",
     category: "AI interface",
@@ -52,6 +56,7 @@ const mockResources = [
   },
   {
     id: 5,
+    slug: "dify",
     title: "Dify",
     description: "AI-powered app creation without coding complexities",
     category: "app creation",
@@ -62,6 +67,7 @@ const mockResources = [
   },
   {
     id: 6,
+    slug: "langflow",
     title: "Langflow",
     description: "Visual builder for AI-powered applications and workflows",
     category: "visual builder",
@@ -72,6 +78,7 @@ const mockResources = [
   },
   {
     id: 7,
+    slug: "supabase",
     title: "Supabase",
     description: "Open source Firebase alternative with instant APIs",
     category: "database",
@@ -82,6 +89,7 @@ const mockResources = [
   },
   {
     id: 8,
+    slug: "vercel",
     title: "Vercel",
     description: "Frontend cloud platform for static sites and serverless functions",
     category: "deployment",
@@ -92,6 +100,7 @@ const mockResources = [
   },
   {
     id: 9,
+    slug: "nextjs",
     title: "Next.js",
     description: "React framework for production with built-in optimizations",
     category: "framework",
@@ -102,6 +111,7 @@ const mockResources = [
   },
   {
     id: 10,
+    slug: "tailwind-css",
     title: "Tailwind CSS",
     description: "Utility-first CSS framework for rapid UI development",
     category: "styling",
@@ -112,6 +122,7 @@ const mockResources = [
   },
   {
     id: 11,
+    slug: "react-query",
     title: "React Query",
     description: "Powerful data synchronization for React applications",
     category: "data fetching",
@@ -122,6 +133,7 @@ const mockResources = [
   },
   {
     id: 12,
+    slug: "zustand",
     title: "Zustand",
     description: "Small, fast and scalable state management solution",
     category: "state management",
@@ -141,7 +153,7 @@ const MainContainer = () => {
   const filteredResources = React.useMemo(() => {
     const filtered = mockResources.filter(resource => {
       const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           resource.description.toLowerCase().includes(searchTerm.toLowerCase())
+        resource.description.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesCategory = selectedCategory === "all" || resource.category === selectedCategory
       return matchesSearch && matchesCategory
     })

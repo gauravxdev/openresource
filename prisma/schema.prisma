@@ -82,22 +82,26 @@ model Waitlist {
 }
 
 model Resource {
-  id            String   @id @default(cuid())
-  name          String
-  description   String
-  category      String
-  websiteUrl    String
-  repositoryUrl String
-  alternative   String?
-  stars         Int      @default(0)
-  forks         Int      @default(0)
-  lastCommit    DateTime?
-  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  addedBy       String?  // User ID or "ADMIN"
-  image         String?
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  slug                String    @unique
+  name                String
+  description         String
+  shortDescription    String?
+  category            String
+  websiteUrl          String
+  repositoryUrl       String
+  alternative         String?
+  stars               Int       @default(0)
+  forks               Int       @default(0)
+  lastCommit          DateTime?
+  repositoryCreatedAt DateTime?
+  license             String?
+  status              String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  addedBy             String?   // User ID or "ADMIN"
+  image               String?
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   @@map("resource")
 }
