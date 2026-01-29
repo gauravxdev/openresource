@@ -214,7 +214,7 @@ export function SubmitForm() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="mb-8 grid grid-cols-2 gap-8">
+                    <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <Label className="block mb-4">Resource Logo</Label>
                             <Controller
@@ -280,7 +280,7 @@ export function SubmitForm() {
                                     <Label htmlFor="category">Categories</Label>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                         <div className="flex-1">
                                             <Controller
                                                 control={control}

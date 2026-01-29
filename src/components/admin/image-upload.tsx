@@ -76,9 +76,9 @@ export function ImageUpload({
 
     return (
         <div className="space-y-4 w-full">
-            <div className="flex items-start gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
                 {value ? (
-                    <div className="relative w-40 h-40 shrink-0 rounded-lg overflow-hidden border border-neutral-800">
+                    <div className="relative w-full sm:w-40 h-40 shrink-0 rounded-lg overflow-hidden border border-neutral-800">
                         <Image
                             src={value}
                             alt="Uploaded image"
@@ -95,7 +95,7 @@ export function ImageUpload({
                         </button>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-2 w-40 shrink-0">
+                    <div className="flex flex-col gap-2 w-full sm:w-40 shrink-0">
                         <div
                             onClick={() => fileInputRef.current?.click()}
                             className="w-full h-28 rounded-lg border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-neutral-700 transition-all bg-neutral-900/50"
@@ -120,13 +120,13 @@ export function ImageUpload({
                                         handleUrlSubmit();
                                     }
                                 }}
-                                className="h-8 text-xs"
+                                className="h-8 text-xs flex-1"
                             />
                             <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 shrink-0"
                                 onClick={handleUrlSubmit}
                             >
                                 <LinkIcon className="h-3 w-3" />
