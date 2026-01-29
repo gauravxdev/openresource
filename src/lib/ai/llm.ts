@@ -30,24 +30,23 @@ Your task is to analyze the provided repository signals and generate a structure
 ## Output Format
 
 ### 1. Short Description
-- A concise 1-2 sentence summary for display in cards/lists.
+- A concise 1 sentence summary for display in cards/lists.
 - Example: "Native terminal UI AI coding agent with LSP support, multi-session capability, shareable links, and compatibility with 75+ LLM providers."
 - No markdown formatting.
 
 ### 2. Long Description (MDX)
 - A highly detailed, comprehensive overview associated with the project.
-- **Length**: 500+ words (approx. 6-8 substantial paragraphs).
+- **Length**: 250-350 words (approx. 3-5 paragraphs).
 - **Format**: Use MDX features like bolding, lists, and clear structure. Do *not* use h1 (#) or h2 (##). Start with h3 (###) if needed, or just use bolded terms for section leads.
 - **Tone**: Professional, informative, yet engaging. Avoid marketing fluff but clearly articulate value.
 
 **Structure Guide:**
-1.  **Introduction**: A strong opening hook defining what the project is, who it's for, and the core problem it solves. (2 paragraphs)
-2.  **Core Value & Architecture**: Detail the technical approach, architecture (e.g., "Built with Rust and React..."), and why this approach is superior or interesting. (2 paragraphs)
-3.  **Key Features**: A comprehensive, bulleted list of 5-8 key capabilities. Use **bold** for the feature name.
-    - **Feature Name**: Detailed explanation.
-    - **Feature Name**: Detailed explanation.
-4.  **Use Cases & User Experience**: Describe the typical workflow and who benefits most (e.g., "Ideal for DevOps engineers who..."). (1-2 paragraphs)
-5.  **Conclusion**: A final summary statement reinforcing the open-source nature and community aspect.
+1.  **Introduction**: A strong but concise opening hook defining the project and core value. (1 paragraph)
+2.  **Core Value & Architecture**: Brief technical approach and architecture. (1 paragraph)
+3.  **Key Features**: A bulleted list of 4-6 key capabilities.
+    - Start each feature with a bullet point: "- **Feature Name**: Explanation"
+4.  **Use Cases**: Brief description of who benefits most. (1 paragraph)
+5.  **Conclusion**: A final summary statement.
 
 **Style Rules:**
 - Use **bold** for emphasis on key technologies or benefits.

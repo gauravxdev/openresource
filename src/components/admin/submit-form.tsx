@@ -31,7 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { submitResource } from "@/actions/submit";
 import { getCategories, addCategory, deleteCategory } from "@/actions/categories";
 import { api } from "@/trpc/react";
-import { Plus, Trash2, Settings2, Sparkles } from "lucide-react";
+import { Plus, Trash2, Settings2, Sparkles, RefreshCw } from "lucide-react";
 import { ImageUpload } from "./image-upload";
 import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
 import { MultiSelect, type CategoryOption } from "@/components/ui/multi-select";
@@ -48,7 +48,7 @@ const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     shortDescription: z.string().min(10, "Short description must be at least 10 characters"),
     description: z.string().min(10, "Description must be at least 10 characters"),
-    websiteUrl: z.string().url("Please enter a valid Website URL"),
+    websiteUrl: z.string().url("Please enter a valid Website URL").optional().or(z.literal("")),
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
     categories: z.array(z.string()).min(1, "Please select at least one category").max(5, "Max 5 categories"),
     alternative: z.string().optional(),
@@ -150,15 +150,17 @@ export function SubmitForm() {
 
     const repositoryUrl = watch("repositoryUrl");
 
-    const handleGenerateDescription = () => {
+    const handleGenerateDescription = (forceRefresh = false) => {
         if (!repositoryUrl) {
             toast.error("Please enter a Repository URL first");
             return;
         }
-        toast.info("Starting generation...");
-        setIsAiGenerated(false);
-        setSuggestedCategories([]);
-        generateDescriptionMutation.mutate({ repoUrl: repositoryUrl });
+        toast.info(forceRefresh ? "Regenerating description..." : "Starting generation...");
+        if (!forceRefresh) {
+            setIsAiGenerated(false);
+            setSuggestedCategories([]);
+        }
+        generateDescriptionMutation.mutate({ repoUrl: repositoryUrl, forceRefresh });
     };
 
     const onSubmit = (data: FormData) => {
@@ -453,18 +455,30 @@ export function SubmitForm() {
                                     {errors.description.message}
                                 </p>
                             )}
-                            <div className="flex justify-start pt-2">
+                            <div className="flex justify-start pt-2 gap-2">
                                 <Button
                                     type="button"
                                     className="gap-2 bg-foreground text-background hover:bg-foreground/90"
-                                    onClick={handleGenerateDescription}
+                                    onClick={() => handleGenerateDescription(false)}
                                     disabled={generateDescriptionMutation.isPending}
                                 >
                                     <Sparkles className="h-4 w-4" />
-                                    {generateDescriptionMutation.isPending
+                                    {generateDescriptionMutation.isPending && !isAiGenerated
                                         ? "Generating..."
                                         : "Generate with AI"}
                                 </Button>
+                                {isAiGenerated && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="gap-2"
+                                        onClick={() => handleGenerateDescription(true)}
+                                        disabled={generateDescriptionMutation.isPending}
+                                    >
+                                        <RefreshCw className={`h-4 w-4 ${generateDescriptionMutation.isPending ? "animate-spin" : ""}`} />
+                                        Regenerate
+                                    </Button>
+                                )}
                             </div>
                         </div>
 

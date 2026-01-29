@@ -98,7 +98,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                         <div className="space-y-4">
                             <div className="flex items-start gap-4">
                                 {/* Logo/Icon */}
-                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-2xl font-bold text-white uppercase shadow-lg overflow-hidden">
+                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-2xl font-bold text-white uppercase shadow-lg overflow-hidden">
                                     {resource.logo ? (
                                         <img
                                             src={resource.logo}
@@ -160,7 +160,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
 
                         {/* Description */}
                         {/* Description */}
-                        <div className="prose prose-invert prose-neutral max-w-none [&_strong]:text-white prose-headings:text-white">
+                        <div className="prose prose-invert prose-neutral max-w-none [&_strong]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white prose-headings:text-white [&_ul]:list-disc [&_ul]:pl-6 [&_li]:marker:text-white">
                             <h2 className="text-xl font-semibold text-foreground mb-4">About</h2>
                             <MarkdownRenderer
                                 content={resource.description}

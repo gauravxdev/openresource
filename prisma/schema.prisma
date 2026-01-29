@@ -88,7 +88,7 @@ model Resource {
   description         String
   shortDescription    String?
   categories          Category[]
-  websiteUrl          String
+  websiteUrl          String?
   repositoryUrl       String
   alternative         String?
   stars               Int       @default(0)

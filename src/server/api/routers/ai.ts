@@ -36,6 +36,7 @@ import {
 
 const generateDescriptionInput = z.object({
     repoUrl: z.string().url("Please provide a valid GitHub repository URL"),
+    forceRefresh: z.boolean().optional(),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -84,7 +85,7 @@ export const aiRouter = createTRPCRouter({
 
             // Check cache first
             const cached = await findAiDescription(repoUrl);
-            if (cached) {
+            if (cached && !input.forceRefresh) {
                 return {
                     description: cached.descriptionMdx,
                     shortDescription: cached.shortDescription,
