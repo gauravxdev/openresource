@@ -10,9 +10,10 @@ const submissionSchema = z.object({
     description: z.string().min(10, "Description must be at least 10 characters"),
     websiteUrl: z.string().url("Please enter a valid Website URL"),
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
-    category: z.string().min(1, "Please select a category"),
+    categories: z.array(z.string()).min(1, "Please select at least one category").max(5, "You can select up to 5 categories"),
     alternative: z.string().optional(),
     image: z.string().url("Invalid image URL").optional().or(z.literal("")),
+    logo: z.string().url("Invalid logo URL").optional().or(z.literal("")),
     // GitHub stats (optional, will be fetched if not provided)
     stars: z.coerce.number().optional(),
     forks: z.coerce.number().optional(),
@@ -83,20 +84,28 @@ async function getUniqueSlug(name: string): Promise<string> {
 }
 
 export async function submitResource(formData: FormData): Promise<SubmissionResult> {
+    const get = (key: string) => {
+        const value = formData.get(key);
+        return (value && value !== "") ? (value as string) : undefined;
+    };
+
     const rawData = {
-        name: formData.get("name") as string,
-        shortDescription: formData.get("shortDescription") as string,
-        description: formData.get("description") as string,
-        websiteUrl: formData.get("websiteUrl") as string,
-        repositoryUrl: formData.get("repositoryUrl") as string,
-        category: formData.get("category") as string,
-        alternative: formData.get("alternative") as string,
-        image: formData.get("image") as string,
-        stars: formData.get("stars") as string,
-        forks: formData.get("forks") as string,
-        lastCommit: formData.get("lastCommit") as string,
-        repositoryCreatedAt: formData.get("repositoryCreatedAt") as string,
-        license: formData.get("license") as string,
+        name: get("name"),
+        shortDescription: get("shortDescription"),
+        description: get("description"),
+        websiteUrl: get("websiteUrl"),
+        repositoryUrl: get("repositoryUrl"),
+        categories: formData.get("categories")
+            ? JSON.parse(formData.get("categories") as string)
+            : [],
+        alternative: get("alternative"),
+        image: get("image"),
+        logo: get("logo"),
+        stars: get("stars"),
+        forks: get("forks"),
+        lastCommit: get("lastCommit"),
+        repositoryCreatedAt: get("repositoryCreatedAt"),
+        license: get("license"),
     };
 
     try {
@@ -138,9 +147,9 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
                 description: validatedData.description,
                 websiteUrl: validatedData.websiteUrl,
                 repositoryUrl: validatedData.repositoryUrl,
-                category: validatedData.category,
                 alternative: validatedData.alternative ?? null,
                 image: validatedData.image ?? null,
+                logo: validatedData.logo ?? null,
                 stars,
                 forks,
                 lastCommit,
@@ -148,6 +157,15 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
                 license,
                 status: "APPROVED", // Since this is the admin submit page
                 addedBy: "ADMIN",
+                categories: {
+                    connectOrCreate: validatedData.categories.map((cat) => ({
+                        where: { name: cat },
+                        create: {
+                            name: cat,
+                            slug: slugify(cat),
+                        },
+                    })),
+                },
             },
         });
 
@@ -168,5 +186,18 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
             success: false,
             message: "Something went wrong. Please try again later.",
         };
+    }
+}
+
+export async function getCategories() {
+    try {
+        const categories = await db.category.findMany({
+            select: { name: true },
+            orderBy: { name: 'asc' }
+        });
+        return categories.map(c => ({ value: c.name, label: c.name }));
+    } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        return [];
     }
 }

@@ -11,6 +11,9 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
 
     const resource = await db.resource.findUnique({
         where: { slug },
+        include: {
+            categories: true,
+        },
     });
 
     if (!resource) {

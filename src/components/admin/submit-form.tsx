@@ -34,6 +34,7 @@ import { api } from "@/trpc/react";
 import { Plus, Trash2, Settings2, Sparkles } from "lucide-react";
 import { ImageUpload } from "./image-upload";
 import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
+import { MultiSelect, type CategoryOption } from "@/components/ui/multi-select";
 import {
     Dialog,
     DialogContent,
@@ -49,9 +50,10 @@ const formSchema = z.object({
     description: z.string().min(10, "Description must be at least 10 characters"),
     websiteUrl: z.string().url("Please enter a valid Website URL"),
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
-    category: z.string().min(1, "Please select a category"),
+    categories: z.array(z.string()).min(1, "Please select at least one category").max(5, "Max 5 categories"),
     alternative: z.string().optional(),
     image: z.string().optional(),
+    logo: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -139,9 +141,10 @@ export function SubmitForm() {
             description: "",
             websiteUrl: "",
             repositoryUrl: "",
-            category: "",
+            categories: [],
             alternative: "",
             image: "",
+            logo: "",
         },
     });
 
@@ -162,7 +165,11 @@ export function SubmitForm() {
         startTransition(async () => {
             const formData = new FormData();
             Object.entries(data).forEach(([key, value]) => {
-                if (value) formData.append(key, value);
+                if (key === "categories") {
+                    formData.append(key, JSON.stringify(value));
+                } else if (value) {
+                    formData.append(key, value as string);
+                }
             });
 
             // Add GitHub stats if available from AI generation
@@ -205,24 +212,49 @@ export function SubmitForm() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="mb-8">
-                        <Label className="block mb-4">Resource Image</Label>
-                        <Controller
-                            control={control}
-                            name="image"
-                            render={({ field }) => (
-                                <ImageUpload
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    onRemove={() => field.onChange("")}
-                                />
+                    <div className="mb-8 grid grid-cols-2 gap-8">
+                        <div>
+                            <Label className="block mb-4">Resource Logo</Label>
+                            <Controller
+                                control={control}
+                                name="logo"
+                                render={({ field }) => (
+                                    <ImageUpload
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        onRemove={() => field.onChange("")}
+                                        title="Resource Logo"
+                                        description="Square 1:1, Max 2MB"
+                                    />
+                                )}
+                            />
+                            {errors.logo && (
+                                <p className="text-sm font-medium text-destructive mt-2">
+                                    {errors.logo.message}
+                                </p>
                             )}
-                        />
-                        {errors.image && (
-                            <p className="text-sm font-medium text-destructive mt-2">
-                                {errors.image.message}
-                            </p>
-                        )}
+                        </div>
+                        <div>
+                            <Label className="block mb-4">Resource Banner</Label>
+                            <Controller
+                                control={control}
+                                name="image"
+                                render={({ field }) => (
+                                    <ImageUpload
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        onRemove={() => field.onChange("")}
+                                        title="Resource Banner"
+                                        description="Recommended 1200x630px"
+                                    />
+                                )}
+                            />
+                            {errors.image && (
+                                <p className="text-sm font-medium text-destructive mt-2">
+                                    {errors.image.message}
+                                </p>
+                            )}
+                        </div>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid gap-4 md:grid-cols-2">
@@ -243,30 +275,22 @@ export function SubmitForm() {
                             </div>
                             <div className="space-y-2">
                                 <div className="h-8 flex items-center">
-                                    <Label htmlFor="category">Category</Label>
+                                    <Label htmlFor="category">Categories</Label>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <div className="flex items-center gap-2">
                                         <div className="flex-1">
                                             <Controller
                                                 control={control}
-                                                name="category"
+                                                name="categories"
                                                 render={({ field }) => (
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        value={field.value}
-                                                    >
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select a category" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {categories.map((category) => (
-                                                                <SelectItem key={category.id} value={category.name}>
-                                                                    {category.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <MultiSelect
+                                                        selected={field.value}
+                                                        onChange={field.onChange}
+                                                        options={categories.map(c => ({ value: c.name, label: c.name }))}
+                                                        placeholder="Select categories..."
+                                                        maxItems={5}
+                                                    />
                                                 )}
                                             />
                                         </div>
@@ -348,7 +372,12 @@ export function SubmitForm() {
                                                             if (exists) {
                                                                 // Use specific matching name to be safe
                                                                 const match = categories.find(c => c.name.toLowerCase() === suggestion.toLowerCase());
-                                                                if (match) setValue("category", match.name);
+                                                                if (match) {
+                                                                    const current = watch("categories");
+                                                                    if (!current.includes(match.name) && current.length < 5) {
+                                                                        setValue("categories", [...current, match.name]);
+                                                                    }
+                                                                }
                                                             } else {
                                                                 // Pre-fill creation
                                                                 setNewCategoryName(suggestion);
@@ -365,9 +394,9 @@ export function SubmitForm() {
                                         </div>
                                     )}
                                 </div>
-                                {errors.category && (
+                                {errors.categories && (
                                     <p className="text-sm font-medium text-destructive">
-                                        {errors.category.message}
+                                        {errors.categories.message}
                                     </p>
                                 )}
                             </div>

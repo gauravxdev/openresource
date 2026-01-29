@@ -16,7 +16,9 @@ import { ImageUpload } from "@/components/admin/image-upload"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { submitResource } from "@/actions/submit"
+import { Textarea } from "@/components/ui/textarea"
+import { MultiSelect, type CategoryOption } from "@/components/ui/multi-select"
+import { submitResource, getCategories } from "@/actions/submit"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -30,6 +32,13 @@ export default function SubmitPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = React.useState(false)
     const [imageUrl, setImageUrl] = React.useState("")
+    const [logoUrl, setLogoUrl] = React.useState("")
+    const [selectedCategories, setSelectedCategories] = React.useState<string[]>([])
+    const [categoryOptions, setCategoryOptions] = React.useState<CategoryOption[]>([])
+
+    React.useEffect(() => {
+        getCategories().then(setCategoryOptions)
+    }, [])
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -39,6 +48,10 @@ export default function SubmitPage() {
         if (imageUrl) {
             formData.append("image", imageUrl)
         }
+        if (logoUrl) {
+            formData.append("logo", logoUrl)
+        }
+        formData.append("categories", JSON.stringify(selectedCategories))
 
         try {
             const result = await submitResource(formData)
@@ -89,6 +102,19 @@ export default function SubmitPage() {
                         <form onSubmit={handleSubmit} className="space-y-8">
                             <div className="space-y-2">
                                 <Label className="text-sm font-medium text-gray-200 block mb-4">
+                                    Resource Logo:
+                                </Label>
+                                <ImageUpload
+                                    value={logoUrl}
+                                    onChange={setLogoUrl}
+                                    onRemove={() => setLogoUrl("")}
+                                    title="Resource Logo"
+                                    description="Square image (1:1). Max 2MB."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-200 block mb-4">
                                     Resource Image:
                                 </Label>
                                 <ImageUpload
@@ -128,6 +154,35 @@ export default function SubmitPage() {
                                 </div>
                             </div>
 
+
+
+                            <div className="space-y-2">
+                                <Label htmlFor="shortDescription" className="text-sm font-medium text-gray-200">
+                                    Short Description:
+                                </Label>
+                                <Input
+                                    id="shortDescription"
+                                    name="shortDescription"
+                                    placeholder="Brief summary (min 10 chars)..."
+                                    disabled={isLoading}
+                                    className="bg-neutral-900/50 border-neutral-800 focus:border-neutral-700 h-12 text-white placeholder:text-gray-600"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="description" className="text-sm font-medium text-gray-200">
+                                    Description: <span className="text-red-500">*</span>
+                                </Label>
+                                <Textarea
+                                    id="description"
+                                    name="description"
+                                    placeholder="Detailed description (min 10 chars)..."
+                                    required
+                                    disabled={isLoading}
+                                    className="bg-neutral-900/50 border-neutral-800 focus:border-neutral-700 min-h-[120px] text-white placeholder:text-gray-600"
+                                />
+                            </div>
+
                             <div className="space-y-2">
                                 <Label htmlFor="repositoryUrl" className="text-sm font-medium text-gray-200">
                                     Repository URL: <span className="text-red-500">*</span>
@@ -140,6 +195,19 @@ export default function SubmitPage() {
                                     required
                                     disabled={isLoading}
                                     className="bg-neutral-900/50 border-neutral-800 focus:border-neutral-700 h-12 text-white placeholder:text-gray-600"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-200">
+                                    Categories: <span className="text-red-500">*</span>
+                                </Label>
+                                <MultiSelect
+                                    selected={selectedCategories}
+                                    onChange={setSelectedCategories}
+                                    options={categoryOptions}
+                                    placeholder="Select or create categories (max 5)"
+                                    maxItems={5}
                                 />
                             </div>
 
@@ -235,7 +303,7 @@ export default function SubmitPage() {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

@@ -22,7 +22,7 @@ interface Resource {
     name: string;
     description: string;
     shortDescription?: string | null;
-    category: string;
+    categories: { id: string; name: string; slug: string }[];
     websiteUrl: string;
     repositoryUrl: string;
     alternative?: string | null;
@@ -32,6 +32,7 @@ interface Resource {
     repositoryCreatedAt: Date | null;
     license: string | null;
     image?: string | null;
+    logo?: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -50,6 +51,8 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
         repositoryUrl: resource.repositoryUrl,
     };
 
+    const primaryCategory = resource.categories[0];
+
     return (
         <div className="w-full bg-background min-h-screen">
             <div className="mx-auto max-w-[1152px] px-5 pb-20 pt-8 md:px-6 md:pt-12">
@@ -61,12 +64,16 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                 <BreadcrumbLink href="/home">Home</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href={`/categories?filter=${encodeURIComponent(resource.category)}`}>
-                                    {resource.category}
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
+                            {primaryCategory && (
+                                <>
+                                    <BreadcrumbItem>
+                                        <BreadcrumbLink href={`/categories?filter=${encodeURIComponent(primaryCategory.name)}`}>
+                                            {primaryCategory.name}
+                                        </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator />
+                                </>
+                            )}
                             <BreadcrumbItem>
                                 <BreadcrumbPage>{resource.name}</BreadcrumbPage>
                             </BreadcrumbItem>
@@ -91,31 +98,36 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                         <div className="space-y-4">
                             <div className="flex items-start gap-4">
                                 {/* Logo/Icon */}
-                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 text-2xl font-bold text-white uppercase shadow-lg">
-                                    {resource.name.slice(0, 1)}
+                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-2xl font-bold text-white uppercase shadow-lg overflow-hidden">
+                                    {resource.logo ? (
+                                        <img
+                                            src={resource.logo}
+                                            alt={`${resource.name} logo`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 bg-clip-text text-transparent">
+                                            {resource.name.slice(0, 1)}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-                                        {resource.name}
-                                    </h1>
+                                    <div className="flex items-center gap-3">
+                                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                                            {resource.name}
+                                        </h1>
+                                        {resource.alternative && (
+                                            <Badge variant="outline" className="border-neutral-700 text-neutral-400 h-6">
+                                                Alt to {resource.alternative}
+                                            </Badge>
+                                        )}
+                                    </div>
                                     {resource.shortDescription && (
                                         <p className="mt-2 text-lg text-muted-foreground">
                                             {resource.shortDescription}
                                         </p>
                                     )}
                                 </div>
-                            </div>
-
-                            {/* Tags */}
-                            <div className="flex flex-wrap gap-2 pt-2">
-                                <Badge variant="secondary" className="bg-neutral-800 text-neutral-200">
-                                    {resource.category}
-                                </Badge>
-                                {resource.alternative && (
-                                    <Badge variant="outline" className="border-neutral-700 text-neutral-400">
-                                        Alternative to {resource.alternative}
-                                    </Badge>
-                                )}
                             </div>
 
                             {/* Action Buttons */}
@@ -147,17 +159,30 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                         )}
 
                         {/* Description */}
-                        <div className="prose prose-invert prose-neutral max-w-none">
+                        {/* Description */}
+                        <div className="prose prose-invert prose-neutral max-w-none [&_strong]:text-white prose-headings:text-white">
                             <h2 className="text-xl font-semibold text-foreground mb-4">About</h2>
                             <MarkdownRenderer
                                 content={resource.description}
                                 className="text-muted-foreground leading-relaxed"
                             />
                         </div>
+
+                        {/* Categories */}
+                        <div className="space-y-4 pt-4 border-t border-neutral-800">
+                            <h3 className="text-lg font-semibold text-foreground">Categories</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {resource.categories.map((cat) => (
+                                    <Badge key={cat.id} variant="secondary" className="bg-neutral-800 text-neutral-200 hover:bg-neutral-700 px-3 py-1">
+                                        {cat.name}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Sidebar */}
-                    <aside className="space-y-6">
+                    <aside className="space-y-6 sticky top-24 self-start h-fit">
                         <GitHubStatsSidebar stats={githubStats} />
                     </aside>
                 </div>

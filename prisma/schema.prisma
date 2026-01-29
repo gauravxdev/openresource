@@ -87,7 +87,7 @@ model Resource {
   name                String
   description         String
   shortDescription    String?
-  category            String
+  categories          Category[]
   websiteUrl          String
   repositoryUrl       String
   alternative         String?
@@ -99,6 +99,7 @@ model Resource {
   status              String    @default("PENDING") // PENDING, APPROVED, REJECTED
   addedBy             String?   // User ID or "ADMIN"
   image               String?
+  logo                String?
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -110,6 +111,7 @@ model Category {
   id        String   @id @default(cuid())
   name      String   @unique
   slug      String   @unique
+  resources Resource[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
