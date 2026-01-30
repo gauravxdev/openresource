@@ -60,9 +60,15 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
       <CardContent className="relative flex h-full flex-col gap-3 px-4 py-2">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 text-lg font-semibold text-[#032119] uppercase">
-              {app.title.slice(0, 1)}
-            </div>
+            {app.logo ? (
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[9px] overflow-hidden bg-white/10">
+                <img src={app.logo} alt={app.title} className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 text-lg font-semibold text-[#032119] uppercase">
+                {app.title.slice(0, 1)}
+              </div>
+            )}
             <div className="space-y-1">
               <h3 className="text-[1.25rem] font-semibold leading-tight text-neutral-900 dark:text-card-foreground">
                 {app.title}

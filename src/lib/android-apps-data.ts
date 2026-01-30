@@ -1,5 +1,5 @@
 export interface AndroidApp {
-  id: number
+  id: string | number
   title: string
   description: string
   category: string
@@ -11,6 +11,7 @@ export interface AndroidApp {
   license: string
   stars: string
   tags: string[]
+  logo?: string | null
 }
 
 export const mockAndroidApps: AndroidApp[] = [

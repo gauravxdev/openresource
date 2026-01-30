@@ -8,163 +8,44 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Pagination } from "@/components/ui/pagination-wrapper"
 import { Separator } from "@/components/ui/separator"
-// Mock data for demonstration
-const mockResources = [
-  {
-    id: 1,
-    slug: "tolgee",
-    title: "Tolgee",
-    description: "Effortless localization for modern web applications",
-    category: "in seconds",
-    stars: "11,891",
-    forks: "798",
-    lastCommit: "2 days ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 2,
-    slug: "postiz",
-    title: "Postiz",
-    description: "AI-powered social media management platform",
-    category: "user insights",
-    stars: "176",
-    forks: "12",
-    lastCommit: "2 days ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 3,
-    slug: "n8n",
-    title: "n8n",
-    description: "AI-powered workflow automation for technical teams",
-    category: "notification platform",
-    stars: "37,921",
-    forks: "4,124",
-    lastCommit: "1 day ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 4,
-    slug: "open-webui",
-    title: "Open WebUI",
-    description: "Extensible, self-hosted AI interface for your workflow",
-    category: "AI interface",
-    stars: "111,287",
-    forks: "15,337",
-    lastCommit: "1 day ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 5,
-    slug: "dify",
-    title: "Dify",
-    description: "AI-powered app creation without coding complexities",
-    category: "app creation",
-    stars: "115,494",
-    forks: "17,806",
-    lastCommit: "1 day ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 6,
-    slug: "langflow",
-    title: "Langflow",
-    description: "Visual builder for AI-powered applications and workflows",
-    category: "visual builder",
-    stars: "125,345",
-    forks: "7,702",
-    lastCommit: "1 day ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 7,
-    slug: "supabase",
-    title: "Supabase",
-    description: "Open source Firebase alternative with instant APIs",
-    category: "database",
-    stars: "45,231",
-    forks: "3,456",
-    lastCommit: "3 days ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 8,
-    slug: "vercel",
-    title: "Vercel",
-    description: "Frontend cloud platform for static sites and serverless functions",
-    category: "deployment",
-    stars: "89,123",
-    forks: "12,789",
-    lastCommit: "1 day ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 9,
-    slug: "nextjs",
-    title: "Next.js",
-    description: "React framework for production with built-in optimizations",
-    category: "framework",
-    stars: "234,567",
-    forks: "45,678",
-    lastCommit: "2 days ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 10,
-    slug: "tailwind-css",
-    title: "Tailwind CSS",
-    description: "Utility-first CSS framework for rapid UI development",
-    category: "styling",
-    stars: "156,789",
-    forks: "23,456",
-    lastCommit: "4 days ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 11,
-    slug: "react-query",
-    title: "React Query",
-    description: "Powerful data synchronization for React applications",
-    category: "data fetching",
-    stars: "98,765",
-    forks: "8,901",
-    lastCommit: "1 day ago",
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 12,
-    slug: "zustand",
-    title: "Zustand",
-    description: "Small, fast and scalable state management solution",
-    category: "state management",
-    stars: "67,890",
-    forks: "5,432",
-    lastCommit: "3 days ago",
-    image: "/api/placeholder/300/200"
-  }
-]
+import { timeAgo } from "@/lib/utils"
+import type { ResourceWithCategories } from "@/actions/resources"
 
-const MainContainer = () => {
+interface MainContainerProps {
+  initialResources: ResourceWithCategories[];
+}
+
+const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [selectedCategory, setSelectedCategory] = React.useState("all")
   const [currentPage, setCurrentPage] = React.useState(1)
   const itemsPerPage = 9 // 3x3 grid
 
+  // Extract all unique categories from resources
+  const categories = React.useMemo(() => {
+    const allCategories = new Set<string>();
+    initialResources.forEach(r => {
+      r.categories.forEach(c => allCategories.add(c.name));
+    });
+    return ["all", ...Array.from(allCategories).sort()];
+  }, [initialResources]);
+
   const filteredResources = React.useMemo(() => {
-    const filtered = mockResources.filter(resource => {
-      const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return initialResources.filter(resource => {
+      const matchesSearch = resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         resource.description.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesCategory = selectedCategory === "all" || resource.category === selectedCategory
+
+      const matchesCategory = selectedCategory === "all" ||
+        resource.categories.some(c => c.name === selectedCategory);
+
       return matchesSearch && matchesCategory
     })
+  }, [initialResources, searchTerm, selectedCategory]);
 
-    // Reset to first page when filters change
-    if (currentPage > Math.ceil(filtered.length / itemsPerPage)) {
-      setCurrentPage(1)
-    }
-
-    return filtered
-  }, [searchTerm, selectedCategory, currentPage])
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredResources.length / itemsPerPage)
@@ -174,8 +55,6 @@ const MainContainer = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
-
-  const categories = ["all", ...Array.from(new Set(mockResources.map(r => r.category)))]
 
   return (
     <div className="w-full bg-background min-h-screen">
@@ -194,7 +73,7 @@ const MainContainer = () => {
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-gray-400 text-sm">
-            Showing {filteredResources.length} of {mockResources.length} resources
+            Showing {filteredResources.length} of {initialResources.length} resources
           </p>
           <div className="flex gap-2">
             <Badge variant="secondary" className="bg-gray-800/80 text-gray-300 border-gray-700/50">
@@ -212,7 +91,21 @@ const MainContainer = () => {
         {filteredResources.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {paginatedResources.map((resource) => (
-              <ResourceCard key={resource.id} resource={resource} />
+              <ResourceCard
+                key={resource.id}
+                resource={{
+                  id: resource.id,
+                  slug: resource.slug,
+                  title: resource.name,
+                  description: resource.shortDescription || resource.description,
+                  category: resource.categories[0]?.name || "Uncategorized",
+                  stars: resource.stars.toString(),
+                  forks: resource.forks.toString(),
+                  lastCommit: timeAgo(resource.lastCommit),
+                  logo: resource.logo,
+                  image: resource.image || "/api/placeholder/300/200"
+                }}
+              />
             ))}
           </div>
         ) : (

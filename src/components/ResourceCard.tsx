@@ -5,7 +5,6 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, Clock, Bookmark } from "lucide-react"
-import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 interface BookmarkItem {
   id: string | number
@@ -21,6 +20,7 @@ interface Resource {
   forks: string
   lastCommit: string
   image: string
+  logo?: string | null
 }
 
 interface ResourceCardProps {
@@ -93,11 +93,17 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
     <Link href={`/resource/${resource.slug}`} className="block h-full">
       <Card className="group relative h-full overflow-hidden rounded-[12px] border border-neutral-150 bg-transparent transition-all duration-200 hover:outline-[3px] hover:outline-neutral-200 dark:border-neutral-800 dark:hover:outline-neutral-800">
         <div className="pointer-events-none absolute inset-y-[2%] inset-x-[1%] rounded-[9px] bg-neutral-50 dark:bg-[#141414]" />
-        <CardContent className="relative flex h-full flex-col px-5 py-1.5">
+        <CardContent className="relative flex h-full flex-col px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 text-sm font-semibold text-white uppercase">
-              {resource.title.slice(0, 1)}
-            </div>
+            {resource.logo ? (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                <img src={resource.logo} alt={resource.title} className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 text-sm font-semibold text-white uppercase">
+                {resource.title.slice(0, 1)}
+              </div>
+            )}
             <div className="flex flex-1 items-center">
               <h3 className="text-[1.25rem] font-semibold leading-tight text-neutral-900 dark:text-card-foreground">
                 {resource.title}
@@ -117,18 +123,17 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
             </Button>
           </div>
 
-          <div className="mt-3">
-            <MarkdownRenderer
-              content={resource.description}
-              className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground"
-            />
+          <div className="mt-3 flex-1">
+            <p className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground line-clamp-3">
+              {resource.description}
+            </p>
           </div>
 
-          <div className="mt-2 flex flex-col gap-2 text-sm">
+          <div className="mt-4 flex flex-col gap-2 text-sm border-t border-neutral-100 dark:border-neutral-800/50 pt-3">
             {stats.map(({ label, value, Icon, iconClassName }) => (
               <div key={label} className="flex items-center gap-3 text-neutral-500 dark:text-muted-foreground">
                 <div className="flex flex-1 items-center gap-2">
-                  <Icon className={`h-4 w-4 ${iconClassName}`} />
+                  <Icon className={`h-3.5 w-3.5 ${iconClassName}`} />
                   <span className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-muted-foreground">{label}</span>
                   <div className="h-px flex-1 rounded-full bg-neutral-200 dark:bg-border/70" />
                 </div>

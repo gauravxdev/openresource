@@ -1,4 +1,6 @@
+import Link from "next/link"
 import { ChevronRight } from "lucide-react"
+import { db } from "@/server/db"
 
 import {
   Breadcrumb,
@@ -9,76 +11,23 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-const categoryGroups = [
-  {
-    title: "AI & Machine Learning",
-    items: [
-      "AI Development Platforms",
-      "Machine Learning Infrastructure",
-      "AI Security & Privacy",
-      "AI Interaction & Interfaces",
-    ],
-  },
-  {
-    title: "Business Software",
-    items: [
-      "CRM & Sales",
-      "ERP & Operations",
-      "Finance & Accounting",
-      "Human Resources (HR)",
-      "Marketing & Customer Engagement",
-      "Customer Support & Success",
-      "E-commerce Platforms",
-    ],
-  },
-  {
-    title: "Data & Analytics",
-    items: [
-      "Web & Product Analytics",
-      "Business Intelligence & Reporting",
-      "Data Engineering & Integration",
-      "Data Warehousing & Processing",
-      "Data Extraction & Web Scraping",
-    ],
-  },
-  {
-    title: "Developer Tools",
-    items: [
-      "Website Builders",
-      "IDEs & Code Editors",
-      "Frameworks & Libraries",
-      "API Development & Testing",
-      "Version Control & Hosting",
-      "Team Collaboration",
-    ],
-  },
-  {
-    title: "Miscellaneous",
-    items: [
-      "Design & Prototyping",
-      "Cryptocurrency & Blockchain",
-      "Finance & Fintech",
-      "Gaming",
-      "Internet of Things (IoT)",
-      "Logistics & Supply Chain",
-      "Media & Streaming",
-    ],
-  },
-  {
-    title: "Productivity & Utilities",
-    items: [
-      "Note Taking & Knowledge Management",
-      "Password & Secret Management",
-      "Screen Capture & Recording",
-      "File Management & Sync",
-      "Task & Project Management",
-      "Automation & RPA",
-      "Time Tracking",
-    ],
-  },
-]
+export const dynamic = "force-dynamic"
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  const categories = await db.category.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      _count: {
+        select: { resources: true }
+      }
+    },
+    orderBy: {
+      name: "asc"
+    }
+  });
+
   return (
     <div className="w-full bg-background min-h-screen">
       <div className="mx-auto max-w-6xl px-5 pb-20 pt-12 md:px-6">
@@ -106,24 +55,32 @@ export default function CategoriesPage() {
           </p>
         </div>
 
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-          {categoryGroups.map((category) => (
-            <section key={category.title} className="space-y-4">
-              <h2 className="text-lg font-semibold text-foreground">
-                {category.title}
-              </h2>
-              <ul className="space-y-3">
-                {category.items.map((item) => (
-                  <li key={item}>
-                    <div className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-                      <span className="leading-relaxed">{item}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.length > 0 ? (
+            categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/?category=${encodeURIComponent(category.name)}`}
+                className="group block"
+              >
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:bg-accent/50 transition-all duration-200">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                      {category.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {category._count.resources} resources
+                    </span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10 text-muted-foreground">
+              No categories found.
+            </div>
+          )}
         </div>
       </div>
     </div>
