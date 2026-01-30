@@ -6,11 +6,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Calendar, Shield, Loader2, Camera, Trash2 } from "lucide-react";
-import { updateUserImage } from "@/actions/user";
+import { User, Mail, Calendar, Shield, Loader2, Camera, Trash2, Pencil, Save, X } from "lucide-react";
+import { updateUserImage, updateUserProfile } from "@/actions/user";
 import { uploadImage } from "@/actions/upload";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface ProfileFormProps {
     user: {
@@ -25,8 +27,12 @@ interface ProfileFormProps {
 
 export function ProfileForm({ user }: ProfileFormProps) {
     const [isUpdating, setIsUpdating] = React.useState(false);
+    const [isEditing, setIsEditing] = React.useState(false);
     // Track the current image URL - starts with user.image from props, updated on successful upload
     const [imageUrl, setImageUrl] = React.useState<string | null>(user.image);
+    // Track user name
+    const [name, setName] = React.useState(user.name || "");
+
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const router = useRouter();
 
@@ -124,18 +130,68 @@ export function ProfileForm({ user }: ProfileFormProps) {
         }
     };
 
+    const handleSaveChanges = async () => {
+        try {
+            setIsUpdating(true);
+            const result = await updateUserProfile({ name });
+
+            if (result.success) {
+                toast.success(result.message);
+                setIsEditing(false);
+                router.refresh();
+            } else {
+                toast.error(result.message);
+            }
+        } catch (error) {
+            toast.error("Failed to update profile");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const toggleEdit = () => {
+        if (isEditing) {
+            // Cancel editing
+            setName(user.name || "");
+            setIsEditing(false);
+        } else {
+            // Start editing
+            setIsEditing(true);
+        }
+    };
+
     return (
-        <Card className="border-border/50 bg-card/50 backdrop-blur">
-            <CardHeader className="text-center pb-2">
-                <div className="flex justify-center mb-8">
+        <Card className="border-border/50 bg-card/50 backdrop-blur w-full">
+            <CardHeader className="text-center pb-2 relative">
+                <div className="absolute right-6 top-6">
+                    {!isEditing ? (
+                        <Button variant="outline" size="sm" onClick={toggleEdit} className="gap-2">
+                            <Pencil className="h-4 w-4" />
+                            Edit Profile
+                        </Button>
+                    ) : (
+                        <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" onClick={toggleEdit} disabled={isUpdating} className="gap-2">
+                                <X className="h-4 w-4" />
+                                Cancel
+                            </Button>
+                            <Button variant="default" size="sm" onClick={handleSaveChanges} disabled={isUpdating} className="gap-2">
+                                {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                                Save
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex justify-center mb-8 pt-4">
                     <div
                         className="relative group cursor-pointer"
                         onClick={() => !isUpdating && fileInputRef.current?.click()}
                     >
                         <Avatar className="h-40 w-40 border-4 border-background shadow-2xl transition-all duration-300 group-hover:scale-[1.05] group-hover:shadow-primary/20">
-                            <AvatarImage src={imageUrl || undefined} alt={user.name ?? "User"} className="object-cover" />
+                            <AvatarImage src={imageUrl || undefined} alt={name ?? "User"} className="object-cover" />
                             <AvatarFallback className="text-4xl bg-primary/10 text-primary">
-                                {getInitials(user.name, user.email)}
+                                {getInitials(name, user.email)}
                             </AvatarFallback>
                         </Avatar>
 
@@ -176,7 +232,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
                 <div className="space-y-1">
                     <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
-                        {user.name || "Anonymous User"}
+                        {name || "Anonymous User"}
                     </CardTitle>
                     <CardDescription className="text-lg text-muted-foreground">{user.email}</CardDescription>
                 </div>
@@ -190,7 +246,16 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         </div>
                         <div className="flex-1">
                             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mb-0.5">Display Name</p>
-                            <p className="font-semibold text-foreground text-lg">{user.name || "Not set"}</p>
+                            {isEditing ? (
+                                <Input
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="h-10 text-lg font-semibold mt-1"
+                                    placeholder="Enter your name"
+                                />
+                            ) : (
+                                <p className="font-semibold text-foreground text-lg">{name || "Not set"}</p>
+                            )}
                         </div>
                     </div>
 

@@ -55,9 +55,9 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
 
     return (
         <div className="w-full bg-background min-h-screen">
-            <div className="mx-auto max-w-[1152px] px-5 pb-20 pt-8 md:px-6 md:pt-12">
+            <div className="mx-auto max-w-[1152px] px-5 pb-20 pt-4 md:px-6 md:pt-6">
                 {/* Breadcrumb Navigation */}
-                <div className="mb-8">
+                <div className="mb-2">
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
