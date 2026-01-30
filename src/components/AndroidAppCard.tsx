@@ -79,7 +79,13 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
             </div>
           </div>
           <div className="flex gap-2 items-center">
-            <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+            {app.repositoryUrl ? (
+              <a href={app.repositoryUrl} target="_blank" rel="noopener noreferrer">
+                <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+              </a>
+            ) : (
+              <Github className="h-5 w-5 text-white/70 hover:text-white hover:scale-110 transition-all cursor-pointer" />
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -130,9 +136,22 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
         </div>
 
         <div className="mt-2">
-          <Button className="h-11 w-full rounded-lg bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100">
-            Install
-          </Button>
+          {app.repositoryUrl ? (
+            <a
+              href={`${app.repositoryUrl}/releases/latest`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full"
+            >
+              <Button className="h-11 w-full rounded-lg bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100 cursor-pointer">
+                Install
+              </Button>
+            </a>
+          ) : (
+            <Button className="h-11 w-full rounded-lg bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100" disabled>
+              Install
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

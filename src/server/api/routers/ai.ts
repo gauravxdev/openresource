@@ -89,6 +89,7 @@ export const aiRouter = createTRPCRouter({
                 return {
                     description: cached.descriptionMdx,
                     shortDescription: cached.shortDescription,
+                    oneLiner: cached.oneLiner, // [NEW]
                     categories: cached.categories,
                     repoType: cached.repoType,
                     confidence: cached.aiConfidence,
@@ -167,6 +168,7 @@ export const aiRouter = createTRPCRouter({
                 repoUrl,
                 descriptionMdx: llmOutput.longDescription,
                 shortDescription: llmOutput.shortDescription,
+                oneLiner: llmOutput.oneLiner, // [NEW]
                 categories: llmOutput.categories,
                 repoType: classification.type,
                 signals,
@@ -178,6 +180,7 @@ export const aiRouter = createTRPCRouter({
             return {
                 description: llmOutput.longDescription,
                 shortDescription: llmOutput.shortDescription,
+                oneLiner: llmOutput.oneLiner, // [NEW]
                 categories: llmOutput.categories,
                 repoType: classification.type,
                 confidence: record.aiConfidence,

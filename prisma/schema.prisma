@@ -87,6 +87,7 @@ model Resource {
   name                String
   description         String
   shortDescription    String?
+  oneLiner            String?
   categories          Category[]
   websiteUrl          String?
   repositoryUrl       String

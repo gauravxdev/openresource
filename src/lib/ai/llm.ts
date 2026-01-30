@@ -12,6 +12,7 @@ export interface LLMWriterInput {
 
 export interface LLMWriterOutput {
     shortDescription: string;
+    oneLiner: string; // [NEW] added oneLiner
     longDescription: string;
     categories: string[];
     model: string;
@@ -34,7 +35,12 @@ Your task is to analyze the provided repository signals and generate a structure
 - Example: "Native terminal UI AI coding agent with LSP support, multi-session capability, shareable links, and compatibility with 75+ LLM providers."
 - No markdown formatting.
 
-### 2. Long Description (MDX)
+### 2. One Liner
+- A punchy, marketing-style one-liner.
+- Example: "Share files securely across all your devices with a self-hosted server."
+- Max 100 characters.
+
+### 3. Long Description (MDX)
 - A highly detailed, comprehensive overview associated with the project.
 - **Length**: 250-350 words (approx. 3-5 paragraphs).
 - **Format**: Use MDX features like bolding, lists, and clear structure. Do *not* use h1 (#) or h2 (##). Start with h3 (###) if needed, or just use bolded terms for section leads.
@@ -64,6 +70,7 @@ Your task is to analyze the provided repository signals and generate a structure
 
 const descriptionSchema = z.object({
     shortDescription: z.string().describe("A concise 1-2 sentence description."),
+    oneLiner: z.string().describe("A punchy 1-sentence one-liner description."),
     longDescription: z.string().describe("A detailed description in MDX format with headings and formatting."),
     categories: z.array(z.string()).describe("3-5 relevant categories for the resource."),
 });
@@ -89,6 +96,7 @@ export async function writeDescriptionWithLLM(
 
     return {
         shortDescription: object.shortDescription,
+        oneLiner: object.oneLiner,
         longDescription: object.longDescription,
         categories: object.categories,
         model: response.modelId ?? MODEL,

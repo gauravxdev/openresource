@@ -12,6 +12,7 @@ export interface AndroidApp {
   stars: string
   tags: string[]
   logo?: string | null
+  repositoryUrl?: string
 }
 
 export const mockAndroidApps: AndroidApp[] = [

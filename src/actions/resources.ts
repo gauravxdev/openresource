@@ -8,6 +8,7 @@ export type ResourceWithCategories = {
     name: string;
     description: string;
     shortDescription: string | null;
+    oneLiner: string | null;
     websiteUrl: string | null;
     repositoryUrl: string;
     alternative: string | null;
@@ -57,7 +58,7 @@ export async function getResources() {
     }
 }
 
-export async function getAndroidApps() {
+export async function getAndroidApps(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
     try {
         const resources = await db.resource.findMany({
             where: {
@@ -89,3 +90,4 @@ export async function getAndroidApps() {
         return { success: false, data: [] };
     }
 }
+// Force re-check

@@ -20,6 +20,7 @@ export interface AiDescriptionRecord {
     repoUrl: string;
     descriptionMdx: string;
     shortDescription: string;
+    oneLiner: string; // [NEW]
     categories: string[];
     repoType: RepoType;
     signals: RepoSignals;
@@ -143,6 +144,7 @@ export function createAiDescriptionRecord(params: {
     repoUrl: string;
     descriptionMdx: string;
     shortDescription: string;
+    oneLiner: string; // [NEW]
     categories: string[];
     repoType: RepoType;
     signals: RepoSignals;
@@ -152,6 +154,7 @@ export function createAiDescriptionRecord(params: {
         repoUrl: params.repoUrl,
         descriptionMdx: params.descriptionMdx,
         shortDescription: params.shortDescription,
+        oneLiner: params.oneLiner, // [NEW]
         categories: params.categories,
         repoType: params.repoType,
         signals: params.signals,

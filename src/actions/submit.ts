@@ -7,6 +7,7 @@ import { getRepoDetails } from "@/lib/github";
 const submissionSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     shortDescription: z.string().min(10, "Short description must be at least 10 characters").optional(),
+    oneLiner: z.string().max(100, "One-liner must be 100 characters or less").optional(),
     description: z.string().min(10, "Description must be at least 10 characters"),
     websiteUrl: z.string().url("Please enter a valid Website URL").optional().or(z.literal("")),
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
@@ -92,6 +93,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
     const rawData = {
         name: get("name"),
         shortDescription: get("shortDescription"),
+        oneLiner: get("oneLiner"),
         description: get("description"),
         websiteUrl: get("websiteUrl"),
         repositoryUrl: get("repositoryUrl"),
@@ -144,6 +146,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
                 slug,
                 name: validatedData.name,
                 shortDescription: validatedData.shortDescription ?? null,
+                oneLiner: validatedData.oneLiner ?? null,
                 description: validatedData.description,
                 websiteUrl: validatedData.websiteUrl ?? null,
                 repositoryUrl: validatedData.repositoryUrl,

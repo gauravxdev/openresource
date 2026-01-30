@@ -47,6 +47,7 @@ import {
 const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     shortDescription: z.string().min(10, "Short description must be at least 10 characters"),
+    oneLiner: z.string().max(100, "One-liner must be 100 characters or less").optional(),
     description: z.string().min(10, "Description must be at least 10 characters"),
     websiteUrl: z.string().url("Please enter a valid Website URL").optional().or(z.literal("")),
     repositoryUrl: z.string().url("Please enter a valid Repository URL"),
@@ -74,6 +75,7 @@ export function SubmitForm() {
         onSuccess: (data) => {
             setValue("description", data.description);
             setValue("shortDescription", data.shortDescription);
+            if (data.oneLiner) setValue("oneLiner", data.oneLiner);
             setSuggestedCategories(data.categories);
             setIsAiGenerated(true);
             // Set GitHub stats preview if available
@@ -138,6 +140,7 @@ export function SubmitForm() {
         defaultValues: {
             name: "",
             shortDescription: "",
+            oneLiner: "",
             description: "",
             websiteUrl: "",
             repositoryUrl: "",
@@ -402,6 +405,23 @@ export function SubmitForm() {
                                     </p>
                                 )}
                             </div>
+                        </div>
+
+                        {/* One Liner Field */}
+                        <div className="space-y-2">
+                            <div className="h-8 flex items-center justify-between">
+                                <Label htmlFor="oneLiner">One Liner</Label>
+                            </div>
+                            <Input
+                                id="oneLiner"
+                                placeholder="Marketing-style one-liner (max 100 chars)..."
+                                {...register("oneLiner")}
+                            />
+                            {errors.oneLiner && (
+                                <p className="text-sm font-medium text-destructive">
+                                    {errors.oneLiner.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Short Description Field */}
