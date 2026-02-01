@@ -91,3 +91,33 @@ export async function getAndroidApps(): Promise<{ success: boolean; data: Resour
     }
 }
 // Force re-check
+
+export async function getGitHubRepos(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+    try {
+        const resources = await db.resource.findMany({
+            where: {
+                status: "APPROVED",
+                repositoryUrl: {
+                    contains: "github.com",
+                },
+            },
+            include: {
+                categories: {
+                    select: {
+                        name: true,
+                        slug: true,
+                    },
+                },
+            },
+            orderBy: {
+                stars: "desc",
+            },
+        });
+
+        return { success: true, data: resources };
+    } catch (error) {
+        console.error("[GitHub Repos] Get Error:", error);
+        return { success: false, data: [] };
+    }
+}
+
