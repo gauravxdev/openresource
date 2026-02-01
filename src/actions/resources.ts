@@ -97,9 +97,13 @@ export async function getGitHubRepos(): Promise<{ success: boolean; data: Resour
         const resources = await db.resource.findMany({
             where: {
                 status: "APPROVED",
-                repositoryUrl: {
-                    contains: "github.com",
-                },
+                categories: {
+                    some: {
+                        slug: {
+                            in: ["github-repo", "github-repos"]
+                        }
+                    }
+                }
             },
             include: {
                 categories: {

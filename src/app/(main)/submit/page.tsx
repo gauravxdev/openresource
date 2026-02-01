@@ -44,6 +44,24 @@ export default function SubmitPage() {
         event.preventDefault()
         setIsLoading(true)
 
+        // Check if github-repo is in selected categories (re-evaluate on each submit)
+        // Normalize category names by replacing spaces with hyphens for comparison
+        const isGitHubRepo = selectedCategories.some(cat => {
+            const normalized = cat.toLowerCase().replace(/\s+/g, "-")
+            return normalized === "github-repo" || normalized === "github-repos"
+        })
+
+        console.log("Submit attempt - Categories:", selectedCategories)
+        console.log("Is GitHub Repo:", isGitHubRepo)
+        console.log("Image URL:", imageUrl)
+
+        // Validate image requirement on frontend
+        if (!isGitHubRepo && !imageUrl) {
+            toast.error("Image is required for non-GitHub repository resources")
+            setIsLoading(false)
+            return
+        }
+
         const formData = new FormData(event.currentTarget)
         if (imageUrl) {
             formData.append("image", imageUrl)
@@ -59,6 +77,8 @@ export default function SubmitPage() {
             if (result.success) {
                 toast.success(result.message)
                 setImageUrl("")
+                setLogoUrl("")
+                setSelectedCategories([])
                 router.push("/")
             } else {
                 toast.error(result.message)
@@ -115,7 +135,11 @@ export default function SubmitPage() {
 
                             <div className="space-y-2">
                                 <Label className="text-sm font-medium text-gray-200 block mb-4">
-                                    Resource Image:
+                                    Resource Image:{" "}
+                                    {!selectedCategories.some(cat => {
+                                        const normalized = cat.toLowerCase().replace(/\s+/g, "-")
+                                        return normalized === "github-repo" || normalized === "github-repos"
+                                    }) && <span className="text-red-500">*</span>}
                                 </Label>
                                 <ImageUpload
                                     value={imageUrl}

@@ -113,6 +113,21 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
     try {
         const validatedData = submissionSchema.parse(rawData);
 
+        // Check if github-repo is in the categories
+        // Normalize category names by replacing spaces with hyphens for comparison
+        const isGitHubRepo = validatedData.categories.some(cat => {
+            const normalized = cat.toLowerCase().replace(/\s+/g, "-");
+            return normalized === "github-repo" || normalized === "github-repos";
+        });
+
+        // Validate image requirement: required for all except github-repo
+        if (!isGitHubRepo && !validatedData.image) {
+            return {
+                success: false,
+                message: "Image is required for non-GitHub repository resources",
+            };
+        }
+
         // Generate unique slug
         const slug = await getUniqueSlug(validatedData.name);
 
