@@ -31,6 +31,13 @@ export async function getResources() {
         const resources = await db.resource.findMany({
             where: {
                 status: "APPROVED",
+                categories: {
+                    none: {
+                        slug: {
+                            in: ["android", "android-app", "android-apps", "github-repo", "github-repos"]
+                        }
+                    }
+                },
             },
             include: {
                 categories: {

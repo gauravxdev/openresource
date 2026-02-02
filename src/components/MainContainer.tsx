@@ -97,7 +97,7 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
                   id: resource.id,
                   slug: resource.slug,
                   title: resource.name,
-                  description: resource.shortDescription || resource.description,
+                  description: resource.oneLiner || resource.shortDescription || resource.description,
                   category: resource.categories[0]?.name || "Uncategorized",
                   stars: resource.stars.toString(),
                   forks: resource.forks.toString(),
