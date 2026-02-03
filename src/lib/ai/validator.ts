@@ -28,8 +28,7 @@ export interface ValidateDescriptionInput {
 /**
  * Minimum and maximum sentence count for valid descriptions.
  */
-const MIN_SENTENCES = 3;
-const MAX_SENTENCES = 6;
+
 
 /**
  * Regex pattern to match emojis.
@@ -93,17 +92,7 @@ const CODE_BLOCK_REGEX = /```[\s\S]*?```|~~~[\s\S]*?~~~/;
  * Counts the number of sentences in a text.
  * A sentence is defined as text ending with . ! or ? (excluding abbreviations).
  */
-function countSentences(text: string): number {
-    // Remove common abbreviations that end with periods
-    const cleaned = text
-        .replace(/\b(e\.g\.|i\.e\.|etc\.|vs\.|Mr\.|Mrs\.|Dr\.|Jr\.|Sr\.)/gi, "ABBREV")
-        .replace(/\.\.\./g, "ELLIPSIS"); // Handle ellipsis
 
-    // Split on sentence endings followed by space or end of string
-    const sentences = cleaned.split(/[.!?]+(?:\s|$)/).filter((s) => s.trim().length > 0);
-
-    return sentences.length;
-}
 
 /**
  * Checks if text contains any emojis.

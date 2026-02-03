@@ -10,7 +10,7 @@ import {
     Zap,
     ArrowRightLeft,
     Grid2X2,
-    Image as ImageIcon,
+
 } from "lucide-react"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { Button } from "@/components/ui/button"
@@ -37,7 +37,7 @@ export default function SubmitPage() {
     const [categoryOptions, setCategoryOptions] = React.useState<CategoryOption[]>([])
 
     React.useEffect(() => {
-        getCategories().then(setCategoryOptions)
+        void getCategories().then(setCategoryOptions)
     }, [])
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

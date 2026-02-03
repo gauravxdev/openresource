@@ -25,7 +25,7 @@ export async function uploadImage(formData: FormData) {
             return { success: false, message: `Upload failed: ${response.statusText}` };
         }
 
-        const data = await response.json();
+        const data = await response.json() as Array<{ src: string }>;
 
         if (Array.isArray(data) && data[0]?.src) {
             return {

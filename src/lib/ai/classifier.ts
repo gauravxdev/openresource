@@ -273,8 +273,8 @@ function classifyByKeywords(
     topics: string[] | undefined
 ): { type: RepoType; confidence: "medium" } | null {
     const lowerName = name.toLowerCase();
-    const lowerDesc = (description || "").toLowerCase();
-    const lowerTopics = (topics || []).map((t) => t.toLowerCase());
+    const lowerDesc = (description ?? "").toLowerCase();
+    const lowerTopics = (topics ?? []).map((t) => t.toLowerCase());
 
     // Score each type
     const scores: Partial<Record<RepoType, number>> = {};

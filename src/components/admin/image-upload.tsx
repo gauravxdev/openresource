@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Upload, X, ImageIcon, Loader2, Link as LinkIcon } from "lucide-react";
+import { Upload, X, Loader2, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -54,7 +54,7 @@ export function ImageUpload({
                 onChange(result.url);
                 toast.success("Image uploaded successfully");
             } else {
-                throw new Error(result.message || "Upload failed");
+                throw new Error(result.message ?? "Upload failed");
             }
         } catch (error) {
             console.error("Upload Error:", error);

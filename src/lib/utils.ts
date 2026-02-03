@@ -11,7 +11,7 @@ export function timeAgo(date: Date | string | null): string {
   try {
     const d = new Date(date);
     return formatDistanceToNow(d, { addSuffix: true });
-  } catch (e) {
+  } catch {
     return "N/A";
   }
 }

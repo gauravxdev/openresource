@@ -84,7 +84,7 @@ export default function Navbar() {
                 setAvatarImage(customEvent.detail.imageUrl)
             }
             // Also refetch session for other data
-            refetchSession()
+            void refetchSession()
         }
         window.addEventListener('session-refresh', handleSessionRefresh)
         return () => window.removeEventListener('session-refresh', handleSessionRefresh)
@@ -284,7 +284,7 @@ export default function Navbar() {
                                     <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
                                         <Avatar className="h-8 w-8">
                                             <AvatarImage
-                                                src={avatarImage || undefined}
+                                                src={avatarImage ?? undefined}
                                                 alt={session.user?.name || "User"}
                                                 className="object-cover"
                                             />

@@ -26,15 +26,15 @@ export default async function AndroidApps() {
     return {
       id: resource.id,
       title: resource.name,
-      description: resource.oneLiner || resource.shortDescription || resource.description,
-      category: resource.categories[0]?.name || "Uncategorized", // Fallback to first category
+      description: resource.oneLiner ?? resource.shortDescription ?? resource.description,
+      category: resource.categories[0]?.name ?? "Uncategorized", // Fallback to first category
       downloads: "1k+", // Placeholder as requested
       rating: "4.5",    // Placeholder as requested
       lastUpdated: lastUpdatedStr,
-      image: resource.image || "/api/placeholder/300/200", // Fallback image
+      image: resource.image ?? "/api/placeholder/300/200", // Fallback image
       logo: resource.logo,
-      developer: resource.addedBy || "Unknown", // Or use a field if available, 'addedBy' is user ID so might want 'Unknown' for now
-      license: resource.license || "Free",
+      developer: resource.addedBy ?? "Unknown", // Or use a field if available, 'addedBy' is user ID so might want 'Unknown' for now
+      license: resource.license ?? "Free",
       stars: resource.stars ? `${(resource.stars / 1000).toFixed(1)}k` : "0",
       tags: resource.categories.map(c => c.name), // Use categories as tags
       repositoryUrl: resource.repositoryUrl

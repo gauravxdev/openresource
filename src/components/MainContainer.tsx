@@ -97,13 +97,13 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
                   id: resource.id,
                   slug: resource.slug,
                   title: resource.name,
-                  description: resource.oneLiner || resource.shortDescription || resource.description,
-                  category: resource.categories[0]?.name || "Uncategorized",
+                  description: resource.oneLiner ?? resource.shortDescription ?? resource.description,
+                  category: resource.categories[0]?.name ?? "Uncategorized",
                   stars: resource.stars.toString(),
                   forks: resource.forks.toString(),
                   lastCommit: timeAgo(resource.lastCommit),
                   logo: resource.logo,
-                  image: resource.image || "/api/placeholder/300/200"
+                  image: resource.image ?? "/api/placeholder/300/200"
                 }}
               />
             ))}

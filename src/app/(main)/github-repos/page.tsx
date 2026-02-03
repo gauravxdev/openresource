@@ -9,8 +9,8 @@ export default async function GitHubRepos() {
 
   const repos: GitHubRepo[] = resources.map((resource) => ({
     name: resource.name,
-    description: resource.oneLiner || resource.shortDescription || resource.description,
-    language: resource.categories[0]?.name || "Unknown",
+    description: resource.oneLiner ?? resource.shortDescription ?? resource.description,
+    language: resource.categories[0]?.name ?? "Unknown",
     stars: resource.stars,
     forks: resource.forks,
     url: resource.repositoryUrl,

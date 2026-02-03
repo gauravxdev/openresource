@@ -98,7 +98,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
         websiteUrl: get("websiteUrl"),
         repositoryUrl: get("repositoryUrl"),
         categories: formData.get("categories")
-            ? JSON.parse(formData.get("categories") as string)
+            ? (JSON.parse(formData.get("categories") as string) as string[])
             : [],
         alternative: get("alternative"),
         image: get("image"),

@@ -31,7 +31,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     // Track the current image URL - starts with user.image from props, updated on successful upload
     const [imageUrl, setImageUrl] = React.useState<string | null>(user.image);
     // Track user name
-    const [name, setName] = React.useState(user.name || "");
+    const [name, setName] = React.useState(user.name ?? "");
 
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -93,7 +93,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     toast.error(result.message);
                 }
             } else {
-                toast.error(uploadResult.message || "Upload failed");
+                toast.error(uploadResult.message ?? "Upload failed");
             }
         } catch (error) {
             console.error("[Profile Upload] Error:", error);
@@ -152,7 +152,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     const toggleEdit = () => {
         if (isEditing) {
             // Cancel editing
-            setName(user.name || "");
+            setName(user.name ?? "");
             setIsEditing(false);
         } else {
             // Start editing
@@ -189,7 +189,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         onClick={() => !isUpdating && fileInputRef.current?.click()}
                     >
                         <Avatar className="h-40 w-40 border-4 border-background shadow-2xl transition-all duration-300 group-hover:scale-[1.05] group-hover:shadow-primary/20">
-                            <AvatarImage src={imageUrl || undefined} alt={name ?? "User"} className="object-cover" />
+                            <AvatarImage src={imageUrl ?? undefined} alt={name ?? "User"} className="object-cover" />
                             <AvatarFallback className="text-4xl bg-primary/10 text-primary">
                                 {getInitials(name, user.email)}
                             </AvatarFallback>

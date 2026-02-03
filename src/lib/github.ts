@@ -50,14 +50,14 @@ export async function getRepoDetails(owner: string, repo: string): Promise<RepoD
 
 export async function getReadmeFile(owner: string, repo: string): Promise<string | undefined> {
     try {
-        const { data }: any = await octokit.request('GET /repos/{owner}/{repo}/readme', {
+        const { data } = await octokit.request('GET /repos/{owner}/{repo}/readme', {
             owner,
             repo,
-        })
+        });
 
         // Decode Base64 to UTF-8
-        if (data.content) {
-            return Buffer.from(data.content, "base64").toString("utf-8");
+        if (typeof data === 'object' && data !== null && 'content' in data && typeof (data as { content: string }).content === 'string') {
+            return Buffer.from((data as { content: string }).content, "base64").toString("utf-8");
         }
         return undefined;
     } catch (error) {
@@ -84,17 +84,21 @@ export interface RepoFileEntry {
  */
 export async function getRepoStructure(owner: string, repo: string): Promise<RepoFileEntry[] | undefined> {
     try {
-        const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents', {
+        const response = await octokit.request('GET /repos/{owner}/{repo}/contents', {
             owner,
             repo,
         });
+        const data = response.data as unknown;
 
-        // GitHub returns an array for directory contents
+        // GitHub returns an array for directory contents (explicitly cast to safely map)
         if (Array.isArray(data)) {
-            return data.map((item: { name: string; type: string }) => ({
-                name: item.name,
-                type: item.type === 'dir' ? 'dir' : 'file',
-            }));
+            return (data as unknown[]).map((item) => {
+                const typedItem = item as { name: string; type: string };
+                return {
+                    name: typedItem.name,
+                    type: typedItem.type === 'dir' ? 'dir' as const : 'file' as const,
+                };
+            });
         }
         return undefined;
     } catch (error) {
@@ -127,7 +131,7 @@ export async function getLanguages(owner: string, repo: string): Promise<Record<
 export async function getReleaseCount(owner: string, repo: string): Promise<number> {
     try {
         // Fetch just one item to get the headers/stats
-        const response: any = await octokit.request('GET /repos/{owner}/{repo}/releases', {
+        const response = await octokit.request('GET /repos/{owner}/{repo}/releases', {
             owner,
             repo,
             per_page: 1,
@@ -136,8 +140,9 @@ export async function getReleaseCount(owner: string, repo: string): Promise<numb
         // If there's a Link header, parse it to find the last page number
         const linkHeader = response.headers.link;
         if (linkHeader) {
-            const match = linkHeader.match(/page=(\d+)>; rel="last"/);
-            if (match) {
+            const regex = /page=(\d+)>; rel="last"/;
+            const match = regex.exec(linkHeader);
+            if (match?.[1]) {
                 return parseInt(match[1], 10);
             }
         }
@@ -148,7 +153,7 @@ export async function getReleaseCount(owner: string, repo: string): Promise<numb
         }
 
         return 0;
-    } catch (error) {
+    } catch {
         // 404 means no releases usually, or just return 0 on error to be safe
         return 0;
     }

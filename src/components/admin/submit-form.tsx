@@ -12,13 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import MDEditor from "@uiw/react-md-editor";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+
 import {
     Card,
     CardContent,
@@ -105,7 +99,7 @@ export function SubmitForm() {
     }, [fetchCategories]);
 
     const handleAddCategory = async (name?: string) => {
-        const catName = name || newCategoryName;
+        const catName = name ?? newCategoryName;
         if (!catName.trim()) return;
         const result = await addCategory(catName);
         if (result.success) {

@@ -1,17 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { X, Check } from "lucide-react";
+import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
     Command,
     CommandGroup,
     CommandItem,
     CommandList,
-    CommandInput,
     CommandEmpty,
 } from "@/components/ui/command";
-import { Command as CommandPrimitive } from "cmdk";
 
 // Category type based on schema, but simplified for UI
 export type CategoryOption = {
@@ -69,7 +67,7 @@ export function MultiSelect({
             <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 flex flex-wrap gap-1 bg-neutral-900/50 border-neutral-800">
                 {selected.map((item) => {
                     // Find label if possible, else use value
-                    const label = options.find(opt => opt.value === item)?.label || item;
+                    const label = options.find(opt => opt.value === item)?.label ?? item;
                     return (
                         <Badge key={item} variant="secondary" className="hover:bg-secondary/80">
                             {label}
@@ -127,7 +125,7 @@ export function MultiSelect({
                                             }}
                                             onClick={() => handleSelect(inputValue)}
                                         >
-                                            Create tag: <span className="font-bold">"{inputValue}"</span>
+                                            Create tag: <span className="font-bold">&quot;{inputValue}&quot;</span>
                                         </div>
                                     ) : (
                                         <span className="py-6 text-center text-sm block text-gray-500">No results found.</span>
