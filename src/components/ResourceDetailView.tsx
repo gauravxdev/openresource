@@ -23,7 +23,7 @@ interface Resource {
     description: string;
     shortDescription?: string | null;
     categories: { id: string; name: string; slug: string }[];
-    websiteUrl: string;
+    websiteUrl: string | null;
     repositoryUrl: string;
     alternative?: string | null;
     stars: number;
@@ -132,12 +132,14 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
 
                             {/* Action Buttons */}
                             <div className="flex flex-wrap gap-3 pt-4">
-                                <Button asChild className="gap-2">
-                                    <a href={resource.websiteUrl} target="_blank" rel="noopener noreferrer">
-                                        <Globe className="h-4 w-4" />
-                                        Visit Website
-                                    </a>
-                                </Button>
+                                {resource.websiteUrl && (
+                                    <Button asChild className="gap-2">
+                                        <a href={resource.websiteUrl} target="_blank" rel="noopener noreferrer">
+                                            <Globe className="h-4 w-4" />
+                                            Visit Website
+                                        </a>
+                                    </Button>
+                                )}
                                 <Button variant="outline" asChild className="gap-2">
                                     <a href={resource.repositoryUrl} target="_blank" rel="noopener noreferrer">
                                         <ExternalLink className="h-4 w-4" />

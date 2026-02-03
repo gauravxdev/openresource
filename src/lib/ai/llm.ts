@@ -89,7 +89,6 @@ export async function writeDescriptionWithLLM(
         model: mistral(MODEL),
         temperature: TEMPERATURE,
         system: SYSTEM_MESSAGE,
-        mode: "json",
         prompt: input.prompt,
         schema: descriptionSchema,
     });

@@ -1,6 +1,6 @@
 import React from "react"
 import { getGitHubRepos } from "@/actions/resources"
-import GitHubReposClient, { GitHubRepo } from "./github-repos-client"
+import GitHubReposClient, { type GitHubRepo } from "./github-repos-client"
 
 export const dynamic = "force-dynamic"
 

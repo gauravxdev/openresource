@@ -24,6 +24,8 @@ export type ResourceWithCategories = {
     }[];
     createdAt: Date;
     updatedAt: Date;
+    addedBy: string | null;
+    license: string | null;
 };
 
 export async function getResources() {
