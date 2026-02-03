@@ -132,3 +132,23 @@ export async function getGitHubRepos(): Promise<{ success: boolean; data: Resour
     }
 }
 
+export async function getDailyResourceCount(): Promise<{ success: boolean; count: number }> {
+    try {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const count = await db.resource.count({
+            where: {
+                status: "APPROVED",
+                createdAt: {
+                    gte: twentyFourHoursAgo,
+                },
+            },
+        });
+
+        return { success: true, count };
+    } catch (error) {
+        console.error("[Daily Count] Get Error:", error);
+        return { success: false, count: 0 };
+    }
+}
+
