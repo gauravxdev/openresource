@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 import MDEditor from "@uiw/react-md-editor";
 
 import {
@@ -55,7 +56,12 @@ type FormData = z.infer<typeof formSchema>;
 
 // CATEGORIES removed as it is now dynamic
 
-export function SubmitForm() {
+interface SubmitFormProps {
+    mode?: "admin" | "public";
+    onSuccess?: () => void;
+}
+
+export function SubmitForm({ mode = "admin", onSuccess }: SubmitFormProps) {
     const { theme } = useTheme();
     const [isPending, startTransition] = useTransition();
     const [categories, setCategories] = React.useState<{ id: string; name: string }[]>([]);
@@ -188,6 +194,7 @@ export function SubmitForm() {
                 setSuggestedCategories([]);
                 setIsAiGenerated(false);
                 setGithubStatsPreview(null);
+                onSuccess?.();
             } else {
                 toast.error(result.message);
             }
@@ -195,13 +202,18 @@ export function SubmitForm() {
     };
 
     return (
-        <div className="flex-1 overflow-auto p-4 sm:p-6 space-y-6 bg-background w-full flex flex-col items-center">
-            <div className="space-y-0.5 w-full">
-                <h2 className="text-2xl font-bold tracking-tight">Admin Submit</h2>
-                <p className="text-muted-foreground">
-                    Add a new resource directly to the database.
-                </p>
-            </div>
+        <div className={cn(
+            "flex-1 overflow-auto space-y-6 w-full flex flex-col items-center",
+            mode === "admin" ? "bg-background p-4 sm:p-6" : "bg-transparent"
+        )}>
+            {mode === "admin" && (
+                <div className="space-y-0.5 w-full">
+                    <h2 className="text-2xl font-bold tracking-tight">Admin Submit</h2>
+                    <p className="text-muted-foreground">
+                        Add a new resource directly to the database.
+                    </p>
+                </div>
+            )}
 
             <Card className="w-full">
                 <CardHeader>
@@ -293,65 +305,67 @@ export function SubmitForm() {
                                                 )}
                                             />
                                         </div>
-                                        <Dialog open={isManagingCategories} onOpenChange={setIsManagingCategories}>
-                                            <DialogTrigger asChild>
-                                                <Button type="button" variant="outline" className="h-10 px-3 shrink-0 gap-2">
-                                                    <Settings2 className="h-4 w-4" />
-                                                    Manage
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-md">
-                                                <DialogHeader>
-                                                    <DialogTitle>Manage Categories</DialogTitle>
-                                                    <DialogDescription>
-                                                        Add or remove resource categories.
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="space-y-4 py-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <Input
-                                                            placeholder="New category name..."
-                                                            value={newCategoryName}
-                                                            onChange={(e) => setNewCategoryName(e.target.value)}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === "Enter") {
-                                                                    e.preventDefault();
-                                                                    void handleAddCategory();
-                                                                }
-                                                            }}
-                                                        />
-                                                        <Button onClick={() => void handleAddCategory()} size="sm">
-                                                            <Plus className="h-4 w-4 mr-1" />
-                                                            Add
-                                                        </Button>
-                                                    </div>
-                                                    <div className="max-h-[300px] overflow-auto space-y-2 pr-1">
-                                                        {categories.length === 0 ? (
-                                                            <p className="text-sm text-center text-muted-foreground py-4">
-                                                                No categories found.
-                                                            </p>
-                                                        ) : (
-                                                            categories.map((cat) => (
-                                                                <div
-                                                                    key={cat.id}
-                                                                    className="flex items-center justify-between p-2 rounded-md bg-muted/50"
-                                                                >
-                                                                    <span className="text-sm font-medium">{cat.name}</span>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                                                        onClick={() => void handleDeleteCategory(cat.id)}
+                                        {mode === "admin" && (
+                                            <Dialog open={isManagingCategories} onOpenChange={setIsManagingCategories}>
+                                                <DialogTrigger asChild>
+                                                    <Button type="button" variant="outline" className="h-10 px-3 shrink-0 gap-2">
+                                                        <Settings2 className="h-4 w-4" />
+                                                        Manage
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent className="sm:max-w-md">
+                                                    <DialogHeader>
+                                                        <DialogTitle>Manage Categories</DialogTitle>
+                                                        <DialogDescription>
+                                                            Add or remove resource categories.
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="space-y-4 py-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <Input
+                                                                placeholder="New category name..."
+                                                                value={newCategoryName}
+                                                                onChange={(e) => setNewCategoryName(e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        e.preventDefault();
+                                                                        void handleAddCategory();
+                                                                    }
+                                                                }}
+                                                            />
+                                                            <Button onClick={() => void handleAddCategory()} size="sm">
+                                                                <Plus className="h-4 w-4 mr-1" />
+                                                                Add
+                                                            </Button>
+                                                        </div>
+                                                        <div className="max-h-[300px] overflow-auto space-y-2 pr-1">
+                                                            {categories.length === 0 ? (
+                                                                <p className="text-sm text-center text-muted-foreground py-4">
+                                                                    No categories found.
+                                                                </p>
+                                                            ) : (
+                                                                categories.map((cat) => (
+                                                                    <div
+                                                                        key={cat.id}
+                                                                        className="flex items-center justify-between p-2 rounded-md bg-muted/50"
                                                                     >
-                                                                        <Trash2 className="h-4 w-4" />
-                                                                    </Button>
-                                                                </div>
-                                                            ))
-                                                        )}
+                                                                        <span className="text-sm font-medium">{cat.name}</span>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                                            onClick={() => void handleDeleteCategory(cat.id)}
+                                                                        >
+                                                                            <Trash2 className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </div>
+                                                                ))
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
+                                                </DialogContent>
+                                            </Dialog>
+                                        )}
                                     </div>
 
                                     {/* Suggested Categories */}
