@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { authClient } from "@/lib/auth-client"
+import { searchResources, type ResourceWithCategories } from "@/actions/resources"
 
 const browseOptions = [
     { href: "/browse/latest", label: "Latest", description: "Fresh arrivals added recently.", icon: Clock },
@@ -32,7 +33,7 @@ const browseOptions = [
     { href: "/browse/coming-soon", label: "Coming Soon", description: "Projects launching soon.", icon: Rocket },
     { href: "/browse/alternatives", label: "Alternatives", description: "Explore replacements for tools.", icon: ArrowLeftRight },
     { href: "/categories", label: "Categories", description: "Browse curated categories.", icon: FolderOpen },
-    { href: "/browse/tech-stacks", label: "Tech Stacks", description: "Discover stacks from top teams.", icon: Layers },
+    { href: "/android-apps", label: "Android Apps", description: "Discover apps for android.", icon: Layers },
     { href: "/browse/licenses", label: "Licenses", description: "Filter by software licenses.", icon: Scale },
 ]
 
@@ -40,21 +41,11 @@ const navLinks = [
     { href: "/browse/alternatives", label: "Alternatives" },
     { href: "/github-repos", label: "GitHub Repos" },
     { href: "/categories", label: "Categories" },
-    { href: "/browse/tech-stacks", label: "Tech Stacks" },
-    { href: "/browse/self-hosted", label: "Self-hosted" },
+    { href: "/android-apps", label: "Android Apps" }
 ]
 
-// Mock search data - replace with actual data source
-const mockSearchData = [
-    { id: 1, title: "React", category: "Framework", href: "/" },
-    { id: 2, title: "Next.js", category: "Framework", href: "/" },
-    { id: 3, title: "Tailwind CSS", category: "Styling", href: "/" },
-    { id: 4, title: "Prisma", category: "Database", href: "/" },
-    { id: 5, title: "tRPC", category: "API", href: "/" },
-    { id: 6, title: "Supabase", category: "Backend", href: "/" },
-    { id: 7, title: "Vercel", category: "Deployment", href: "/" },
-    { id: 8, title: "Docker", category: "DevOps", href: "/" },
-]
+// Removed mockSearchData
+
 
 export default function Navbar() {
     const router = useRouter()
@@ -62,6 +53,8 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
     const [searchOpen, setSearchOpen] = React.useState(false)
     const [searchQuery, setSearchQuery] = React.useState("")
+    const [searchResults, setSearchResults] = React.useState<ResourceWithCategories[]>([])
+    const [isSearching, setIsSearching] = React.useState(false)
     const [browseOpen, setBrowseOpen] = React.useState(false)
     const { data: session, isPending, refetch: refetchSession } = authClient.useSession()
 
@@ -96,15 +89,35 @@ export default function Navbar() {
         setTheme(theme === "dark" ? "light" : "dark")
     }
 
-    // Filter search results based on query
-    const filteredResults = React.useMemo(() => {
-        if (!searchQuery.trim()) return []
-        const query = searchQuery.toLowerCase()
-        return mockSearchData.filter(
-            item =>
-                item.title.toLowerCase().includes(query) ||
-                item.category.toLowerCase().includes(query)
-        )
+    // Fetch real search results with debounce
+    React.useEffect(() => {
+        const fetchResults = async () => {
+            if (!searchQuery.trim()) {
+                setSearchResults([])
+                return
+            }
+
+            setIsSearching(true)
+            try {
+                const result = await searchResources(searchQuery)
+                if (result.success && result.data) {
+                    setSearchResults(result.data)
+                } else {
+                    setSearchResults([])
+                }
+            } catch (error) {
+                console.error("Search failed:", error)
+                setSearchResults([])
+            } finally {
+                setIsSearching(false)
+            }
+        }
+
+        const timer = setTimeout(() => {
+            fetchResults()
+        }, 300)
+
+        return () => clearTimeout(timer)
     }, [searchQuery])
 
     const handleSearchSelect = (href: string) => {
@@ -223,18 +236,29 @@ export default function Navbar() {
                                     {/* Filtered Results */}
                                     {searchQuery.trim() && (
                                         <div className="max-h-64 overflow-y-auto rounded-md border border-border">
-                                            {filteredResults.length > 0 ? (
+                                            {isSearching ? (
+                                                <div className="p-4 text-center text-sm text-muted-foreground animate-pulse">
+                                                    Searching...
+                                                </div>
+                                            ) : searchResults.length > 0 ? (
                                                 <div className="divide-y divide-border">
-                                                    {filteredResults.map((result) => (
+                                                    {searchResults.map((result) => (
                                                         <button
                                                             key={result.id}
-                                                            onClick={() => handleSearchSelect(result.href)}
-                                                            className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors"
+                                                            onClick={() => handleSearchSelect(`/resource/${result.slug}`)}
+                                                            className="w-full flex flex-col items-start gap-1 p-3 text-left hover:bg-muted/50 transition-colors"
                                                         >
-                                                            <span className="font-medium">{result.title}</span>
-                                                            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                                                                {result.category}
-                                                            </span>
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <span className="font-medium">{result.name}</span>
+                                                                {result.categories[0] && (
+                                                                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                                                                        {result.categories[0].name}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {result.oneLiner && (
+                                                                <span className="text-xs text-muted-foreground line-clamp-1">{result.oneLiner}</span>
+                                                            )}
                                                         </button>
                                                     ))}
                                                 </div>

@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Sparkles, ArrowRight } from "lucide-react"
 
 interface NotificationButtonProps {
   count?: number;
@@ -7,27 +8,18 @@ interface NotificationButtonProps {
 
 const NotificationButton = ({ count = 0 }: NotificationButtonProps) => {
   return (
-    <Button
-      className="relative overflow-hidden bg-zinc-500 hover:bg-zinc-600 text-white font-medium px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2 group"
-      size="sm"
-    >
-      <span className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-      <svg
-        className="w-4 h-4 mr-2 animate-pulse relative z-10"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
+    <div className="mb-4 flex justify-center animate-in fade-in slide-in-from-bottom-3 duration-700">
+      <Link
+        href="/browse/latest"
+        className="group relative flex items-center gap-1.5 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-1.5 text-sm font-medium text-yellow-600 dark:text-yellow-400 transition-colors hover:bg-yellow-500/20 backdrop-blur-sm"
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 17h5l-5 5v-5zM4.868 12.683A17.925 17.925 0 0112 21c7.962 0 12-1.21 12-4.5 0-3.29-4.038-4.5-12-4.5S0 13.29 0 16.5c0 3.29 4.038 4.5 12 4.5 2.178 0 4.068-.28 5.132-.683M9 9v1.5c0 .828-.672 1.5-1.5 1.5S6 11.328 6 10.5V9c0-.828.672-1.5 1.5-1.5S9 8.172 9 9zm6 0v1.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5V9c0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5z"
-        />
-      </svg>
-      <span className="relative z-10">{count} new tools added</span>
-    </Button>
+        <Sparkles className="h-4 w-4" />
+        <span>
+          <strong className="font-semibold text-yellow-700 dark:text-yellow-300">{count}</strong> new tools added
+        </span>
+        <ArrowRight className="h-4 w-4 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+      </Link>
+    </div>
   )
 }
 

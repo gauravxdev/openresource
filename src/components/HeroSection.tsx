@@ -6,7 +6,7 @@ const HeroSection = async () => {
   const { count } = await getDailyResourceCount();
 
   return (
-    <section className="mt-20 flex flex-col items-center px-4 text-center">
+    <section className="mt-12 md:mt-16 flex flex-col items-center px-4 text-center">
       <NotificationButton count={count} />
       <div className="max-w-4xl space-y-4">
         <h1

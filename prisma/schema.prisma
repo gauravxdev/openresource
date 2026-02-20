@@ -81,6 +81,15 @@ model Waitlist {
   @@map("waitlist")
 }
 
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("newsletter")
+}
+
 model Resource {
   id                  String    @id @default(cuid())
   slug                String    @unique

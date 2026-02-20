@@ -154,3 +154,68 @@ export async function getDailyResourceCount(): Promise<{ success: boolean; count
     }
 }
 
+export async function getLatestResources(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+    try {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const resources = await db.resource.findMany({
+            where: {
+                status: "APPROVED",
+                createdAt: {
+                    gte: twentyFourHoursAgo,
+                },
+            },
+            include: {
+                categories: {
+                    select: {
+                        name: true,
+                        slug: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        return { success: true, data: resources };
+    } catch (error) {
+        console.error("[Latest Resources] Get Error:", error);
+        return { success: false, data: [] };
+    }
+}
+
+export async function searchResources(query: string): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+    if (!query) return { success: true, data: [] };
+
+    try {
+        const resources = await db.resource.findMany({
+            where: {
+                status: "APPROVED",
+                OR: [
+                    { name: { contains: query, mode: "insensitive" } },
+                    { description: { contains: query, mode: "insensitive" } },
+                    { shortDescription: { contains: query, mode: "insensitive" } },
+                    { oneLiner: { contains: query, mode: "insensitive" } },
+                ]
+            },
+            take: 10,
+            include: {
+                categories: {
+                    select: {
+                        name: true,
+                        slug: true,
+                    },
+                },
+            },
+            orderBy: {
+                stars: "desc", // order by stars for relevance
+            }
+        });
+
+        return { success: true, data: resources };
+    } catch (error) {
+        console.error("[Search] Get Error:", error);
+        return { success: false, data: [] };
+    }
+}
