@@ -1,7 +1,5 @@
 "use server";
 
-import { z } from "zod";
-
 const UPLOAD_API = "https://image-937.pages.dev/upload";
 
 export async function uploadImage(formData: FormData) {

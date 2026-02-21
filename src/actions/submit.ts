@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { db } from "@/server/db";
 import { getRepoDetails } from "@/lib/github";
+import { logAudit } from "@/lib/audit";
 
 const submissionSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -156,7 +157,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
             }
         }
 
-        await db.resource.create({
+        const resource = await db.resource.create({
             data: {
                 slug,
                 name: validatedData.name,
@@ -185,6 +186,12 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
                     })),
                 },
             },
+        });
+
+        await logAudit({
+            action: "SUBMIT_RESOURCE",
+            resourceId: resource.id,
+            details: { name: resource.name, slug: resource.slug }
         });
 
         return {

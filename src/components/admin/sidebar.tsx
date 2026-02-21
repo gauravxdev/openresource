@@ -30,11 +30,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
     Search,
-    Inbox,
     BarChart3,
-    CheckSquare,
     Layers,
-    Calendar,
     FileText,
     Users,
     Building,
@@ -53,27 +50,22 @@ import {
     LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDashboardStore } from "@/store/dashboard-store";
 
 type NavItem = {
     title: string;
     icon: React.ElementType;
     shortcut?: string;
-    view?: "dashboard" | "submit";
+    href: string;
 };
 
 const navItems: NavItem[] = [
-    { title: "Search", icon: Search, shortcut: "/" },
-    { title: "Inbox", icon: Inbox },
-    { title: "Dashboard", icon: BarChart3, view: "dashboard" as const },
-    { title: "Submit Resource", icon: Plus, view: "submit" as const },
-    { title: "My Tasks", icon: CheckSquare },
-    { title: "Projects", icon: Layers },
-    { title: "Calendar", icon: Calendar },
-    { title: "Documents", icon: FileText },
-    { title: "Teams", icon: Users },
-    { title: "Company", icon: Building },
-    { title: "Settings", icon: Settings },
+    { title: "Dashboard", icon: BarChart3, href: "/admin" },
+    { title: "Users & Logins", icon: Users, href: "/admin/users" },
+    { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
+    { title: "Audit Logs", icon: FileText, href: "/admin/logs" },
+    { title: "System Health", icon: Building, href: "/admin/health" },
+    { title: "Submit Resource", icon: Plus, href: "/admin/submit" },
+    { title: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 
 const workgroups = [
@@ -103,11 +95,7 @@ const workgroups = [
 export function DashboardSidebar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
-    const { currentView, setView } = useDashboardStore();
-    const [expandedItems, setExpandedItems] = React.useState<string[]>([
-        "all-work",
-        "website-copy",
-    ]);
+    const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
     const toggleItem = (id: string) => {
         setExpandedItems((prev) =>
@@ -222,12 +210,11 @@ export function DashboardSidebar({
                         <SidebarMenu>
                             {navItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    {item.view ? (
-                                        <SidebarMenuButton
-                                            isActive={currentView === item.view}
-                                            onClick={() => item.view && setView(item.view)}
-                                            className="h-7"
-                                        >
+                                    <SidebarMenuButton
+                                        asChild
+                                        className="h-7"
+                                    >
+                                        <Link href={item.href}>
                                             <item.icon className="size-3.5" />
                                             <span className="text-sm">{item.title}</span>
                                             {item.shortcut && (
@@ -235,24 +222,8 @@ export function DashboardSidebar({
                                                     {item.shortcut}
                                                 </span>
                                             )}
-                                        </SidebarMenuButton>
-                                    ) : (
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={false}
-                                            className="h-7"
-                                        >
-                                            <Link href="#">
-                                                <item.icon className="size-3.5" />
-                                                <span className="text-sm">{item.title}</span>
-                                                {item.shortcut && (
-                                                    <span className="ml-auto flex size-5 items-center justify-center rounded bg-muted text-[10px] font-medium text-muted-foreground">
-                                                        {item.shortcut}
-                                                    </span>
-                                                )}
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    )}
+                                        </Link>
+                                    </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>

@@ -17,11 +17,13 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lastLoginAt DateTime?
 
   emailVerified Boolean   @default(false)
   image         String?
   sessions      Session[]
   accounts      Account[]
+  loginHistory  LoginHistory[]
 
   @@index([email])
   @@map("user")
@@ -126,4 +128,29 @@ model Category {
   updatedAt DateTime @updatedAt
 
   @@map("category")
+}
+
+model LoginHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("login_history")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // e.g., "LOGIN", "SUBMIT_RESOURCE", "APPROVE_RESOURCE"
+  userId     String?  // Optional, if action was performed by a specific user
+  resourceId String?  // Optional, if action was related to a specific resource
+  details    Json?    // Optional, unstructured details about the action
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@map("audit_log")
 }

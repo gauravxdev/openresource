@@ -48,11 +48,11 @@ export default async function LatestResourcesPage() {
                                     shortDescription: resource.shortDescription,
                                     oneLiner: resource.oneLiner,
                                     alternative: resource.alternative,
-                                    category: resource.categories[0]?.name || "Uncategorized",
+                                    category: resource.categories[0]?.name ?? "Uncategorized",
                                     stars: resource.stars.toString(),
                                     forks: resource.forks.toString(),
-                                    lastCommit: (serializeDate(resource.createdAt).split('T')[0]) as string,
-                                    image: resource.image || "/images/placeholder.png",
+                                    lastCommit: serializeDate(resource.createdAt).split('T')[0]!,
+                                    image: resource.image ?? "/images/placeholder.png",
                                     logo: resource.logo,
                                 }}
                             />

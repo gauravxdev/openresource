@@ -2,7 +2,6 @@ import React from "react"
 import { getAndroidApps } from "@/actions/resources"
 import AndroidAppsClient from "./android-apps-client"
 import { type AndroidApp } from "@/lib/android-apps-data"
-import { mockAndroidApps } from "@/lib/android-apps-data"
 
 export const dynamic = "force-dynamic"
 

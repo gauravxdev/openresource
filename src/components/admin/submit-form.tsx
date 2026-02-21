@@ -29,7 +29,7 @@ import { api } from "@/trpc/react";
 import { Plus, Trash2, Settings2, Sparkles, RefreshCw } from "lucide-react";
 import { ImageUpload } from "./image-upload";
 import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
-import { MultiSelect, type CategoryOption } from "@/components/ui/multi-select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
     Dialog,
     DialogContent,
