@@ -114,7 +114,7 @@ export default function Navbar() {
         }
 
         const timer = setTimeout(() => {
-            void fetchResults()
+            fetchResults()
         }, 300)
 
         return () => clearTimeout(timer)

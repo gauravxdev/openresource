@@ -123,7 +123,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             } else {
                 toast.error(result.message);
             }
-        } catch {
+        } catch (error) {
             toast.error("Failed to remove image");
         } finally {
             setIsUpdating(false);
@@ -142,7 +142,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             } else {
                 toast.error(result.message);
             }
-        } catch {
+        } catch (error) {
             toast.error("Failed to update profile");
         } finally {
             setIsUpdating(false);

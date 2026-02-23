@@ -135,17 +135,17 @@ export default async function UsersPage({
                                                                     <AvatarImage src={record.user.image ?? ""} alt={record.user.name ?? "User"} />
                                                                     <AvatarFallback>{record.user.name?.charAt(0) ?? "U"}</AvatarFallback>
                                                                 </Avatar>
-                                                                <span className="text-sm">{record.user.name ?? record.user.email}</span>
+                                                                <span className="text-sm">{record.user.name || record.user.email}</span>
                                                             </div>
                                                         ) : (
                                                             <span className="font-mono text-xs">{record.userId}</span>
                                                         )}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <span className="font-mono text-xs">{record.ipAddress ?? "Unknown"}</span>
+                                                        <span className="font-mono text-xs">{record.ipAddress || "Unknown"}</span>
                                                     </TableCell>
-                                                    <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground" title={record.userAgent ?? "Unknown"}>
-                                                        {record.userAgent ?? "Unknown"}
+                                                    <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground" title={record.userAgent || "Unknown"}>
+                                                        {record.userAgent || "Unknown"}
                                                     </TableCell>
                                                 </TableRow>
                                             ))

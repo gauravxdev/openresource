@@ -30,8 +30,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
     Search,
+    Inbox,
     BarChart3,
+    CheckSquare,
     Layers,
+    Calendar,
     FileText,
     Users,
     Building,
@@ -50,6 +53,7 @@ import {
     LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDashboardStore } from "@/store/dashboard-store";
 
 type NavItem = {
     title: string;
