@@ -2,14 +2,13 @@
 
 import { WelcomeSection } from "./header";
 import { StatsCards } from "./stats-cards";
-import { LeadsChart } from "./leads-chart";
-import { TopPerformers } from "./top-performers";
-import { LeadsTable } from "./leads-table";
+import { RecentResourcesTable } from "./recent-resources-table";
+import { RecentActivityList } from "./recent-activity-list";
 
 import { useDashboardStore } from "@/store/dashboard-store";
 import { SubmitForm } from "./submit-form";
 
-export function DashboardContent() {
+export function DashboardContent({ data }: { data: any }) {
     const { currentView } = useDashboardStore();
 
     if (currentView === "submit") {
@@ -19,12 +18,11 @@ export function DashboardContent() {
     return (
         <main className="flex-1 overflow-auto p-4 sm:p-6 space-y-6 bg-background w-full">
             <WelcomeSection />
-            <StatsCards />
+            <StatsCards data={data} />
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-                <LeadsChart />
-                <TopPerformers />
+                <RecentResourcesTable resources={data.recentResources} />
+                <RecentActivityList activities={data.recentActivity} />
             </div>
-            <LeadsTable />
         </main>
     );
 }

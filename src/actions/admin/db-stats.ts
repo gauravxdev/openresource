@@ -8,12 +8,29 @@ export async function getDashboardStats() {
             totalUsers,
             totalResources,
             pendingSubmissions,
-            totalSubscribers
+            totalSubscribers,
+            recentResources,
+            recentActivity
         ] = await Promise.all([
             db.user.count(),
             db.resource.count({ where: { status: "APPROVED" } }),
             db.resource.count({ where: { status: "PENDING" } }),
-            db.newsletter.count()
+            db.newsletter.count(),
+            db.resource.findMany({
+                take: 5,
+                orderBy: { createdAt: "desc" },
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    status: true,
+                    createdAt: true
+                }
+            }),
+            db.auditLog.findMany({
+                take: 5,
+                orderBy: { createdAt: "desc" },
+            })
         ]);
 
         return {
@@ -23,6 +40,8 @@ export async function getDashboardStats() {
                 totalResources,
                 pendingSubmissions,
                 totalSubscribers,
+                recentResources,
+                recentActivity,
             }
         };
     } catch (error) {
