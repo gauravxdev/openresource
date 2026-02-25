@@ -22,9 +22,11 @@ import {
     Mail,
     Link2,
     Users,
+    AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useDashboardStore } from "@/store/dashboard-store";
+import { toast } from "sonner";
 
 export function DashboardHeader() {
     return (
@@ -183,6 +185,19 @@ export function WelcomeSection() {
                 <Button className="h-9 gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-white border border-border/50">
                     <UserPlus className="size-4" />
                     <span className="hidden sm:inline">New Client</span>
+                </Button>
+                <Button
+                    variant="destructive"
+                    className="h-9 gap-1.5 border border-border/50"
+                    onClick={() => {
+                        toast.error("Triggering Sentry test error...");
+                        setTimeout(() => {
+                            throw new Error("Sentry Test Error from Admin Dashboard!");
+                        }, 100);
+                    }}
+                >
+                    <AlertCircle className="size-4" />
+                    <span className="hidden sm:inline">Test Sentry</span>
                 </Button>
             </div>
         </div>

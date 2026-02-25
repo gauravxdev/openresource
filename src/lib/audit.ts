@@ -27,7 +27,7 @@ export async function logAudit({ action, userId, resourceId, details }: CreateAu
                 action,
                 userId,
                 resourceId,
-                details: details ? JSON.parse(JSON.stringify(details)) : undefined, // Ensure it's valid JSON for Prisma
+                details: details ? (JSON.parse(JSON.stringify(details)) as Record<string, unknown>) : undefined, // Ensure it's valid JSON for Prisma
             },
         });
     } catch (error) {

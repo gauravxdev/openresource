@@ -1,7 +1,4 @@
-/*
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
- * for Docker builds.
- */
+import { withSentryConfig } from "@sentry/nextjs";
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
@@ -35,4 +32,11 @@ const config = {
   skipTrailingSlashRedirect: true,
 };
 
-export default config;
+export default withSentryConfig(config, {
+  silent: !process.env.CI,
+  telemetry: false,
+  widenClientFileUpload: true,
+  hideSourceMaps: true,
+  disableLogger: true,
+  automaticVercelMonitors: false,
+});
