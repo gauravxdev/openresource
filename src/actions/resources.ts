@@ -62,7 +62,9 @@ export async function getAndroidApps(): Promise<{ success: boolean; data: Resour
                 status: "APPROVED",
                 categories: {
                     some: {
-                        slug: "android-apps"
+                        slug: {
+                            in: ["android-app", "android-apps"]
+                        }
                     }
                 }
             },
