@@ -15,6 +15,7 @@ export type ResourceWithCategories = {
     stars: number;
     forks: number;
     lastCommit: Date | null;
+    repositoryCreatedAt: Date | null;
     image: string | null;
     logo: string | null;
     status: string;
@@ -33,13 +34,6 @@ export async function getResources() {
         const resources = await db.resource.findMany({
             where: {
                 status: "APPROVED",
-                categories: {
-                    none: {
-                        slug: {
-                            in: ["android", "android-app", "android-apps", "github-repo", "github-repos"]
-                        }
-                    }
-                },
             },
             include: {
                 categories: {
@@ -53,12 +47,6 @@ export async function getResources() {
                 createdAt: "desc",
             },
         });
-
-        // Serialize Date objects to strings if needed by Client Components 
-        // passing across the server/client boundary usually requires plain objects,
-        // but Server Components -> Client Components largely handles dates fine as of recent Next.js versions.
-        // However, if we run into serialization issues, we can convert dates here.
-        // For now, let's return the raw objects and safe-guard on the client or mapped type.
 
         return { success: true, data: resources };
     } catch (error) {
@@ -74,9 +62,7 @@ export async function getAndroidApps(): Promise<{ success: boolean; data: Resour
                 status: "APPROVED",
                 categories: {
                     some: {
-                        slug: {
-                            in: ["android", "android-app", "android-apps"]
-                        }
+                        slug: "android-apps"
                     }
                 }
             },
@@ -99,7 +85,6 @@ export async function getAndroidApps(): Promise<{ success: boolean; data: Resour
         return { success: false, data: [] };
     }
 }
-// Force re-check
 
 export async function getGitHubRepos(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
     try {

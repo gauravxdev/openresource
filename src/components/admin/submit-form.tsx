@@ -268,151 +268,150 @@ export function SubmitForm({ mode = "admin", onSuccess }: SubmitFormProps) {
                         </div>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <div className="h-8 flex items-center">
-                                    <Label htmlFor="name">Name</Label>
-                                </div>
-                                <Input
-                                    id="name"
-                                    placeholder="Resource Name"
-                                    {...register("name")}
-                                />
-                                {errors.name && (
-                                    <p className="text-sm font-medium text-destructive">
-                                        {errors.name.message}
-                                    </p>
-                                )}
+                        <div className="space-y-2">
+                            <div className="h-8 flex items-center">
+                                <Label htmlFor="name">Name</Label>
                             </div>
-                            <div className="space-y-2">
-                                <div className="h-8 flex items-center">
-                                    <Label htmlFor="category">Categories</Label>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                        <div className="flex-1">
-                                            <Controller
-                                                control={control}
-                                                name="categories"
-                                                render={({ field }) => (
-                                                    <MultiSelect
-                                                        selected={field.value}
-                                                        onChange={field.onChange}
-                                                        options={categories.map(c => ({ value: c.name, label: c.name }))}
-                                                        placeholder="Select categories..."
-                                                        maxItems={5}
-                                                    />
-                                                )}
-                                            />
-                                        </div>
-                                        {mode === "admin" && (
-                                            <Dialog open={isManagingCategories} onOpenChange={setIsManagingCategories}>
-                                                <DialogTrigger asChild>
-                                                    <Button type="button" variant="outline" className="h-10 px-3 shrink-0 gap-2">
-                                                        <Settings2 className="h-4 w-4" />
-                                                        Manage
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="sm:max-w-md">
-                                                    <DialogHeader>
-                                                        <DialogTitle>Manage Categories</DialogTitle>
-                                                        <DialogDescription>
-                                                            Add or remove resource categories.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-                                                    <div className="space-y-4 py-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <Input
-                                                                placeholder="New category name..."
-                                                                value={newCategoryName}
-                                                                onChange={(e) => setNewCategoryName(e.target.value)}
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === "Enter") {
-                                                                        e.preventDefault();
-                                                                        void handleAddCategory();
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <Button onClick={() => void handleAddCategory()} size="sm">
-                                                                <Plus className="h-4 w-4 mr-1" />
-                                                                Add
-                                                            </Button>
-                                                        </div>
-                                                        <div className="max-h-[300px] overflow-auto space-y-2 pr-1">
-                                                            {categories.length === 0 ? (
-                                                                <p className="text-sm text-center text-muted-foreground py-4">
-                                                                    No categories found.
-                                                                </p>
-                                                            ) : (
-                                                                categories.map((cat) => (
-                                                                    <div
-                                                                        key={cat.id}
-                                                                        className="flex items-center justify-between p-2 rounded-md bg-muted/50"
-                                                                    >
-                                                                        <span className="text-sm font-medium">{cat.name}</span>
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="icon"
-                                                                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                                                            onClick={() => void handleDeleteCategory(cat.id)}
-                                                                        >
-                                                                            <Trash2 className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </div>
-                                                                ))
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
-                                        )}
-                                    </div>
+                            <Input
+                                id="name"
+                                placeholder="Resource Name"
+                                {...register("name")}
+                            />
+                            {errors.name && (
+                                <p className="text-sm font-medium text-destructive">
+                                    {errors.name.message}
+                                </p>
+                            )}
+                        </div>
 
-                                    {/* Suggested Categories */}
-                                    {suggestedCategories.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 text-sm">
-                                            <span className="text-muted-foreground self-center mr-1 text-xs">Suggested:</span>
-                                            {suggestedCategories.map((suggestion) => {
-                                                const exists = categories.some(
-                                                    c => c.name.toLowerCase() === suggestion.toLowerCase()
-                                                );
-                                                return (
-                                                    <Badge
-                                                        key={suggestion}
-                                                        variant={exists ? "secondary" : "outline"}
-                                                        className="cursor-pointer hover:bg-primary/20 transition-colors"
-                                                        onClick={() => {
-                                                            if (exists) {
-                                                                // Use specific matching name to be safe
-                                                                const match = categories.find(c => c.name.toLowerCase() === suggestion.toLowerCase());
-                                                                if (match) {
-                                                                    const current = watch("categories");
-                                                                    if (!current.includes(match.name) && current.length < 5) {
-                                                                        setValue("categories", [...current, match.name]);
-                                                                    }
+                        <div className="grid gap-4 md:grid-cols-1">
+                            <div className="h-8 flex items-center">
+                                <Label htmlFor="category">Categories</Label>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                    <div className="flex-1">
+                                        <Controller
+                                            control={control}
+                                            name="categories"
+                                            render={({ field }) => (
+                                                <MultiSelect
+                                                    selected={field.value}
+                                                    onChange={field.onChange}
+                                                    options={categories.map(c => ({ value: c.name, label: c.name }))}
+                                                    placeholder="Select categories..."
+                                                    maxItems={5}
+                                                />
+                                            )}
+                                        />
+                                    </div>
+                                    {mode === "admin" && (
+                                        <Dialog open={isManagingCategories} onOpenChange={setIsManagingCategories}>
+                                            <DialogTrigger asChild>
+                                                <Button type="button" variant="outline" className="h-10 px-3 shrink-0 gap-2">
+                                                    <Settings2 className="h-4 w-4" />
+                                                    Manage
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-md">
+                                                <DialogHeader>
+                                                    <DialogTitle>Manage Categories</DialogTitle>
+                                                    <DialogDescription>
+                                                        Add or remove resource categories.
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div className="space-y-4 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <Input
+                                                            placeholder="New category name..."
+                                                            value={newCategoryName}
+                                                            onChange={(e) => setNewCategoryName(e.target.value)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    e.preventDefault();
+                                                                    void handleAddCategory();
                                                                 }
-                                                            } else {
-                                                                // Pre-fill creation
-                                                                setNewCategoryName(suggestion);
-                                                                setIsManagingCategories(true);
-                                                                toast.info(`Review and add "${suggestion}" as a new category`);
-                                                            }
-                                                        }}
-                                                    >
-                                                        {suggestion}
-                                                        {!exists && <Plus className="ml-1 h-3 w-3" />}
-                                                    </Badge>
-                                                );
-                                            })}
-                                        </div>
+                                                            }}
+                                                        />
+                                                        <Button onClick={() => void handleAddCategory()} size="sm">
+                                                            <Plus className="h-4 w-4 mr-1" />
+                                                            Add
+                                                        </Button>
+                                                    </div>
+                                                    <div className="max-h-[300px] overflow-auto space-y-2 pr-1">
+                                                        {categories.length === 0 ? (
+                                                            <p className="text-sm text-center text-muted-foreground py-4">
+                                                                No categories found.
+                                                            </p>
+                                                        ) : (
+                                                            categories.map((cat) => (
+                                                                <div
+                                                                    key={cat.id}
+                                                                    className="flex items-center justify-between p-2 rounded-md bg-muted/50"
+                                                                >
+                                                                    <span className="text-sm font-medium">{cat.name}</span>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                                        onClick={() => void handleDeleteCategory(cat.id)}
+                                                                    >
+                                                                        <Trash2 className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
                                     )}
                                 </div>
-                                {errors.categories && (
-                                    <p className="text-sm font-medium text-destructive">
-                                        {errors.categories.message}
-                                    </p>
+
+                                {/* Suggested Categories */}
+                                {suggestedCategories.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 text-sm">
+                                        <span className="text-muted-foreground self-center mr-1 text-xs">Suggested:</span>
+                                        {suggestedCategories.map((suggestion) => {
+                                            const exists = categories.some(
+                                                c => c.name.toLowerCase() === suggestion.toLowerCase()
+                                            );
+                                            return (
+                                                <Badge
+                                                    key={suggestion}
+                                                    variant={exists ? "secondary" : "outline"}
+                                                    className="cursor-pointer hover:bg-primary/20 transition-colors"
+                                                    onClick={() => {
+                                                        if (exists) {
+                                                            // Use specific matching name to be safe
+                                                            const match = categories.find(c => c.name.toLowerCase() === suggestion.toLowerCase());
+                                                            if (match) {
+                                                                const current = watch("categories");
+                                                                if (!current.includes(match.name) && current.length < 5) {
+                                                                    setValue("categories", [...current, match.name]);
+                                                                }
+                                                            }
+                                                        } else {
+                                                            // Pre-fill creation
+                                                            setNewCategoryName(suggestion);
+                                                            setIsManagingCategories(true);
+                                                            toast.info(`Review and add "${suggestion}" as a new category`);
+                                                        }
+                                                    }}
+                                                >
+                                                    {suggestion}
+                                                    {!exists && <Plus className="ml-1 h-3 w-3" />}
+                                                </Badge>
+                                            );
+                                        })}
+                                    </div>
                                 )}
                             </div>
+                            {errors.categories && (
+                                <p className="text-sm font-medium text-destructive">
+                                    {errors.categories.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* One Liner Field */}

@@ -64,6 +64,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
     { title: "Dashboard", icon: BarChart3, href: "/admin" },
+    { title: "Resources", icon: Folder, href: "/admin/resources" },
     { title: "Users & Logins", icon: Users, href: "/admin/users" },
     { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
     { title: "Audit Logs", icon: FileText, href: "/admin/logs" },
