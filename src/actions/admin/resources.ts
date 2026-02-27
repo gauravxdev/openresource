@@ -48,14 +48,6 @@ export async function getAdminResources(params?: {
         const [resources, total] = await Promise.all([
             db.resource.findMany({
                 where,
-                include: {
-                    categories: {
-                        select: {
-                            name: true,
-                            slug: true,
-                        },
-                    },
-                },
                 orderBy: {
                     createdAt: "desc",
                 },
@@ -139,5 +131,30 @@ export async function deleteAdminResource(id: string) {
     } catch (error) {
         console.error("[Admin Resources] Delete Error:", error);
         return { success: false, error: "Failed to delete resource" };
+    }
+}
+
+export async function getAdminResourceById(id: string) {
+    try {
+        const resource = await db.resource.findUnique({
+            where: { id },
+            include: {
+                categories: {
+                    select: {
+                        name: true,
+                        slug: true,
+                    },
+                },
+            },
+        });
+
+        if (!resource) {
+            return { success: false, error: "Resource not found" };
+        }
+
+        return { success: true, data: resource };
+    } catch (error) {
+        console.error("[Admin Resources] Get By Id Error:", error);
+        return { success: false, error: "Failed to fetch resource" };
     }
 }

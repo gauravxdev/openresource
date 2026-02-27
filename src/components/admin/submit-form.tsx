@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 
 const formSchema = z.object({
+    id: z.string().optional(),
     name: z.string().min(2, "Name must be at least 2 characters"),
     shortDescription: z.string().min(10, "Short description must be at least 10 characters"),
     oneLiner: z.string().max(100, "One-liner must be 100 characters or less").optional(),
@@ -57,11 +58,12 @@ type FormData = z.infer<typeof formSchema>;
 // CATEGORIES removed as it is now dynamic
 
 interface SubmitFormProps {
+    initialData?: Partial<FormData>;
     mode?: "admin" | "public";
     onSuccess?: () => void;
 }
 
-export function SubmitForm({ mode = "admin", onSuccess }: SubmitFormProps) {
+export function SubmitForm({ initialData, mode = "admin", onSuccess }: SubmitFormProps) {
     const { theme } = useTheme();
     const [isPending, startTransition] = useTransition();
     const [categories, setCategories] = React.useState<{ id: string; name: string }[]>([]);
@@ -137,7 +139,8 @@ export function SubmitForm({ mode = "admin", onSuccess }: SubmitFormProps) {
         formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
+        defaultValues: initialData || {
+            id: "",
             name: "",
             shortDescription: "",
             oneLiner: "",
@@ -559,7 +562,9 @@ export function SubmitForm({ mode = "admin", onSuccess }: SubmitFormProps) {
                         </div>
 
                         <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending ? "Submitting..." : "Submit Resource"}
+                            {isPending
+                                ? (initialData?.id ? "Updating..." : "Submitting...")
+                                : (initialData?.id ? "Update Resource" : "Submit Resource")}
                         </Button>
                     </form>
 

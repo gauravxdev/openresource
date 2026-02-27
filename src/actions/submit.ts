@@ -6,6 +6,7 @@ import { getRepoDetails } from "@/lib/github";
 import { logAudit } from "@/lib/audit";
 
 const submissionSchema = z.object({
+    id: z.string().optional(),
     name: z.string().min(2, "Name must be at least 2 characters"),
     shortDescription: z.string().min(10, "Short description must be at least 10 characters").optional(),
     oneLiner: z.string().max(100, "One-liner must be 100 characters or less").optional(),
@@ -92,6 +93,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
     };
 
     const rawData = {
+        id: get("id"),
         name: get("name"),
         shortDescription: get("shortDescription"),
         oneLiner: get("oneLiner"),
@@ -121,82 +123,129 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
             return normalized === "github-repo" || normalized === "github-repos";
         });
 
-        // Validate image requirement: required for all except github-repo
-        if (!isGitHubRepo && !validatedData.image) {
+        // Validate logo requirement: required for all except github-repo
+        if (!isGitHubRepo && !validatedData.logo) {
             return {
                 success: false,
-                message: "Image is required for non-GitHub repository resources",
+                message: "Logo is required for non-GitHub repository resources",
             };
         }
 
-        // Generate unique slug
-        const slug = await getUniqueSlug(validatedData.name);
+        // Prepare GitHub stats with fallback fetching if necessary
+        let stats = {
+            stars: validatedData.stars,
+            forks: validatedData.forks,
+            lastCommit: validatedData.lastCommit,
+            repositoryCreatedAt: validatedData.repositoryCreatedAt,
+            license: validatedData.license,
+        };
 
-        // If GitHub stats are not provided, fetch them
-        let stars = validatedData.stars ?? 0;
-        let forks = validatedData.forks ?? 0;
-        let lastCommit: Date | null = validatedData.lastCommit ? new Date(validatedData.lastCommit) : null;
-        let repositoryCreatedAt: Date | null = validatedData.repositoryCreatedAt ? new Date(validatedData.repositoryCreatedAt) : null;
-        let license = validatedData.license ?? null;
-
-        if (!validatedData.stars || !validatedData.forks) {
-            const parsed = parseGitHubUrl(validatedData.repositoryUrl);
-            if (parsed) {
+        if (isGitHubRepo && (stats.stars === undefined || stats.forks === undefined)) {
+            const githubInfo = parseGitHubUrl(validatedData.repositoryUrl);
+            if (githubInfo) {
                 try {
-                    const repoDetails = await getRepoDetails(parsed.owner, parsed.repo);
-                    if (repoDetails) {
-                        stars = repoDetails.stargazers_count;
-                        forks = repoDetails.forks_count;
-                        lastCommit = repoDetails.updated_at ? new Date(repoDetails.updated_at) : null;
-                        repositoryCreatedAt = repoDetails.created_at ? new Date(repoDetails.created_at) : null;
-                        license = repoDetails.license?.spdx_id ?? repoDetails.license?.name ?? null;
+                    const details = await getRepoDetails(githubInfo.owner, githubInfo.repo);
+                    if (details) {
+                        stats = {
+                            stars: details.stargazers_count,
+                            forks: details.forks_count,
+                            lastCommit: details.updated_at ?? undefined,
+                            repositoryCreatedAt: details.created_at ?? undefined,
+                            license: details.license?.spdx_id ?? details.license?.name ?? undefined,
+                        };
                     }
-                } catch (err) {
-                    console.warn("[Submission] Failed to fetch GitHub stats:", err);
+                } catch (e) {
+                    console.error("Failed to fetch GitHub stats during submission:", e);
                 }
             }
         }
 
-        const resource = await db.resource.create({
-            data: {
-                slug,
-                name: validatedData.name,
-                shortDescription: validatedData.shortDescription ?? null,
-                oneLiner: validatedData.oneLiner ?? null,
-                description: validatedData.description,
-                websiteUrl: validatedData.websiteUrl ?? null,
-                repositoryUrl: validatedData.repositoryUrl,
-                alternative: validatedData.alternative ?? null,
-                image: validatedData.image ?? null,
-                logo: validatedData.logo ?? null,
-                stars,
-                forks,
-                lastCommit,
-                repositoryCreatedAt,
-                license,
-                status: "APPROVED", // Since this is the admin submit page
-                addedBy: "ADMIN",
-                categories: {
-                    connectOrCreate: validatedData.categories.map((cat) => ({
-                        where: { name: cat },
-                        create: {
-                            name: cat,
-                            slug: slugify(cat),
-                        },
-                    })),
+        let resource;
+
+        if (validatedData.id) {
+            // Update existing resource
+            resource = await db.resource.update({
+                where: { id: validatedData.id },
+                data: {
+                    name: validatedData.name,
+                    shortDescription: validatedData.shortDescription ?? null,
+                    oneLiner: validatedData.oneLiner ?? null,
+                    description: validatedData.description,
+                    websiteUrl: validatedData.websiteUrl ?? null,
+                    repositoryUrl: validatedData.repositoryUrl,
+                    alternative: validatedData.alternative ?? null,
+                    image: validatedData.image ?? null,
+                    logo: validatedData.logo ?? null,
+                    stars: stats.stars ?? undefined,
+                    forks: stats.forks ?? undefined,
+                    lastCommit: stats.lastCommit ?? null,
+                    repositoryCreatedAt: stats.repositoryCreatedAt ?? null,
+                    license: stats.license ?? null,
+                    categories: {
+                        set: [], // Disconnect old categories
+                        connectOrCreate: validatedData.categories.map((cat) => ({
+                            where: { name: cat },
+                            create: {
+                                name: cat,
+                                slug: slugify(cat),
+                            },
+                        })),
+                    },
                 },
-            },
-        });
+            });
+        } else {
+            // Create new resource
+            // Generate unique slug only for new resource
+            const slug = await getUniqueSlug(validatedData.name);
+
+            resource = await db.resource.create({
+                data: {
+                    slug,
+                    name: validatedData.name,
+                    shortDescription: validatedData.shortDescription ?? null,
+                    oneLiner: validatedData.oneLiner ?? null,
+                    description: validatedData.description,
+                    websiteUrl: validatedData.websiteUrl ?? null,
+                    repositoryUrl: validatedData.repositoryUrl,
+                    alternative: validatedData.alternative ?? null,
+                    image: validatedData.image ?? null,
+                    logo: validatedData.logo ?? null,
+                    stars: stats.stars ?? undefined,
+                    forks: stats.forks ?? undefined,
+                    lastCommit: stats.lastCommit ?? null,
+                    repositoryCreatedAt: stats.repositoryCreatedAt ?? null,
+                    license: stats.license ?? null,
+                    status: "APPROVED", // Since this is the admin submit page
+                    addedBy: "ADMIN",
+                    categories: {
+                        connectOrCreate: validatedData.categories.map((cat) => ({
+                            where: { name: cat },
+                            create: {
+                                name: cat,
+                                slug: slugify(cat),
+                            },
+                        })),
+                    },
+                },
+            });
+        }
 
         await logAudit({
-            action: "SUBMIT_RESOURCE",
+            action: validatedData.id ? "UPDATE_RESOURCE" : "SUBMIT_RESOURCE",
             resourceId: resource.id,
             details: { name: resource.name, slug: resource.slug }
         });
 
+        const { revalidatePath } = await import("next/cache");
+        revalidatePath("/admin/resources");
+        revalidatePath("/home");
+        revalidatePath("/github-repos");
+        revalidatePath("/android-apps");
+        revalidatePath(`/resource/${resource.slug}`);
+
         return {
             success: true,
-            message: "Resource successfully added!",
+            message: validatedData.id ? "Resource updated successfully!" : "Resource successfully added!",
         };
     } catch (error) {
         if (error instanceof z.ZodError) {
