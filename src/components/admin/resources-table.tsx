@@ -50,7 +50,7 @@ export function ResourcesTable({ resources }: { resources: any[] }) {
     };
 
     return (
-        <div className="rounded-md border bg-card">
+        <div className="rounded-md border-none bg-card/30">
             <Table>
                 <TableHeader>
                     <TableRow>

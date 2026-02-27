@@ -16,12 +16,17 @@ export function AdminSearch({ defaultValue = "" }: { defaultValue?: string }) {
 
     useEffect(() => {
         const params = new URLSearchParams(searchParams.toString());
+        const currentQuery = params.get("q") ?? "";
+
+        // Only update if search query has actually changed
+        if (query === currentQuery) return;
+
         if (query) {
             params.set("q", query);
         } else {
             params.delete("q");
         }
-        // Always reset to page 1 on search
+        // Always reset to page 1 on NEW search
         params.set("page", "1");
 
         startTransition(() => {
@@ -34,29 +39,28 @@ export function AdminSearch({ defaultValue = "" }: { defaultValue?: string }) {
     };
 
     return (
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1 min-w-[200px] max-w-md">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
                 type="search"
                 placeholder="Search resources..."
-                className="pl-8 pr-8"
+                className="pl-8 pr-20 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-neutral-900/50 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-ms-clear]:display-none"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
             />
-            {text && (
-                <button
-                    onClick={handleClear}
-                    className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground"
-                    title="Clear search"
-                >
-                    <X className="h-4 w-4" />
-                </button>
-            )}
-            {isPending && (
-                <div className="absolute right-10 top-3">
-                    <div className="animate-spin h-3 w-3 border-2 border-primary border-t-transparent rounded-full" />
-                </div>
-            )}
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {isPending ? (
+                    <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full mx-1" />
+                ) : text ? (
+                    <button
+                        onClick={handleClear}
+                        className="text-muted-foreground hover:text-foreground p-1 transition-colors"
+                        title="Clear search"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                ) : null}
+            </div>
         </div>
     );
 }

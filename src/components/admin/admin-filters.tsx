@@ -46,7 +46,7 @@ export function AdminFilters() {
             <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Status:</span>
                 <Select value={status} onValueChange={(v) => updateQuery("status", v)}>
-                    <SelectTrigger className="w-[150px]">
+                    <SelectTrigger className="w-[150px] border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-neutral-900/50">
                         <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -61,7 +61,7 @@ export function AdminFilters() {
             <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Category:</span>
                 <Select value={category} onValueChange={(v) => updateQuery("category", v)}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[180px] border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-neutral-900/50">
                         <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -78,7 +78,7 @@ export function AdminFilters() {
             <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Sort By:</span>
                 <Select value={sortBy} onValueChange={(v) => updateQuery("sortBy", v)}>
-                    <SelectTrigger className="w-[160px]">
+                    <SelectTrigger className="w-[160px] border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-neutral-900/50">
                         <SelectValue placeholder="Sort By" />
                     </SelectTrigger>
                     <SelectContent>

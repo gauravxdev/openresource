@@ -23,12 +23,17 @@ export async function getAdminResources(params?: {
     limit?: number;
     search?: string;
     status?: string;
+    category?: string;
+    sortBy?: string;
 }) {
     const page = params?.page ?? 1;
     const limit = params?.limit ?? 10;
     const skip = (page - 1) * limit;
     const search = params?.search ?? "";
     const status = params?.status;
+
+    const category = params?.category;
+    const sortBy = params?.sortBy ?? "newest";
 
     try {
         const where: any = {};
@@ -45,12 +50,23 @@ export async function getAdminResources(params?: {
             where.status = status;
         }
 
+        if (category && category !== "ALL") {
+            where.categories = {
+                some: {
+                    name: category
+                }
+            };
+        }
+
+        let orderBy: any = { createdAt: "desc" };
+        if (sortBy === "oldest") orderBy = { createdAt: "asc" };
+        if (sortBy === "name-asc") orderBy = { name: "asc" };
+        if (sortBy === "name-desc") orderBy = { name: "desc" };
+
         const [resources, total] = await Promise.all([
             db.resource.findMany({
                 where,
-                orderBy: {
-                    createdAt: "desc",
-                },
+                orderBy,
                 skip,
                 take: limit,
             }),
@@ -68,7 +84,12 @@ export async function getAdminResources(params?: {
         };
     } catch (error) {
         console.error("[Admin Resources] Get Error:", error);
-        return { success: false, data: [], error: "Failed to fetch resources" };
+        return {
+            success: false,
+            data: [],
+            metadata: { total: 0, page: 1, totalPages: 1 },
+            error: "Failed to fetch resources"
+        };
     }
 }
 
