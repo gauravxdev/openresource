@@ -111,9 +111,9 @@ export function GitHubStatsSidebar({ stats, className }: GitHubStatsSidebarProps
     ];
 
     return (
-        <Card className={`border-neutral-800 bg-neutral-900/80 backdrop-blur-sm ${className ?? ""}`}>
+        <Card className={`border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm ${className ?? ""}`}>
             <CardHeader className="pb-4">
-                <CardTitle className="text-base font-semibold text-neutral-200">
+                <CardTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-200">
                     Repository Stats
                 </CardTitle>
             </CardHeader>
@@ -123,11 +123,11 @@ export function GitHubStatsSidebar({ stats, className }: GitHubStatsSidebarProps
                         key={label}
                         className="flex items-center justify-between text-sm"
                     >
-                        <div className="flex items-center gap-2.5 text-neutral-400">
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-400">
                             <Icon className={`h-4 w-4 ${iconClassName}`} />
                             <span>{label}</span>
                         </div>
-                        <span className="font-medium text-neutral-100">{value}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{value}</span>
                     </div>
                 ))}
 
@@ -135,7 +135,7 @@ export function GitHubStatsSidebar({ stats, className }: GitHubStatsSidebarProps
                     <Button
                         variant="outline"
                         size="sm"
-                        className="w-full mt-4 gap-2 border-neutral-700 bg-transparent hover:bg-neutral-800 text-neutral-300"
+                        className="w-full mt-4 gap-2 border-neutral-200 dark:border-neutral-700 bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
                         asChild
                     >
                         <a href={stats.repositoryUrl} target="_blank" rel="noopener noreferrer">

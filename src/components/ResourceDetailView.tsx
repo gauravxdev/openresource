@@ -98,7 +98,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                         <div className="space-y-4">
                             <div className="flex items-start gap-4">
                                 {/* Logo/Icon */}
-                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-2xl font-bold text-white uppercase shadow-lg overflow-hidden">
+                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-2xl font-bold text-neutral-900 dark:text-white uppercase shadow-lg overflow-hidden">
                                     {resource.logo ? (
                                         <img
                                             src={resource.logo}
@@ -117,7 +117,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                             {resource.name}
                                         </h1>
                                         {resource.alternative && (
-                                            <Badge variant="outline" className="border-neutral-700 text-neutral-400 h-6">
+                                            <Badge variant="outline" className="border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 h-6">
                                                 Alt to {resource.alternative}
                                             </Badge>
                                         )}
@@ -151,7 +151,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
 
                         {/* Resource Image */}
                         {resource.image && (
-                            <div className="rounded-xl overflow-hidden border border-neutral-800">
+                            <div className="rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800">
                                 <img
                                     src={resource.image}
                                     alt={resource.name}
@@ -162,7 +162,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
 
                         {/* Description */}
                         {/* Description */}
-                        <div className="prose prose-invert prose-neutral max-w-none [&_strong]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white prose-headings:text-white [&_ul]:list-disc [&_ul]:pl-6 [&_li]:marker:text-white">
+                        <div className="prose dark:prose-invert prose-neutral max-w-none dark:[&_strong]:text-white [&_strong]:text-neutral-900 dark:[&_h1]:text-white [&_h1]:text-neutral-900 dark:[&_h2]:text-white [&_h2]:text-neutral-900 dark:[&_h3]:text-white [&_h3]:text-neutral-900 dark:[&_h4]:text-white [&_h4]:text-neutral-900 dark:prose-headings:text-white prose-headings:text-neutral-900 [&_ul]:list-disc [&_ul]:pl-6 dark:[&_li]:marker:text-white [&_li]:marker:text-neutral-900">
                             <h2 className="text-xl font-semibold text-foreground mb-4">About</h2>
                             <MarkdownRenderer
                                 content={resource.description}
@@ -171,11 +171,11 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                         </div>
 
                         {/* Categories */}
-                        <div className="space-y-4 pt-4 border-t border-neutral-800">
+                        <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                             <h3 className="text-lg font-semibold text-foreground">Categories</h3>
                             <div className="flex flex-wrap gap-2">
                                 {resource.categories.map((cat) => (
-                                    <Badge key={cat.id} variant="secondary" className="bg-neutral-800 text-neutral-200 hover:bg-neutral-700 px-3 py-1">
+                                    <Badge key={cat.id} variant="secondary" className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 px-3 py-1">
                                         {cat.name}
                                     </Badge>
                                 ))}
