@@ -64,6 +64,47 @@ export async function getResources() {
     }
 }
 
+export async function getResourcesByCategory(slug: string): Promise<{ success: boolean; data: ResourceWithCategories[], categoryName?: string }> {
+    if (!slug) return { success: false, data: [] };
+
+    try {
+        const category = await db.category.findUnique({
+            where: { slug }
+        });
+
+        if (!category) {
+            return { success: false, data: [] };
+        }
+
+        const resources = await db.resource.findMany({
+            where: {
+                status: "APPROVED",
+                categories: {
+                    some: {
+                        slug: slug
+                    }
+                }
+            },
+            include: {
+                categories: {
+                    select: {
+                        name: true,
+                        slug: true,
+                    },
+                },
+            },
+            orderBy: {
+                stars: "desc", // Default sorting for category pages
+            },
+        });
+
+        return { success: true, data: resources, categoryName: category.name };
+    } catch (error) {
+        console.error("[Category Resources] Get Error:", error);
+        return { success: false, data: [] };
+    }
+}
+
 export async function getAndroidApps(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
     try {
         const resources = await db.resource.findMany({

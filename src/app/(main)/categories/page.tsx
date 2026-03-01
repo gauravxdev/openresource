@@ -60,9 +60,10 @@ export default async function CategoriesPage() {
             categories.map((category) => (
               <Link
                 key={category.id}
-                href={`/?category=${encodeURIComponent(category.name)}`}
+                href={`/category/${category.slug}`}
                 className="group block"
               >
+
                 <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:bg-accent/50 transition-all duration-200">
                   <div className="flex flex-col gap-1">
                     <span className="font-medium text-foreground group-hover:text-primary transition-colors">
