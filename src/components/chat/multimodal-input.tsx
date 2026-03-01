@@ -196,6 +196,9 @@ export const MultimodalInput = memo(
         if (prevProps.selectedModelId !== nextProps.selectedModelId) {
             return false;
         }
+        if (!equal(prevProps.messages, nextProps.messages)) {
+            return false;
+        }
         return true;
     },
 );
