@@ -42,14 +42,30 @@ export default async function Page({
 
     // Load messages
     const dbMessages = await getMessagesByChatId({ id });
+    console.log(`[Chat ${id}] Loaded ${dbMessages.length} messages from DB`);
+    if (dbMessages.length > 0) {
+        console.log(`[Chat ${id}] First message role: ${dbMessages[0].role}, parts:`, JSON.stringify(dbMessages[0].parts).substring(0, 200));
+    }
 
     // Convert DB messages to UIMessages
-    const initialMessages: UIMessage[] = dbMessages.map((msg) => ({
-        id: msg.id,
-        role: msg.role as UIMessage["role"],
-        parts: msg.parts as UIMessage["parts"],
-        createdAt: msg.createdAt,
-    }));
+    const initialMessages: UIMessage[] = dbMessages.map((msg) => {
+        const partsArray = msg.parts as Array<{ type: string; text?: string }> | null;
+        const content = partsArray
+            ? partsArray
+                .filter((p) => p.type === "text")
+                .map((p) => p.text)
+                .join("")
+            : "";
+
+        return {
+            id: msg.id,
+            role: msg.role as UIMessage["role"],
+            content,
+            parts: msg.parts as UIMessage["parts"],
+            createdAt: msg.createdAt,
+        };
+    });
+    console.log(`[Chat ${id}] Converted ${initialMessages.length} initialMessages`);
 
     const cookieStore = await cookies();
     const modelIdFromCookie = cookieStore.get("chat-model");

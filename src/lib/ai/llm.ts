@@ -41,23 +41,21 @@ Your task is to analyze the provided repository signals and generate a structure
 - Max 100 characters.
 
 ### 3. Long Description (MDX)
-- A highly detailed, comprehensive overview associated with the project.
-- **Length**: 250-350 words (approx. 3-5 paragraphs).
-- **Format**: Use MDX features like bolding, lists, and clear structure. Do *not* use h1 (#) or h2 (##). Start with h3 (###) if needed, or just use bolded terms for section leads.
-- **Tone**: Professional, informative, yet engaging. Avoid marketing fluff but clearly articulate value.
+- A concise, high-impact overview of the project.
+- **Length**: 80-120 words.
+- **Format**: Use MDX features like bolding and lists. Do *not* use h1 (#) or h2 (##). Start with h3 (###) if needed.
+- **Tone**: Professional, technical, and objective.
 
 **Structure Guide:**
-1.  **Introduction**: A strong but concise opening hook defining the project and core value. (1 paragraph)
-2.  **Core Value & Architecture**: Brief technical approach and architecture. (1 paragraph)
-3.  **Key Features**: A bulleted list of 4-6 key capabilities.
-    - Start each feature with a bullet point: "- **Feature Name**: Explanation"
-4.  **Use Cases**: Brief description of who benefits most. (1 paragraph)
-5.  **Conclusion**: A final summary statement.
+1.  **Overview**: A single paragraph (2-3 sentences) defining the project and its core value.
+2.  **Key Features**: A bulleted list of 3-4 essential capabilities.
+    - Format: "- **Feature**: Brief explanation"
+3.  **Use Case**: One sentence on who it's for.
 
 **Style Rules:**
-- Use **bold** for emphasis on key technologies or benefits.
-- Ensure smooth transitions between paragraphs.
-- Focus on *substance*: mention specific languages, protocols (e.g., MCP, LSP), or integration points found in the signals.
+- Use **bold** for key technologies.
+- Focus strictly on facts from the signals.
+- No fluff or introductory filler.
 
 ### 3. Categories
 - Suggest 3-5 relevant categories (e.g., "Developer Tools", "AI Coding Assistants", "Terminal Apps")

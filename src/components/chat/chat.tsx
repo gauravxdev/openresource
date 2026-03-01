@@ -73,6 +73,14 @@ export function Chat({
         },
     });
 
+    // Force-set initial messages from server on mount
+    // The useChat hook's internal store may ignore initialMessages if it has stale state
+    useEffect(() => {
+        if (initialMessages && initialMessages.length > 0) {
+            setMessages(initialMessages);
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     return (
         <div className="flex h-[calc(100dvh-3.5rem)] min-w-0 flex-col bg-background">
             <ChatHeader chatId={id} />

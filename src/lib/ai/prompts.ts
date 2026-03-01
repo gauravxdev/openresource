@@ -129,7 +129,7 @@ function buildFactsSection(signals: RepoSignals): string {
 function buildConstraintsSection(): string {
     return `WRITING CONSTRAINTS:
 - Output must be valid MDX (Markdown).
-- Write 3–6 sentences only.
+- Write 2–3 sentences only.
 - Use plain paragraphs only (no HTML, no code blocks, no lists).
 - Maintain a neutral, professional tone.
 - No emojis.

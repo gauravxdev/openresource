@@ -14,6 +14,7 @@ import {
     saveChat,
     getChatById,
     saveMessages,
+    getMessagesByChatId,
     updateChatTitle,
     deleteChatById,
 } from "@/lib/chat/queries";
@@ -104,7 +105,24 @@ export async function POST(request: Request) {
             ],
         });
 
-        const uiMessages = [message];
+        // Load ALL previous messages from DB for full conversation context
+        const allDbMessages = await getMessagesByChatId({ id });
+        const uiMessages = allDbMessages.map((msg) => {
+            const partsArray = msg.parts as Array<{ type: string; text?: string }>;
+            const content = partsArray
+                ? partsArray
+                    .filter((p) => p.type === "text")
+                    .map((p) => p.text)
+                    .join("")
+                : "";
+
+            return {
+                id: msg.id,
+                role: msg.role as "user" | "assistant",
+                content,
+                parts: partsArray,
+            };
+        });
         const modelMessages = await convertToModelMessages(uiMessages);
 
         const stream = createUIMessageStream({
@@ -122,9 +140,13 @@ export async function POST(request: Request) {
 
                             if (assistantMessage) {
                                 const assistantParts = [];
-                                for (const part of assistantMessage.content) {
-                                    if (part.type === "text") {
-                                        assistantParts.push({ type: "text", text: part.text });
+                                if (typeof assistantMessage.content === "string") {
+                                    assistantParts.push({ type: "text", text: assistantMessage.content });
+                                } else if (Array.isArray(assistantMessage.content)) {
+                                    for (const part of assistantMessage.content) {
+                                        if (part.type === "text") {
+                                            assistantParts.push({ type: "text", text: part.text });
+                                        }
                                     }
                                 }
 
