@@ -2,13 +2,21 @@ import {
     convertToModelMessages,
     createUIMessageStream,
     createUIMessageStreamResponse,
+    generateText,
     streamText,
 } from "ai";
 import { z } from "zod";
-import { getLanguageModel } from "@/lib/chat/providers";
+import { getLanguageModel, getTitleModel } from "@/lib/chat/providers";
 import { systemPrompt, titlePrompt } from "@/lib/chat/prompts";
-import { generateUUID, getTextFromMessage } from "@/lib/chat/utils";
+import { generateUUID } from "@/lib/chat/utils";
 import { ChatError } from "@/lib/chat/errors";
+import {
+    saveChat,
+    getChatById,
+    saveMessages,
+    updateChatTitle,
+    deleteChatById,
+} from "@/lib/chat/queries";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -68,8 +76,35 @@ export async function POST(request: Request) {
             return new ChatError("bad_request:api").toResponse();
         }
 
-        const uiMessages = [message];
+        const userId = session.user.id;
 
+        // Check if this is a new chat or existing
+        const existingChat = await getChatById({ id });
+
+        if (!existingChat) {
+            // Create the chat in DB
+            await saveChat({
+                id,
+                userId,
+                title: "New Chat",
+            });
+        }
+
+        // Save the user message to DB
+        const userMessageId = message.id || generateUUID();
+        await saveMessages({
+            messages: [
+                {
+                    id: userMessageId,
+                    chatId: id,
+                    role: "user",
+                    parts: message.parts as any,
+                    createdAt: new Date(),
+                },
+            ],
+        });
+
+        const uiMessages = [message];
         const modelMessages = await convertToModelMessages(uiMessages);
 
         const stream = createUIMessageStream({
@@ -78,6 +113,65 @@ export async function POST(request: Request) {
                     model: getLanguageModel(selectedChatModel),
                     system: systemPrompt({ selectedChatModel }),
                     messages: modelMessages,
+                    onFinish: async ({ response }) => {
+                        // Save assistant message to DB
+                        try {
+                            const assistantMessage = response.messages.find(
+                                (m) => m.role === "assistant",
+                            );
+
+                            if (assistantMessage) {
+                                const assistantParts = [];
+                                for (const part of assistantMessage.content) {
+                                    if (part.type === "text") {
+                                        assistantParts.push({ type: "text", text: part.text });
+                                    }
+                                }
+
+                                await saveMessages({
+                                    messages: [
+                                        {
+                                            id: generateUUID(),
+                                            chatId: id,
+                                            role: "assistant",
+                                            parts: assistantParts,
+                                            createdAt: new Date(),
+                                        },
+                                    ],
+                                });
+                            }
+                        } catch (error) {
+                            console.error("Failed to save assistant message:", error);
+                        }
+
+                        // Generate title for new chats
+                        if (!existingChat) {
+                            try {
+                                const userText =
+                                    message.parts
+                                        ?.filter((p) => p.type === "text")
+                                        .map((p) => p.text)
+                                        .join(" ") || "New Chat";
+
+                                const { text: title } = await generateText({
+                                    model: getTitleModel(),
+                                    system: titlePrompt,
+                                    prompt: userText,
+                                });
+
+                                const cleanTitle = title.trim() || "New Chat";
+                                await updateChatTitle({ id, title: cleanTitle });
+
+                                // Send title to client via data stream
+                                dataStream.write({
+                                    type: "data-chat-title",
+                                    data: cleanTitle,
+                                });
+                            } catch (error) {
+                                console.error("Failed to generate title:", error);
+                            }
+                        }
+                    },
                 });
 
                 dataStream.merge(result.toUIMessageStream({ sendReasoning: true }));
@@ -94,5 +188,46 @@ export async function POST(request: Request) {
 
         console.error("Unhandled error in chat API:", error);
         return new ChatError("offline:chat").toResponse();
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE handler
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+        return new ChatError("bad_request:api").toResponse();
+    }
+
+    try {
+        const headersList = await headers();
+        const session = await auth.api.getSession({
+            headers: headersList,
+        });
+
+        if (!session?.user) {
+            return new ChatError("unauthorized:chat").toResponse();
+        }
+
+        const chat = await getChatById({ id });
+
+        if (!chat) {
+            return new ChatError("not_found:chat").toResponse();
+        }
+
+        if (chat.userId !== session.user.id) {
+            return new ChatError("forbidden:chat").toResponse();
+        }
+
+        await deleteChatById({ id });
+
+        return Response.json({ success: true });
+    } catch (error) {
+        console.error("Failed to delete chat:", error);
+        return new ChatError("bad_request:api").toResponse();
     }
 }

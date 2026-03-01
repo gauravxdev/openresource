@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
+import type { UIMessage } from "ai";
 import type { ChatMessage } from "@/lib/chat/types";
 import { ChatError } from "@/lib/chat/errors";
 import { DEFAULT_CHAT_MODEL } from "@/lib/chat/models";
@@ -11,17 +12,23 @@ import { ChatHeader } from "./chat-header";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
 import { toast } from "sonner";
+import { useSWRConfig } from "swr";
+import { unstable_serialize } from "swr/infinite";
+import { getChatHistoryPaginationKey } from "./sidebar-history";
 
 export function Chat({
     id,
+    initialMessages,
     initialChatModel,
 }: {
     id: string;
+    initialMessages?: UIMessage[];
     initialChatModel: string;
 }) {
     const [input, setInput] = useState<string>("");
     const [currentModelId, setCurrentModelId] = useState(initialChatModel);
     const currentModelIdRef = useRef(currentModelId);
+    const { mutate } = useSWRConfig();
 
     useEffect(() => {
         currentModelIdRef.current = currentModelId;
@@ -35,7 +42,7 @@ export function Chat({
         stop,
     } = useChat<ChatMessage>({
         id,
-        messages: [],
+        initialMessages: initialMessages ?? [],
         generateId: generateUUID,
         transport: new DefaultChatTransport({
             api: "/api/chat",
@@ -60,10 +67,14 @@ export function Chat({
                 toast.error("Something went wrong. Please try again.");
             }
         },
+        onFinish: () => {
+            // Refresh sidebar history after message completes
+            mutate(unstable_serialize(getChatHistoryPaginationKey));
+        },
     });
 
     return (
-        <div className="flex h-dvh min-w-0 flex-col bg-background">
+        <div className="flex h-[calc(100dvh-3.5rem)] min-w-0 flex-col bg-background">
             <ChatHeader chatId={id} />
 
             <Messages

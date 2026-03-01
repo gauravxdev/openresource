@@ -20,6 +20,7 @@ model User {
   accounts      Account[]
   loginHistory  LoginHistory[]
   sessions      Session[]
+  chats         Chat[]
 
   @@index([email])
   @@map("user")
@@ -147,4 +148,30 @@ model AuditLog {
   @@index([userId])
   @@index([action])
   @@map("audit_log")
+}
+
+model Chat {
+  id         String        @id @default(cuid())
+  title      String        @default("New Chat")
+  userId     String
+  visibility String        @default("private")
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages   ChatMessage[]
+
+  @@index([userId])
+  @@map("chat")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  chatId    String
+  role      String
+  parts     Json
+  createdAt DateTime @default(now())
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+  @@map("chat_message")
 }
