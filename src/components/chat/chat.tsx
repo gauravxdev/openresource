@@ -82,7 +82,7 @@ export function Chat({
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className="flex h-[calc(100dvh-3.5rem)] min-w-0 flex-col bg-background">
+        <div className="flex h-full min-w-0 flex-col bg-background">
             <ChatHeader chatId={id} />
 
             <Messages

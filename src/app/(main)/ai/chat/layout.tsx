@@ -17,7 +17,7 @@ export default async function AiChatLayout({
     const isCollapsed = cookieStore.get("sidebar_state")?.value === "false";
 
     return (
-        <SidebarProvider defaultOpen={!isCollapsed}>
+        <SidebarProvider defaultOpen={!isCollapsed} className="h-[calc(100dvh-57px)] min-h-0">
             <ChatSidebar userId={session?.user?.id} />
             <SidebarInset>{children}</SidebarInset>
         </SidebarProvider>
