@@ -16,6 +16,7 @@ import {
     saveMessages,
     getMessagesByChatId,
     updateChatTitle,
+    updateChat,
     deleteChatById,
 } from "@/lib/chat/queries";
 import { auth } from "@/lib/auth";
@@ -250,6 +251,58 @@ export async function DELETE(request: Request) {
         return Response.json({ success: true });
     } catch (error) {
         console.error("Failed to delete chat:", error);
+        return new ChatError("bad_request:api").toResponse();
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH handler (Update chat properties like title, pinned status)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function PATCH(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get("id");
+
+        if (!id) {
+            return new ChatError("bad_request:api").toResponse();
+        }
+
+        const body = await request.json();
+        const { title, isPinned } = body;
+
+        const headersList = await headers();
+        const session = await auth.api.getSession({
+            headers: headersList,
+        });
+
+        if (!session?.user) {
+            return new ChatError("unauthorized:chat").toResponse();
+        }
+
+        const chat = await getChatById({ id });
+
+        if (!chat) {
+            return new ChatError("not_found:chat").toResponse();
+        }
+
+        if (chat.userId !== session.user.id) {
+            return new ChatError("forbidden:chat").toResponse();
+        }
+
+        const updatedChat = await updateChat({
+            id,
+            title,
+            isPinned,
+        });
+
+        if (!updatedChat) {
+            return new ChatError("bad_request:api").toResponse();
+        }
+
+        return Response.json({ success: true, chat: updatedChat });
+    } catch (error) {
+        console.error("Failed to update chat:", error);
         return new ChatError("bad_request:api").toResponse();
     }
 }

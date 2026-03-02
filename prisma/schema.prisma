@@ -155,6 +155,7 @@ model Chat {
   title      String        @default("New Chat")
   userId     String
   visibility String        @default("private")
+  isPinned   Boolean       @default(false)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)

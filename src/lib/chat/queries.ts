@@ -76,6 +76,29 @@ export async function updateChatTitle({
     }
 }
 
+export async function updateChat({
+    id,
+    title,
+    isPinned,
+}: {
+    id: string;
+    title?: string;
+    isPinned?: boolean;
+}) {
+    try {
+        return await db.chat.update({
+            where: { id },
+            data: {
+                ...(title !== undefined && { title }),
+                ...(isPinned !== undefined && { isPinned }),
+            },
+        });
+    } catch (error) {
+        console.warn("Failed to update chat:", id, error);
+        return null;
+    }
+}
+
 export async function deleteChatById({ id }: { id: string }) {
     // ChatMessage cascade-deletes automatically via onDelete: Cascade
     return db.chat.delete({

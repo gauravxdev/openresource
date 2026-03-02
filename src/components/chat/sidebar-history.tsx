@@ -17,6 +17,15 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarMenu,
@@ -29,9 +38,11 @@ type ChatRecord = {
     title: string;
     createdAt: string | Date;
     visibility: string;
+    isPinned?: boolean;
 };
 
 type GroupedChats = {
+    pinned: ChatRecord[];
     today: ChatRecord[];
     yesterday: ChatRecord[];
     lastWeek: ChatRecord[];
@@ -61,7 +72,9 @@ const groupChatsByDate = (chats: ChatRecord[]): GroupedChats => {
         (groups, chat) => {
             const chatDate = new Date(chat.createdAt);
 
-            if (isToday(chatDate)) {
+            if (chat.isPinned) {
+                groups.pinned.push(chat);
+            } else if (isToday(chatDate)) {
                 groups.today.push(chat);
             } else if (isYesterday(chatDate)) {
                 groups.yesterday.push(chat);
@@ -76,6 +89,7 @@ const groupChatsByDate = (chats: ChatRecord[]): GroupedChats => {
             return groups;
         },
         {
+            pinned: [],
             today: [],
             yesterday: [],
             lastWeek: [],
@@ -131,6 +145,10 @@ export function SidebarHistory({
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+    const [renameId, setRenameId] = useState<string | null>(null);
+    const [showRenameDialog, setShowRenameDialog] = useState(false);
+    const [newTitle, setNewTitle] = useState("");
+
     const hasReachedEnd = paginatedChatHistories
         ? paginatedChatHistories.some((page) => page.hasMore === false)
         : false;
@@ -147,6 +165,9 @@ export function SidebarHistory({
 
         const deletePromise = fetch(`/api/chat?id=${chatToDelete}`, {
             method: "DELETE",
+        }).then(async (res) => {
+            if (!res.ok) throw new Error("Failed to delete chat");
+            return res.json();
         });
 
         toast.promise(deletePromise, {
@@ -171,6 +192,68 @@ export function SidebarHistory({
                 return "Chat deleted successfully";
             },
             error: "Failed to delete chat",
+        });
+    };
+
+    const handleRename = () => {
+        if (!renameId || !newTitle.trim()) return;
+        setShowRenameDialog(false);
+
+        const promise = fetch(`/api/chat?id=${renameId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: newTitle }),
+        }).then(async (res) => {
+            if (!res.ok) throw new Error("Failed to rename chat");
+            return res.json();
+        });
+
+        toast.promise(promise, {
+            loading: "Renaming chat...",
+            success: () => {
+                mutate((chatHistories) => {
+                    if (chatHistories) {
+                        return chatHistories.map((history) => ({
+                            ...history,
+                            chats: history.chats.map((c) =>
+                                c.id === renameId ? { ...c, title: newTitle } : c
+                            ),
+                        }));
+                    }
+                });
+                return "Chat renamed successfully";
+            },
+            error: "Failed to rename chat",
+        });
+    };
+
+    const handlePin = (chatToPin: ChatRecord) => {
+        const newPinnedState = !chatToPin.isPinned;
+        const promise = fetch(`/api/chat?id=${chatToPin.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isPinned: newPinnedState }),
+        }).then(async (res) => {
+            if (!res.ok) throw new Error("Failed to pin chat");
+            return res.json();
+        });
+
+        toast.promise(promise, {
+            loading: newPinnedState ? "Pinning chat..." : "Unpinning chat...",
+            success: () => {
+                mutate((chatHistories) => {
+                    if (chatHistories) {
+                        return chatHistories.map((history) => ({
+                            ...history,
+                            chats: history.chats.map((c) =>
+                                c.id === chatToPin.id ? { ...c, isPinned: newPinnedState } : c
+                            ),
+                        }));
+                    }
+                });
+                return newPinnedState ? "Chat pinned" : "Chat unpinned";
+            },
+            error: "Failed to update chat",
         });
     };
 
@@ -242,6 +325,32 @@ export function SidebarHistory({
 
                                 return (
                                     <div className="flex flex-col gap-6">
+                                        {groupedChats.pinned.length > 0 && (
+                                            <div>
+                                                <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
+                                                    Pinned
+                                                </div>
+                                                {groupedChats.pinned.map((chat) => (
+                                                    <ChatItem
+                                                        chat={chat as any}
+                                                        isActive={chat.id === activeChatId}
+                                                        key={chat.id}
+                                                        onDelete={(chatId) => {
+                                                            setDeleteId(chatId);
+                                                            setShowDeleteDialog(true);
+                                                        }}
+                                                        onRename={(chatId, currentTitle) => {
+                                                            setRenameId(chatId);
+                                                            setNewTitle(currentTitle);
+                                                            setShowRenameDialog(true);
+                                                        }}
+                                                        onPin={(chatToPin) => handlePin(chatToPin as any)}
+                                                        setOpenMobile={setOpenMobile}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+
                                         {groupedChats.today.length > 0 && (
                                             <div>
                                                 <div className="px-2 py-1 text-sidebar-foreground/50 text-xs">
@@ -249,13 +358,19 @@ export function SidebarHistory({
                                                 </div>
                                                 {groupedChats.today.map((chat) => (
                                                     <ChatItem
-                                                        chat={chat}
+                                                        chat={chat as any}
                                                         isActive={chat.id === activeChatId}
                                                         key={chat.id}
                                                         onDelete={(chatId) => {
                                                             setDeleteId(chatId);
                                                             setShowDeleteDialog(true);
                                                         }}
+                                                        onRename={(chatId, currentTitle) => {
+                                                            setRenameId(chatId);
+                                                            setNewTitle(currentTitle);
+                                                            setShowRenameDialog(true);
+                                                        }}
+                                                        onPin={(chatToPin) => handlePin(chatToPin as any)}
                                                         setOpenMobile={setOpenMobile}
                                                     />
                                                 ))}
@@ -269,13 +384,19 @@ export function SidebarHistory({
                                                 </div>
                                                 {groupedChats.yesterday.map((chat) => (
                                                     <ChatItem
-                                                        chat={chat}
+                                                        chat={chat as any}
                                                         isActive={chat.id === activeChatId}
                                                         key={chat.id}
                                                         onDelete={(chatId) => {
                                                             setDeleteId(chatId);
                                                             setShowDeleteDialog(true);
                                                         }}
+                                                        onRename={(chatId, currentTitle) => {
+                                                            setRenameId(chatId);
+                                                            setNewTitle(currentTitle);
+                                                            setShowRenameDialog(true);
+                                                        }}
+                                                        onPin={(chatToPin) => handlePin(chatToPin as any)}
                                                         setOpenMobile={setOpenMobile}
                                                     />
                                                 ))}
@@ -289,13 +410,19 @@ export function SidebarHistory({
                                                 </div>
                                                 {groupedChats.lastWeek.map((chat) => (
                                                     <ChatItem
-                                                        chat={chat}
+                                                        chat={chat as any}
                                                         isActive={chat.id === activeChatId}
                                                         key={chat.id}
                                                         onDelete={(chatId) => {
                                                             setDeleteId(chatId);
                                                             setShowDeleteDialog(true);
                                                         }}
+                                                        onRename={(chatId, currentTitle) => {
+                                                            setRenameId(chatId);
+                                                            setNewTitle(currentTitle);
+                                                            setShowRenameDialog(true);
+                                                        }}
+                                                        onPin={(chatToPin) => handlePin(chatToPin as any)}
                                                         setOpenMobile={setOpenMobile}
                                                     />
                                                 ))}
@@ -309,13 +436,19 @@ export function SidebarHistory({
                                                 </div>
                                                 {groupedChats.lastMonth.map((chat) => (
                                                     <ChatItem
-                                                        chat={chat}
+                                                        chat={chat as any}
                                                         isActive={chat.id === activeChatId}
                                                         key={chat.id}
                                                         onDelete={(chatId) => {
                                                             setDeleteId(chatId);
                                                             setShowDeleteDialog(true);
                                                         }}
+                                                        onRename={(chatId, currentTitle) => {
+                                                            setRenameId(chatId);
+                                                            setNewTitle(currentTitle);
+                                                            setShowRenameDialog(true);
+                                                        }}
+                                                        onPin={(chatToPin) => handlePin(chatToPin as any)}
                                                         setOpenMobile={setOpenMobile}
                                                     />
                                                 ))}
@@ -329,13 +462,19 @@ export function SidebarHistory({
                                                 </div>
                                                 {groupedChats.older.map((chat) => (
                                                     <ChatItem
-                                                        chat={chat}
+                                                        chat={chat as any}
                                                         isActive={chat.id === activeChatId}
                                                         key={chat.id}
                                                         onDelete={(chatId) => {
                                                             setDeleteId(chatId);
                                                             setShowDeleteDialog(true);
                                                         }}
+                                                        onRename={(chatId, currentTitle) => {
+                                                            setRenameId(chatId);
+                                                            setNewTitle(currentTitle);
+                                                            setShowRenameDialog(true);
+                                                        }}
+                                                        onPin={(chatToPin) => handlePin(chatToPin as any)}
                                                         setOpenMobile={setOpenMobile}
                                                     />
                                                 ))}
@@ -372,6 +511,35 @@ export function SidebarHistory({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <Dialog onOpenChange={setShowRenameDialog} open={showRenameDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Rename Chat</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Input
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            placeholder="Enter new title..."
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleRename();
+                                }
+                            }}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowRenameDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleRename}>
+                            Save
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
