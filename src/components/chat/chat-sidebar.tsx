@@ -84,7 +84,7 @@ export function ChatSidebar({
                                     OpenResource AI
                                 </span>
                             </Link>
-                            <div className="flex flex-row gap-1">
+                            <div className="mr-2 flex flex-row gap-1">
                                 {userId && (
                                     <TooltipProvider>
                                         <Tooltip>

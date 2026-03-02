@@ -12,26 +12,28 @@ function PureChatHeader({ chatId }: { chatId: string }) {
     const router = useRouter();
 
     return (
-        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-border/50 bg-background/80 px-2 py-2 backdrop-blur-sm md:px-3">
-            <SidebarToggle />
+        <header className="sticky top-0 z-20 flex items-center border-b border-border/50 bg-background/80 backdrop-blur-sm">
+            <div className="mx-auto flex h-full w-full max-w-[1152px] items-center gap-2 px-5 md:px-6 py-2">
+                <SidebarToggle />
 
-            <div className="flex items-center gap-2">
-                <SparklesIcon size={16} />
-                <span className="font-semibold text-sm">OpenResource AI</span>
+                <div className="flex items-center gap-2">
+                    <SparklesIcon size={16} />
+                    <span className="font-semibold text-sm">OpenResource AI</span>
+                </div>
+
+                <Button
+                    className="ml-auto h-8 px-2"
+                    onClick={() => {
+                        router.push("/ai/chat");
+                        router.refresh();
+                    }}
+                    variant="outline"
+                    size="sm"
+                >
+                    <PlusIcon className="size-4" />
+                    <span className="ml-1 hidden sm:inline">New Chat</span>
+                </Button>
             </div>
-
-            <Button
-                className="ml-auto h-8 px-2"
-                onClick={() => {
-                    router.push("/ai/chat");
-                    router.refresh();
-                }}
-                variant="outline"
-                size="sm"
-            >
-                <PlusIcon className="size-4" />
-                <span className="ml-1 hidden sm:inline">New Chat</span>
-            </Button>
         </header>
     );
 }
