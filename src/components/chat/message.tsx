@@ -1,7 +1,6 @@
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
-import { useState } from "react";
 import type { ChatMessage } from "@/lib/chat/types";
 import { sanitizeText } from "@/lib/chat/utils";
 import { cn } from "@/lib/utils";
@@ -15,6 +14,8 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Markdown } from "./markdown";
+import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
+import { Reasoning, ReasoningTrigger, ReasoningContent } from "@/components/ai-elements/reasoning";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Message Actions (copy, etc.)
@@ -82,6 +83,24 @@ export const PreviewMessage = ({
     message: ChatMessage;
     isLoading: boolean;
 }) => {
+    // Consolidate all reasoning parts into a single block
+    const reasoningParts = message.parts?.filter((p) => p.type === "reasoning") || [];
+    const reasoningText = reasoningParts.map((p) => (p as any).text).join("\n\n");
+    const hasReasoning = reasoningText.trim().length > 0;
+
+    // Check if reasoning is still streaming (last part is reasoning on this message)
+    const lastPart = message.parts?.at(-1);
+    const isReasoningStreaming = isLoading && lastPart?.type === "reasoning";
+
+    // Helper: check if a part is a tool invocation (static or dynamic)
+    const isToolPart = (p: any) =>
+        p.type === "dynamic-tool" || (typeof p.type === "string" && p.type.startsWith("tool-"));
+
+    // Check if there are any tool or text parts for gap styling
+    const hasContent = message.parts?.some(
+        (p) => (p.type === "text" && (p as any).text?.trim()) || isToolPart(p),
+    );
+
     return (
         <div
             className="group/message fade-in w-full animate-in duration-200"
@@ -102,32 +121,41 @@ export const PreviewMessage = ({
 
                 <div
                     className={cn("flex flex-col", {
-                        "gap-2 md:gap-4": message.parts?.some(
-                            (p) => p.type === "text" && p.text?.trim(),
-                        ),
+                        "gap-2 md:gap-4": hasContent || hasReasoning,
                         "w-full": message.role === "assistant",
                         "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
                             message.role === "user",
                     })}
                 >
+                    {/* Consolidated reasoning block (rendered before text) */}
+                    {hasReasoning && (
+                        <Reasoning isStreaming={isReasoningStreaming}>
+                            <ReasoningTrigger />
+                            <ReasoningContent>
+                                <Markdown>{reasoningText}</Markdown>
+                            </ReasoningContent>
+                        </Reasoning>
+                    )}
+
+                    {/* Render text and tool parts */}
                     {message.parts?.map((part, index) => {
                         const key = `message-${message.id}-part-${index}`;
 
+                        // Skip reasoning — already consolidated above
                         if (part.type === "reasoning") {
-                            const hasContent = part.text?.trim().length > 0;
-                            if (hasContent) {
-                                return (
-                                    <div
-                                        key={key}
-                                        className="text-xs text-muted-foreground italic border-l-2 border-border pl-3 py-1"
-                                    >
-                                        {part.text}
-                                    </div>
-                                );
-                            }
+                            return null;
                         }
 
+                        // Skip step-start boundaries
+                        if (part.type === "step-start") {
+                            return null;
+                        }
+
+                        // Text part
                         if (part.type === "text") {
+                            const textContent = (part as any).text;
+                            if (!textContent?.trim()) return null;
+
                             return (
                                 <div key={key}>
                                     <div
@@ -145,12 +173,33 @@ export const PreviewMessage = ({
                                         }
                                     >
                                         {message.role === "assistant" ? (
-                                            <Markdown>{sanitizeText(part.text)}</Markdown>
+                                            <Markdown>{sanitizeText(textContent)}</Markdown>
                                         ) : (
-                                            sanitizeText(part.text)
+                                            sanitizeText(textContent)
                                         )}
                                     </div>
                                 </div>
+                            );
+                        }
+
+                        // Tool part: handles both static (tool-{name}) and dynamic (dynamic-tool)
+                        if (isToolPart(part)) {
+                            const toolPart = part as any;
+
+                            return (
+                                <Tool key={key} defaultOpen={toolPart.state !== "output-available"}>
+                                    <ToolHeader
+                                        type={toolPart.type}
+                                        state={toolPart.state}
+                                        {...(toolPart.type === "dynamic-tool" ? { toolName: toolPart.toolName } : {})}
+                                    />
+                                    <ToolContent>
+                                        <ToolInput input={toolPart.input} />
+                                        {(toolPart.state === "output-available" || toolPart.state === "output-error") ? (
+                                            <ToolOutput output={toolPart.output} errorText={toolPart.errorText} />
+                                        ) : null}
+                                    </ToolContent>
+                                </Tool>
                             );
                         }
 

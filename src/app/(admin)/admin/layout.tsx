@@ -4,8 +4,6 @@ import { DashboardSidebar } from "@/components/admin/sidebar";
 import { DashboardHeader } from "@/components/admin/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import * as Sentry from "@sentry/nextjs";
-import { useEffect } from "react";
 
 export default function AdminLayout({
     children,
@@ -13,18 +11,6 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const { data: session } = authClient.useSession();
-
-    useEffect(() => {
-        if (session?.user) {
-            Sentry.setUser({
-                id: session.user.id,
-                email: session.user.email,
-                username: session.user.name,
-            });
-        } else {
-            Sentry.setUser(null);
-        }
-    }, [session]);
 
     return (
         <SidebarProvider className="bg-sidebar">

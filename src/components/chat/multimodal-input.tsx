@@ -3,7 +3,7 @@
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import equal from "fast-deep-equal";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, GlobeIcon } from "lucide-react";
 import {
     type ChangeEvent,
     type Dispatch,
@@ -41,6 +41,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 function setCookie(name: string, value: string) {
     const maxAge = 60 * 60 * 24 * 365; // 1 year
@@ -59,6 +60,8 @@ function PureMultimodalInput({
     className,
     selectedModelId,
     onModelChange,
+    allowSearch,
+    setAllowSearch,
 }: {
     chatId: string;
     input: string;
@@ -71,6 +74,8 @@ function PureMultimodalInput({
     className?: string;
     selectedModelId: string;
     onModelChange?: (modelId: string) => void;
+    allowSearch: boolean;
+    setAllowSearch: (value: boolean) => void;
 }) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -160,6 +165,31 @@ function PureMultimodalInput({
                 </div>
                 <PromptInputToolbar className="border-top-0! border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
                     <PromptInputTools className="gap-0 sm:gap-0.5">
+                        <TooltipProvider>
+                            <Tooltip delayDuration={300}>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setAllowSearch(!allowSearch)}
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors",
+                                            allowSearch
+                                                ? "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
+                                                : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                                        )}
+                                    >
+                                        <GlobeIcon className="h-4 w-4" />
+                                        <span className="sr-only">Toggle web search</span>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Web Search {allowSearch ? "Enabled" : "Disabled"}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
                         <ModelSelectorCompact
                             onModelChange={onModelChange}
                             selectedModelId={selectedModelId}
@@ -194,6 +224,9 @@ export const MultimodalInput = memo(
             return false;
         }
         if (prevProps.selectedModelId !== nextProps.selectedModelId) {
+            return false;
+        }
+        if (prevProps.allowSearch !== nextProps.allowSearch) {
             return false;
         }
         if (!equal(prevProps.messages, nextProps.messages)) {

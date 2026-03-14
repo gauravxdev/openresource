@@ -56,7 +56,12 @@ export default function Navbar() {
     const [searchResults, setSearchResults] = React.useState<ResourceWithCategories[]>([])
     const [isSearching, setIsSearching] = React.useState(false)
     const [browseOpen, setBrowseOpen] = React.useState(false)
+    const [isMounted, setIsMounted] = React.useState(false)
     const { data: session, isPending, refetch: refetchSession } = authClient.useSession()
+
+    React.useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     // Local state for avatar image to enable instant updates
     const [avatarImage, setAvatarImage] = React.useState<string | null | undefined>(session?.user?.image)
@@ -300,7 +305,7 @@ export default function Navbar() {
                         </Button>
 
                         {/* Auth Buttons */}
-                        {isPending ? (
+                        {(!isMounted || isPending) ? (
                             <div className="h-9 w-16 animate-pulse rounded-md bg-muted" />
                         ) : session ? (
                             <DropdownMenu>

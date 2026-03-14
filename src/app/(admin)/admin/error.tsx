@@ -1,7 +1,6 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
-import { useEffect } from "react";
+
 
 export default function AdminError({
     error,
@@ -10,11 +9,6 @@ export default function AdminError({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
-    useEffect(() => {
-        // Log the error to Sentry
-        Sentry.captureException(error);
-    }, [error]);
-
     return (
         <div className="flex px-4 flex-col items-center justify-center min-h-[400px] text-center">
             <h2 className="text-2xl font-bold tracking-tight mb-4">Something went wrong in the Admin area!</h2>

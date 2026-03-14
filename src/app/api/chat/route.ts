@@ -21,6 +21,7 @@ import {
 } from "@/lib/chat/queries";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { exaSearch, tavilySearch, serperSearch } from "@/lib/chat/tools";
 
 export const maxDuration = 60;
 
@@ -45,6 +46,7 @@ const postRequestBodySchema = z.object({
     id: z.string(),
     message: userMessageSchema.optional(),
     selectedChatModel: z.string(),
+    allowSearch: z.boolean().default(false),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { id, message, selectedChatModel } = requestBody;
+        const { id, message, selectedChatModel, allowSearch } = requestBody;
 
         // Auth check
         const headersList = await headers();
@@ -108,22 +110,32 @@ export async function POST(request: Request) {
 
         // Load ALL previous messages from DB for full conversation context
         const allDbMessages = await getMessagesByChatId({ id });
-        const uiMessages = allDbMessages.map((msg) => {
-            const partsArray = msg.parts as Array<{ type: string; text?: string }>;
-            const content = partsArray
-                ? partsArray
-                    .filter((p) => p.type === "text")
-                    .map((p) => p.text)
-                    .join("")
-                : "";
+        const uiMessages = allDbMessages
+            .filter((msg) => {
+                // Skip assistant messages that contain tool-call parts
+                // (tool results aren't persisted, so they'd cause MissingToolResultsError)
+                const partsArray = msg.parts as Array<{ type: string }>;
+                if (msg.role === "assistant" && partsArray?.some((p) => p.type === "tool-call")) {
+                    return false;
+                }
+                return true;
+            })
+            .map((msg) => {
+                const partsArray = msg.parts as Array<{ type: string; text?: string }>;
+                const content = partsArray
+                    ? partsArray
+                        .filter((p) => p.type === "text")
+                        .map((p) => p.text)
+                        .join("")
+                    : "";
 
-            return {
-                id: msg.id,
-                role: msg.role as "user" | "assistant",
-                content,
-                parts: partsArray,
-            };
-        });
+                return {
+                    id: msg.id,
+                    role: msg.role as "user" | "assistant",
+                    content,
+                    parts: partsArray,
+                };
+            });
         const modelMessages = await convertToModelMessages(uiMessages);
 
         const stream = createUIMessageStream({
@@ -132,14 +144,26 @@ export async function POST(request: Request) {
                     model: getLanguageModel(selectedChatModel),
                     system: systemPrompt({ selectedChatModel }),
                     messages: modelMessages,
+                    tools: allowSearch ? {
+                        exaSearch,
+                        tavilySearch,
+                        serperSearch,
+                    } : undefined,
+                    maxSteps: allowSearch ? 5 : 1,
+                    toolCallStreaming: true,
+                    onChunk: ({ chunk }: { chunk: any }) => {
+                        if (chunk.type === 'tool-call' || chunk.type === 'tool-call-streaming-start' || chunk.type === 'tool-call-delta') {
+                            console.log("[onChunk]", chunk.type, JSON.stringify(chunk));
+                        }
+                    },
                     onFinish: async ({ response }) => {
-                        // Save assistant message to DB
+                        // Save all assistant messages to DB (multi-step tool calling produces multiple)
                         try {
-                            const assistantMessage = response.messages.find(
+                            const assistantMessages = response.messages.filter(
                                 (m) => m.role === "assistant",
                             );
 
-                            if (assistantMessage) {
+                            for (const assistantMessage of assistantMessages) {
                                 const assistantParts = [];
                                 if (typeof assistantMessage.content === "string") {
                                     assistantParts.push({ type: "text", text: assistantMessage.content });
@@ -147,21 +171,31 @@ export async function POST(request: Request) {
                                     for (const part of assistantMessage.content) {
                                         if (part.type === "text") {
                                             assistantParts.push({ type: "text", text: part.text });
+                                        } else if (part.type === "tool-call") {
+                                            assistantParts.push({
+                                                type: "tool-call",
+                                                toolCallId: part.toolCallId,
+                                                toolName: part.toolName,
+                                                args: part.args,
+                                            });
                                         }
                                     }
                                 }
 
-                                await saveMessages({
-                                    messages: [
-                                        {
-                                            id: generateUUID(),
-                                            chatId: id,
-                                            role: "assistant",
-                                            parts: assistantParts,
-                                            createdAt: new Date(),
-                                        },
-                                    ],
-                                });
+                                // Only save if there's meaningful content
+                                if (assistantParts.length > 0) {
+                                    await saveMessages({
+                                        messages: [
+                                            {
+                                                id: generateUUID(),
+                                                chatId: id,
+                                                role: "assistant",
+                                                parts: assistantParts,
+                                                createdAt: new Date(),
+                                            },
+                                        ],
+                                    });
+                                }
                             }
                         } catch (error) {
                             console.error("Failed to save assistant message:", error);

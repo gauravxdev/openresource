@@ -31,7 +31,8 @@ Your task is to analyze the provided repository signals and generate a structure
 ## Output Format
 
 ### 1. Short Description
-- A concise 1 sentence summary for display in cards/lists.
+- A concise 1-2 sentence summary for display in cards/lists.
+- **Length**: Maximum 25 words. Keep it brief but descriptive.
 - Example: "Native terminal UI AI coding agent with LSP support, multi-session capability, shareable links, and compatibility with 75+ LLM providers."
 - No markdown formatting.
 
@@ -41,16 +42,16 @@ Your task is to analyze the provided repository signals and generate a structure
 - Max 100 characters.
 
 ### 3. Long Description (MDX)
-- A concise, high-impact overview of the project.
-- **Length**: 80-120 words.
+- A detailed, high-impact overview of the project.
+- **Length**: 200-300 words.
 - **Format**: Use MDX features like bolding and lists. Do *not* use h1 (#) or h2 (##). Start with h3 (###) if needed.
 - **Tone**: Professional, technical, and objective.
 
 **Structure Guide:**
-1.  **Overview**: A single paragraph (2-3 sentences) defining the project and its core value.
-2.  **Key Features**: A bulleted list of 3-4 essential capabilities.
-    - Format: "- **Feature**: Brief explanation"
-3.  **Use Case**: One sentence on who it's for.
+1.  **Overview**: 2 paragraphs defining the project in detail, its background, and its core value.
+2.  **Key Features**: A detailed bulleted list of 5-7 essential capabilities.
+    - Format: "- **Feature**: Detailed explanation of how it works and its benefits"
+3.  **Use Case**: 2-3 sentences on who it's for and when to use it.
 
 **Style Rules:**
 - Use **bold** for key technologies.
@@ -67,7 +68,7 @@ Your task is to analyze the provided repository signals and generate a structure
 `;
 
 const descriptionSchema = z.object({
-    shortDescription: z.string().describe("A concise 1-2 sentence description."),
+    shortDescription: z.string().describe("A concise 1-2 sentence description. Max 25 words."),
     oneLiner: z.string().describe("A punchy 1-sentence one-liner description."),
     longDescription: z.string().describe("A detailed description in MDX format with headings and formatting."),
     categories: z.array(z.string()).describe("3-5 relevant categories for the resource."),

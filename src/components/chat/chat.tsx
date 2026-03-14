@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { unstable_serialize } from "swr/infinite";
 import { getChatHistoryPaginationKey } from "./sidebar-history";
+import { useLocalStorage } from "usehooks-ts";
 
 export function Chat({
     id,
@@ -28,11 +29,22 @@ export function Chat({
     const [input, setInput] = useState<string>("");
     const [currentModelId, setCurrentModelId] = useState(initialChatModel);
     const currentModelIdRef = useRef(currentModelId);
+
+    // Web Search Toggle State
+    const [allowSearch, setAllowSearch] = useLocalStorage("allow-search", false, {
+        initializeWithValue: false,
+    });
+    const allowSearchRef = useRef(allowSearch);
+
     const { mutate } = useSWRConfig();
 
     useEffect(() => {
         currentModelIdRef.current = currentModelId;
     }, [currentModelId]);
+
+    useEffect(() => {
+        allowSearchRef.current = allowSearch;
+    }, [allowSearch]);
 
     const {
         messages,
@@ -55,6 +67,7 @@ export function Chat({
                         id: request.id,
                         message: lastMessage,
                         selectedChatModel: currentModelIdRef.current,
+                        allowSearch: allowSearchRef.current,
                         ...request.body,
                     },
                 };
@@ -105,6 +118,8 @@ export function Chat({
                     setMessages={setMessages}
                     status={status}
                     stop={stop}
+                    allowSearch={allowSearch}
+                    setAllowSearch={setAllowSearch}
                 />
             </div>
         </div>

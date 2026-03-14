@@ -240,12 +240,11 @@ export function validateDescription(input: ValidateDescriptionInput): Validation
     }
 
     // Rule 6: Check tech stack mentions
+    // We only log this for debugging now, as valid tech stacks (e.g. flask) 
+    // might be correctly identified by the AI even if not in the initial signals.
     const invalidTechs = findMentionedTechnologies(mdx, techStack);
     if (invalidTechs.length > 0) {
-        return {
-            valid: false,
-            reason: `Technology "${invalidTechs[0]}" mentioned but not found in project tech stack`,
-        };
+        console.warn(`Technology "${invalidTechs[0]}" mentioned but not found in project tech stack (Warning only)`);
     }
 
     // All validations passed

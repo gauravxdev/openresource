@@ -186,7 +186,7 @@ export function DashboardSidebar({
                                 <span className="text-sm font-bold">S</span>
                             </div>
                             <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
-                                <span className="text-sm font-medium">Square UI</span>
+                                <span className="text-sm font-medium">Admin Panel</span>
                                 <ChevronsUpDown className="size-3 text-muted-foreground" />
                             </div>
                         </button>

@@ -102,7 +102,7 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
         </div>
 
         <p className="text-[0.95rem] leading-relaxed text-neutral-600 dark:text-muted-foreground">
-          {app.description.length > 85 ? `${app.description.slice(0, 85)}...` : app.description}
+          {app.description.length > 60 ? `${app.description.slice(0, 60)}...` : app.description}
         </p>
 
         {app.tags?.length ? (
@@ -118,24 +118,9 @@ export const AndroidAppCard = ({ app }: AndroidAppCardProps) => {
           </div>
         ) : null}
 
-        <div className="mt-1 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-yellow-400" />
-              <span className="font-mono text-sm font-semibold text-neutral-900 dark:text-card-foreground">{app.stars}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Download className="h-4 w-4 text-green-400" />
-              <span className="font-mono text-sm font-semibold text-neutral-900 dark:text-card-foreground">{app.downloads}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4 text-neutral-400" />
-              <span className="font-mono text-sm font-semibold text-neutral-900 dark:text-card-foreground">{app.lastUpdated}</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="mt-2">
+
+        <div className="mt-auto pt-2">
           {app.repositoryUrl ? (
             <a
               href={`${app.repositoryUrl}/releases/latest`}

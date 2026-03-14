@@ -93,8 +93,8 @@ const LineSpan = ({
     {keyedLine.tokens.length === 0
       ? "\n"
       : keyedLine.tokens.map(({ token, key }) => (
-          <TokenSpan key={key} token={token} />
-        ))}
+        <TokenSpan key={key} token={token} />
+      ))}
   </span>
 );
 
@@ -159,15 +159,15 @@ const getHighlighter = (
 const createRawTokens = (code: string): TokenizedCode => ({
   bg: "transparent",
   fg: "inherit",
-  tokens: code.split("\n").map((line) =>
+  tokens: (code || "").split("\n").map((line) =>
     line === ""
       ? []
       : [
-          {
-            color: "inherit",
-            content: line,
-          } as ThemedToken,
-        ]
+        {
+          color: "inherit",
+          content: line,
+        } as ThemedToken,
+      ]
   ),
 });
 

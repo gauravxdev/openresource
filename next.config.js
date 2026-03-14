@@ -1,4 +1,4 @@
-import { withSentryConfig } from "@sentry/nextjs";
+
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
@@ -32,11 +32,4 @@ const config = {
   skipTrailingSlashRedirect: true,
 };
 
-export default withSentryConfig(config, {
-  silent: !process.env.CI,
-  telemetry: false,
-  widenClientFileUpload: true,
-  hideSourceMaps: true,
-  disableLogger: true,
-  automaticVercelMonitors: false,
-});
+export default config;

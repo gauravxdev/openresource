@@ -21,6 +21,10 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     // Mistral AI
     MISTRAL_API_KEY: z.string(),
+    // Search APIs
+    EXA_API_KEY: z.string().optional(),
+    TAVILY_API_KEY: z.string().optional(),
+    SERPER_API_KEY: z.string().optional(),
   },
 
   /**
@@ -49,6 +53,9 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     MISTRAL_API_KEY: process.env.MISTRAL_API_KEY,
+    EXA_API_KEY: process.env.EXA_API_KEY,
+    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
+    SERPER_API_KEY: process.env.SERPER_API_KEY,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,

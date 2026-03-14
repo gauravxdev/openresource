@@ -15,3 +15,5 @@ const globalForPrisma = globalThis as unknown as {
 export const db = globalForPrisma.cachedPrisma ?? createPrismaClient();
 
 if (env.NODE_ENV !== "production") globalForPrisma.cachedPrisma = db;
+
+// trigger Turbopack recompile
