@@ -43,10 +43,14 @@ export default async function middleware(request: NextRequest) {
             return NextResponse.redirect(signInUrl);
         }
 
-        const allowedRoles = roleBasedRoutes[pathname];
-        if (allowedRoles) {
-            const userRole = sessionData.user.role!
-            if (!allowedRoles.includes(userRole)) {
+        const matchedRoute = Object.keys(roleBasedRoutes).find(
+            (route) => pathname === route || pathname.startsWith(`${route}/`)
+        );
+
+        if (matchedRoute) {
+            const allowedRoles = roleBasedRoutes[matchedRoute];
+            const userRole = sessionData.user.role || "user";
+            if (allowedRoles && !allowedRoles.includes(userRole)) {
                 return NextResponse.redirect(new URL('/unauthorized', request.url));
             }
         }

@@ -18,6 +18,11 @@ export const auth = betterAuth({
                 required: false,
                 fieldName: "image",
             },
+            role: {
+                type: "string",
+                required: false,
+                defaultValue: "user",
+            },
         },
     },
     session: {

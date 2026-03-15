@@ -16,11 +16,13 @@ model User {
   updatedAt     DateTime       @updatedAt
   emailVerified Boolean        @default(false)
   image         String?
+  role          String         @default("user")
   lastLoginAt   DateTime?
   accounts      Account[]
   loginHistory  LoginHistory[]
   sessions      Session[]
   chats         Chat[]
+  resources     Resource[]
 
   @@index([email])
   @@map("user")
@@ -109,6 +111,8 @@ model Resource {
   slug                String     @unique
   logo                String?
   oneLiner            String?
+  userId              String?
+  user                User?      @relation(fields: [userId], references: [id])
   categories          Category[] @relation("CategoryToResource")
 
   @@map("resource")

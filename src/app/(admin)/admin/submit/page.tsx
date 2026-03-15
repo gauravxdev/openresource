@@ -1,4 +1,4 @@
-import { SubmitForm } from "@/components/admin/submit-form";
+import { SubmitForm } from "@/components/submit-form";
 
 export default function AdminSubmitPage() {
     return <SubmitForm />;

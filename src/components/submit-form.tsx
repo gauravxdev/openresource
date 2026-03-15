@@ -27,7 +27,7 @@ import { submitResource } from "@/actions/submit";
 import { getCategories, addCategory, deleteCategory } from "@/actions/categories";
 import { api } from "@/trpc/react";
 import { Plus, Trash2, Settings2, Sparkles, RefreshCw } from "lucide-react";
-import { ImageUpload } from "./image-upload";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
 import { MultiSelect, type CategoryOption } from "@/components/ui/multi-select";
 import {
@@ -172,6 +172,7 @@ export function SubmitForm({ initialData, mode = "admin", onSuccess }: SubmitFor
     const onSubmit = (data: FormData) => {
         startTransition(async () => {
             const formData = new FormData();
+            formData.append("mode", mode);
             Object.entries(data).forEach(([key, value]) => {
                 if (key === "categories") {
                     formData.append(key, JSON.stringify(value));

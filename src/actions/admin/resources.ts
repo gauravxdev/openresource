@@ -69,6 +69,14 @@ export async function getAdminResources(params?: {
                 orderBy,
                 skip,
                 take: limit,
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true
+                        }
+                    }
+                }
             }),
             db.resource.count({ where }),
         ]);
@@ -134,6 +142,25 @@ export async function updateAdminResource(id: string, data: Partial<z.infer<type
     } catch (error) {
         console.error("[Admin Resources] Update Error:", error);
         return { success: false, error: "Failed to update resource" };
+    }
+}
+
+export async function updateAdminResourceStatus(id: string, status: "PENDING" | "APPROVED" | "REJECTED") {
+    try {
+        const resource = await db.resource.update({
+            where: { id },
+            data: { status },
+        });
+
+        revalidatePath("/admin/resources");
+        revalidatePath("/home");
+        revalidatePath("/github-repos");
+        revalidatePath("/android-apps");
+
+        return { success: true, data: resource };
+    } catch (error) {
+        console.error("[Admin Resources] Update Status Error:", error);
+        return { success: false, error: "Failed to update resource status" };
     }
 }
 

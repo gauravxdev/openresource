@@ -6,7 +6,7 @@ import { RecentResourcesTable } from "./recent-resources-table";
 import { RecentActivityList } from "./recent-activity-list";
 
 import { useDashboardStore } from "@/store/dashboard-store";
-import { SubmitForm } from "./submit-form";
+import { SubmitForm } from "@/components/submit-form";
 
 export function DashboardContent({ data }: { data: any }) {
     const { currentView } = useDashboardStore();

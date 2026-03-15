@@ -28,12 +28,13 @@ import {
     Globe
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { deleteAdminResource } from "@/actions/admin/resources";
+import { deleteAdminResource, updateAdminResourceStatus } from "@/actions/admin/resources";
 import { toast } from "sonner";
 import Link from "next/link";
 
 export function ResourcesTable({ resources }: { resources: any[] }) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this resource?")) return;
@@ -49,12 +50,25 @@ export function ResourcesTable({ resources }: { resources: any[] }) {
         }
     };
 
+    const handleStatusUpdate = async (id: string, status: "PENDING" | "APPROVED" | "REJECTED") => {
+        setIsUpdatingStatus(id);
+        const result = await updateAdminResourceStatus(id, status);
+        setIsUpdatingStatus(null);
+        
+        if (result.success) {
+            toast.success(`Resource status updated to ${status}`);
+        } else {
+            toast.error(result.error || "Failed to update resource status");
+        }
+    };
+
     return (
         <div className="rounded-md border-none bg-card/30">
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
+                        <TableHead>Submitted By</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Added</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -69,6 +83,12 @@ export function ResourcesTable({ resources }: { resources: any[] }) {
                                     <span className="text-xs text-muted-foreground font-normal line-clamp-1">
                                         {resource.slug}
                                     </span>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-medium">{resource.user?.name || "Admin / Unknown"}</span>
+                                    <span className="text-xs text-muted-foreground">{resource.user?.email || "No email"}</span>
                                 </div>
                             </TableCell>
                             <TableCell>
@@ -105,6 +125,26 @@ export function ResourcesTable({ resources }: { resources: any[] }) {
                                                 Edit
                                             </Link>
                                         </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem 
+                                            onClick={() => handleStatusUpdate(resource.id, "APPROVED")}
+                                            disabled={isUpdatingStatus === resource.id || resource.status === "APPROVED"}
+                                        >
+                                            <span className="text-green-600">Approve</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                            onClick={() => handleStatusUpdate(resource.id, "PENDING")}
+                                            disabled={isUpdatingStatus === resource.id || resource.status === "PENDING"}
+                                        >
+                                            <span className="text-yellow-600">Mark Pending</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                            onClick={() => handleStatusUpdate(resource.id, "REJECTED")}
+                                            disabled={isUpdatingStatus === resource.id || resource.status === "REJECTED"}
+                                        >
+                                            <span className="text-red-600">Reject</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             className="text-destructive focus:text-destructive"
                                             disabled={isDeleting === resource.id}

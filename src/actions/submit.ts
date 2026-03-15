@@ -92,6 +92,25 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
         return (value && value !== "") ? (value as string) : undefined;
     };
 
+    const mode = get("mode") === "admin" ? "admin" : "public";
+    let userId: string | undefined = undefined;
+
+    if (mode === "public") {
+        const { headers } = await import("next/headers");
+        const { auth } = await import("@/lib/auth");
+        const session = await auth.api.getSession({
+            headers: await headers()
+        });
+
+        if (!session || !session.session) {
+            return {
+                success: false,
+                message: "You must be logged in to submit a resource."
+            };
+        }
+        userId = session.user.id;
+    }
+
     const rawData = {
         id: get("id"),
         name: get("name"),
@@ -111,6 +130,8 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
         lastCommit: get("lastCommit"),
         repositoryCreatedAt: get("repositoryCreatedAt"),
         license: get("license"),
+        mode,
+        userId,
     };
 
     try {
@@ -215,8 +236,9 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
                     lastCommit: stats.lastCommit ?? null,
                     repositoryCreatedAt: stats.repositoryCreatedAt ?? null,
                     license: stats.license ?? null,
-                    status: "APPROVED", // Since this is the admin submit page
-                    addedBy: "ADMIN",
+                    status: rawData.mode === "admin" ? "APPROVED" : "PENDING",
+                    addedBy: rawData.mode === "admin" ? "ADMIN" : "USER",
+                    userId: rawData.userId ?? null,
                     categories: {
                         connectOrCreate: validatedData.categories.map((cat) => ({
                             where: { name: cat },
