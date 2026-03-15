@@ -132,28 +132,6 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                             {resource.shortDescription}
                                         </p>
                                     )}
-                                    
-                                    {/* Added by Section */}
-                                    {resource.user && (
-                                        <div className="mt-3 flex items-center gap-2">
-                                            <span className="text-sm text-muted-foreground">Added by</span>
-                                            <Link 
-                                                href={resource.user.username ? `/u/${resource.user.username}` : "#"} 
-                                                className="flex items-center gap-1.5 group/user"
-                                            >
-                                                {resource.user.image && (
-                                                    <img 
-                                                        src={resource.user.image} 
-                                                        className="w-5 h-5 rounded-full border border-border" 
-                                                        alt={resource.user.name || "User"} 
-                                                    />
-                                                )}
-                                                <span className="text-sm font-medium text-primary hover:underline underline-offset-4">
-                                                    {resource.user.username ? `@${resource.user.username}` : (resource.user.name || "Anonymous")}
-                                                </span>
-                                            </Link>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
 
@@ -208,6 +186,41 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                 ))}
                             </div>
                         </div>
+
+                        {/* Added by Section (Bottom) */}
+                        {resource.user && (
+                            <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-muted-foreground font-medium">Contributed by</span>
+                                    <Link 
+                                        href={resource.user.username ? `/u/${resource.user.username}` : "#"} 
+                                        className="flex items-center gap-2 group/user hover:bg-muted/50 p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-border"
+                                    >
+                                        {resource.user.image ? (
+                                            <img 
+                                                src={resource.user.image} 
+                                                className="w-8 h-8 rounded-full border border-border shadow-sm group-hover/user:scale-105 transition-transform" 
+                                                alt={resource.user.name || "User"} 
+                                            />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs border border-primary/20">
+                                                {resource.user.name?.[0] || resource.user.username?.[0]?.toUpperCase() || "U"}
+                                            </div>
+                                        )}
+                                        <div className="flex flex-col -space-y-0.5">
+                                            {resource.user.name && (
+                                                <span className="text-sm font-semibold text-foreground group-hover/user:text-primary transition-colors">
+                                                    {resource.user.name}
+                                                </span>
+                                            )}
+                                            <span className={resource.user.name ? "text-xs text-muted-foreground" : "text-sm font-semibold text-foreground group-hover/user:text-primary transition-colors"}>
+                                                {resource.user.username ? `@${resource.user.username}` : "Anonymous"}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Sidebar */}
