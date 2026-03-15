@@ -6,18 +6,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Calendar, Shield, Loader2, Camera, Trash2, Pencil, Save, X } from "lucide-react";
+import { User, Mail, Calendar, Shield, Loader2, Camera, Trash2, Pencil, Save, X, AtSign } from "lucide-react";
 import { updateUserImage, updateUserProfile } from "@/actions/user";
 import { uploadImage } from "@/actions/upload";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { UsernameInput } from "@/components/username-input";
+import { updateUsername } from "@/actions/user";
 
 interface ProfileFormProps {
     user: {
         id: string;
         name: string | null;
+        username: string | null;
         email: string;
         image: string | null;
         emailVerified: boolean;
@@ -32,6 +35,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
     const [imageUrl, setImageUrl] = React.useState<string | null>(user.image);
     // Track user name
     const [name, setName] = React.useState(user.name ?? "");
+    const [username, setUsername] = React.useState(user.username ?? "");
+    const [isUsernameValid, setIsUsernameValid] = React.useState(user.username ? true : false);
 
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -131,16 +136,26 @@ export function ProfileForm({ user }: ProfileFormProps) {
     };
 
     const handleSaveChanges = async () => {
+        if (username && username.toLowerCase() !== user.username?.toLowerCase() && !isUsernameValid) {
+            toast.error("Please provide a valid unique username.");
+            return;
+        }
+
         try {
             setIsUpdating(true);
-            const result = await updateUserProfile({ name });
+            const nameResult = await updateUserProfile({ name });
+            let usernameResult = { success: true, message: "" };
 
-            if (result.success) {
-                toast.success(result.message);
+            if (username && username.toLowerCase() !== user.username?.toLowerCase() && isUsernameValid) {
+                usernameResult = await updateUsername(username);
+            }
+
+            if (nameResult.success && usernameResult.success) {
+                toast.success(usernameResult.message ? `Profile and ${usernameResult.message}` : nameResult.message);
                 setIsEditing(false);
                 router.refresh();
             } else {
-                toast.error(result.message);
+                toast.error(usernameResult.success ? nameResult.message : usernameResult.message);
             }
         } catch (error) {
             toast.error("Failed to update profile");
@@ -153,6 +168,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         if (isEditing) {
             // Cancel editing
             setName(user.name ?? "");
+            setUsername(user.username ?? "");
             setIsEditing(false);
         } else {
             // Start editing
@@ -255,6 +271,26 @@ export function ProfileForm({ user }: ProfileFormProps) {
                                 />
                             ) : (
                                 <p className="font-semibold text-foreground text-lg">{name || "Not set"}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/20 border border-border/40 hover:bg-muted/40 hover:border-border/60 transition-all duration-200 group">
+                        <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                            <AtSign className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mb-0.5">Username</p>
+                            {isEditing ? (
+                                <UsernameInput
+                                    value={username}
+                                    onChange={setUsername}
+                                    onValidityChange={setIsUsernameValid}
+                                    initialUsername={user.username}
+                                    className="mt-1"
+                                />
+                            ) : (
+                                <p className="font-semibold text-foreground text-lg">{username ? `@${username}` : "Not set"}</p>
                             )}
                         </div>
                     </div>

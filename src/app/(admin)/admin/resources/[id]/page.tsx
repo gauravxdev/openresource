@@ -1,5 +1,5 @@
 import { getAdminResourceById } from "@/actions/admin/resources";
-import { SubmitForm } from "@/components/admin/submit-form";
+import { SubmitForm } from "@/components/submit-form";
 import { notFound } from "next/navigation";
 
 interface EditResourcePageProps {

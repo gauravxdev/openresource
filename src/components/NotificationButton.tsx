@@ -15,7 +15,7 @@ const NotificationButton = ({ count = 0 }: NotificationButtonProps) => {
       >
         <Sparkles className="h-4 w-4" />
         <span>
-          <strong className="font-semibold text-yellow-700 dark:text-yellow-300">{count}</strong> new tools added
+          <strong className="font-semibold text-yellow-700 dark:text-yellow-300">{count}</strong> new resources added
         </span>
         <ArrowRight className="h-4 w-4 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5" />
       </Link>

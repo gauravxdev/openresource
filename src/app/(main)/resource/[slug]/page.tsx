@@ -13,6 +13,13 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         where: { slug },
         include: {
             categories: true,
+            user: {
+                select: {
+                    name: true,
+                    username: true,
+                    image: true,
+                }
+            }
         },
     });
 

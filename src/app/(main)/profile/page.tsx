@@ -20,12 +20,14 @@ export default async function ProfilePage() {
         select: {
             id: true,
             name: true,
+            username: true,
             email: true,
             image: true,
             emailVerified: true,
             createdAt: true,
         },
     })
+
 
     if (!user) {
         redirect("/sign-in")

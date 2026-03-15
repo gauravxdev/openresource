@@ -23,6 +23,11 @@ export const auth = betterAuth({
                 required: false,
                 defaultValue: "user",
             },
+            username: {
+                type: "string",
+                required: false,
+                fieldName: "username",
+            },
         },
     },
     session: {

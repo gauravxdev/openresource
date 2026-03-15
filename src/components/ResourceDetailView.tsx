@@ -35,6 +35,11 @@ interface Resource {
     logo?: string | null;
     createdAt: Date;
     updatedAt: Date;
+    user?: {
+        name: string | null;
+        username: string | null;
+        image: string | null;
+    } | null;
 }
 
 interface ResourceDetailViewProps {
@@ -126,6 +131,28 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                         <p className="mt-2 text-lg text-muted-foreground">
                                             {resource.shortDescription}
                                         </p>
+                                    )}
+                                    
+                                    {/* Added by Section */}
+                                    {resource.user && (
+                                        <div className="mt-3 flex items-center gap-2">
+                                            <span className="text-sm text-muted-foreground">Added by</span>
+                                            <Link 
+                                                href={resource.user.username ? `/u/${resource.user.username}` : "#"} 
+                                                className="flex items-center gap-1.5 group/user"
+                                            >
+                                                {resource.user.image && (
+                                                    <img 
+                                                        src={resource.user.image} 
+                                                        className="w-5 h-5 rounded-full border border-border" 
+                                                        alt={resource.user.name || "User"} 
+                                                    />
+                                                )}
+                                                <span className="text-sm font-medium text-primary hover:underline underline-offset-4">
+                                                    {resource.user.username ? `@${resource.user.username}` : (resource.user.name || "Anonymous")}
+                                                </span>
+                                            </Link>
+                                        </div>
                                     )}
                                 </div>
                             </div>
