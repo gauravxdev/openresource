@@ -25,16 +25,21 @@ import {
     Trash2,
     ExternalLink,
     Github,
-    Globe
+    Globe,
+    Pencil,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { deleteAdminResource, updateAdminResourceStatus } from "@/actions/admin/resources";
 import { toast } from "sonner";
 import Link from "next/link";
+import { AdminEditResourceDialog } from "./edit-resource-dialog";
 
 export function ResourcesTable({ resources }: { resources: any[] }) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
+    const [editingResource, setEditingResource] = useState<any | null>(null);
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this resource?")) return;
@@ -119,11 +124,9 @@ export function ResourcesTable({ resources }: { resources: any[] }) {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                        <DropdownMenuItem asChild>
-                                            <Link href={`/admin/resources/${resource.id}`}>
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Edit
-                                            </Link>
+                                        <DropdownMenuItem onClick={() => setEditingResource(resource)}>
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            Edit
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem 
@@ -182,6 +185,14 @@ export function ResourcesTable({ resources }: { resources: any[] }) {
                     )}
                 </TableBody>
             </Table>
+
+            {editingResource && (
+                <AdminEditResourceDialog
+                    resource={editingResource}
+                    open={!!editingResource}
+                    onOpenChange={(open) => !open && setEditingResource(null)}
+                />
+            )}
         </div>
     );
 }

@@ -331,7 +331,7 @@ export function ProfileForm({ user, resourceStats }: ProfileFormProps) {
             </CardContent>
 
             {/* Contributor Dashboard Section */}
-            {(user.role === "contributor" || user.role === "admin") && (
+            {user.role === "contributor" && (
                 <>
                     <Separator className="my-8" />
                     <CardContent className="space-y-5">

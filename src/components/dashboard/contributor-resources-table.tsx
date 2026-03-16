@@ -25,15 +25,18 @@ import {
     ExternalLink,
     Github,
     Globe,
+    Pencil,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { deleteContributorResource } from "@/actions/contributor/resources";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { EditResourceDialog } from "./edit-resource-dialog";
 
 export function ContributorResourcesTable({ resources }: { resources: any[] }) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [editingResource, setEditingResource] = useState<any | null>(null);
     const router = useRouter();
 
     const handleDelete = async (id: string) => {
@@ -107,6 +110,10 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
                                                 View Resource
                                             </Link>
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setEditingResource(resource)}>
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            Edit
+                                        </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem asChild>
                                             <a href={resource.repositoryUrl} target="_blank" rel="noopener noreferrer">
@@ -145,6 +152,14 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
                     )}
                 </TableBody>
             </Table>
+
+            {editingResource && (
+                <EditResourceDialog
+                    resource={editingResource}
+                    open={!!editingResource}
+                    onOpenChange={(open) => !open && setEditingResource(null)}
+                />
+            )}
         </div>
     );
 }

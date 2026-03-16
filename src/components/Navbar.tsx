@@ -339,7 +339,7 @@ export default function Navbar() {
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
-                                    {((session.user as any).role === "contributor" || (session.user as any).role === "admin") && (
+                                    {(session.user as any).role === "contributor" && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/dashboard" className="flex items-center gap-2">
                                                 <LayoutDashboard className="h-4 w-4" />

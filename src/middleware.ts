@@ -13,7 +13,7 @@ const roleBasedRoutes: Record<string, string[]> = {
     "/admin": ["admin"],
     "/user": ["user"],
     "/contributor": ["contributor", "admin"],
-    "/dashboard": ["admin", "contributor"],
+    "/dashboard": ["contributor", "admin"],
 }
 
 export default async function middleware(request: NextRequest) {
