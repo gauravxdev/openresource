@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
     Moon, Sun, Menu, X, LogIn, LogOut, User, Search, Plus, ChevronDown,
-    Clock, Server, Rocket, ArrowLeftRight, FolderOpen, Layers, Scale
+    Clock, Server, Rocket, ArrowLeftRight, FolderOpen, Layers, Scale,
+    Shield, LayoutDashboard
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -330,6 +331,22 @@ export default function Navbar() {
                                             Profile
                                         </Link>
                                     </DropdownMenuItem>
+                                    {(session.user as any).role === "admin" && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin" className="flex items-center gap-2">
+                                                <Shield className="h-4 w-4" />
+                                                Admin Panel
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
+                                    {((session.user as any).role === "contributor" || (session.user as any).role === "admin") && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/dashboard" className="flex items-center gap-2">
+                                                <LayoutDashboard className="h-4 w-4" />
+                                                Dashboard
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem
                                         onClick={handleSignOut}
                                         className="flex items-center gap-2 text-destructive focus:text-destructive"

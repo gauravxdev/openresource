@@ -25,19 +25,31 @@ export default async function ProfilePage() {
             image: true,
             emailVerified: true,
             createdAt: true,
+            role: true,
         },
     })
-
 
     if (!user) {
         redirect("/sign-in")
     }
 
+    // Fetch resource stats for contributors/admins
+    let resourceStats = null;
+    if (user.role === "contributor" || user.role === "admin") {
+        const [total, approved, pending] = await Promise.all([
+            db.resource.count({ where: { userId: user.id } }),
+            db.resource.count({ where: { userId: user.id, status: "APPROVED" } }),
+            db.resource.count({ where: { userId: user.id, status: "PENDING" } }),
+        ]);
+        resourceStats = { total, approved, pending };
+    }
+
     return (
         <div className="min-h-[calc(100vh-4rem)] px-4 py-12">
             <div className="mx-auto max-w-2xl">
-                <ProfileForm user={user} />
+                <ProfileForm user={user} resourceStats={resourceStats} />
             </div>
         </div>
     )
 }
+

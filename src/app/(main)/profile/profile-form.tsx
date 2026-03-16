@@ -6,7 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Calendar, Shield, Loader2, Camera, Trash2, Pencil, Save, X, AtSign } from "lucide-react";
+import { User, Mail, Calendar, Shield, Loader2, Camera, Trash2, Pencil, Save, X, AtSign, LayoutDashboard, FolderOpen, CheckCircle2, Clock, ArrowRight, Plus } from "lucide-react";
+import Link from "next/link";
 import { updateUserImage, updateUserProfile } from "@/actions/user";
 import { uploadImage } from "@/actions/upload";
 import { authClient } from "@/lib/auth-client";
@@ -25,10 +26,16 @@ interface ProfileFormProps {
         image: string | null;
         emailVerified: boolean;
         createdAt: Date;
+        role: string;
     };
+    resourceStats: {
+        total: number;
+        approved: number;
+        pending: number;
+    } | null;
 }
 
-export function ProfileForm({ user }: ProfileFormProps) {
+export function ProfileForm({ user, resourceStats }: ProfileFormProps) {
     const [isUpdating, setIsUpdating] = React.useState(false);
     const [isEditing, setIsEditing] = React.useState(false);
     // Track the current image URL - starts with user.image from props, updated on successful upload
@@ -322,6 +329,83 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     </div>
                 </div>
             </CardContent>
+
+            {/* Contributor Dashboard Section */}
+            {(user.role === "contributor" || user.role === "admin") && (
+                <>
+                    <Separator className="my-8" />
+                    <CardContent className="space-y-5">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-primary/10">
+                                    <LayoutDashboard className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg">Contributor Dashboard</h3>
+                                    <p className="text-xs text-muted-foreground">Manage your resources and track performance</p>
+                                </div>
+                            </div>
+                            <Badge variant="outline" className="capitalize text-xs">{user.role}</Badge>
+                        </div>
+
+                        {resourceStats && (
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="rounded-xl bg-muted/20 border border-border/40 p-4 text-center hover:bg-muted/40 transition-colors">
+                                    <div className="flex justify-center mb-2">
+                                        <FolderOpen className="h-5 w-5 text-blue-500" />
+                                    </div>
+                                    <p className="text-2xl font-bold">{resourceStats.total}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Total</p>
+                                </div>
+                                <div className="rounded-xl bg-muted/20 border border-border/40 p-4 text-center hover:bg-muted/40 transition-colors">
+                                    <div className="flex justify-center mb-2">
+                                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                    </div>
+                                    <p className="text-2xl font-bold text-green-500">{resourceStats.approved}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Approved</p>
+                                </div>
+                                <div className="rounded-xl bg-muted/20 border border-border/40 p-4 text-center hover:bg-muted/40 transition-colors">
+                                    <div className="flex justify-center mb-2">
+                                        <Clock className="h-5 w-5 text-amber-500" />
+                                    </div>
+                                    <p className="text-2xl font-bold text-amber-500">{resourceStats.pending}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Pending</p>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Link
+                                href="/dashboard"
+                                className="flex items-center justify-between p-4 rounded-xl bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-all duration-200 group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <LayoutDashboard className="h-5 w-5 text-primary" />
+                                    <div>
+                                        <p className="font-medium text-sm">Open Dashboard</p>
+                                        <p className="text-xs text-muted-foreground">Full management panel</p>
+                                    </div>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </Link>
+
+                            <Link
+                                href="/submit"
+                                className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/40 hover:bg-muted/40 transition-all duration-200 group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Plus className="h-5 w-5 text-muted-foreground" />
+                                    <div>
+                                        <p className="font-medium text-sm">Submit Resource</p>
+                                        <p className="text-xs text-muted-foreground">Add a new project</p>
+                                    </div>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </Link>
+                        </div>
+                    </CardContent>
+                </>
+            )}
         </Card>
     );
 }
