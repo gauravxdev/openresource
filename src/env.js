@@ -25,6 +25,9 @@ export const env = createEnv({
     EXA_API_KEY: z.string().optional(),
     TAVILY_API_KEY: z.string().optional(),
     SERPER_API_KEY: z.string().optional(),
+    // PostHog Data Fetching
+    POSTHOG_PERSONAL_API_KEY: z.string().optional(),
+    POSTHOG_PROJECT_ID: z.string().optional(),
   },
 
   /**
@@ -60,6 +63,8 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    POSTHOG_PERSONAL_API_KEY: process.env.POSTHOG_PERSONAL_API_KEY,
+    POSTHOG_PROJECT_ID: process.env.POSTHOG_PROJECT_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

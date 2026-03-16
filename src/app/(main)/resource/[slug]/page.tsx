@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/server/db";
 import { ResourceDetailView } from "@/components/ResourceDetailView";
+import { ResourceViewTracker } from "@/components/analytics/ResourceViewTracker";
 
 interface ResourcePageProps {
     params: Promise<{ slug: string }>;
@@ -27,5 +28,14 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         notFound();
     }
 
-    return <ResourceDetailView resource={resource} />;
+    return (
+        <>
+            <ResourceViewTracker
+                resourceId={resource.id}
+                resourceName={resource.name}
+                resourceSlug={resource.slug}
+            />
+            <ResourceDetailView resource={resource} />
+        </>
+    );
 }

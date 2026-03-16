@@ -30,14 +30,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
     Search,
-    Inbox,
     BarChart3,
-    CheckSquare,
     Layers,
-    Calendar,
     FileText,
     Users,
-    Building,
     Globe,
     Folder,
     File,
@@ -68,9 +64,7 @@ const navItems: NavItem[] = [
     { title: "Users & Logins", icon: Users, href: "/admin/users" },
     { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
     { title: "Audit Logs", icon: FileText, href: "/admin/logs" },
-    { title: "System Health", icon: Building, href: "/admin/health" },
     { title: "Submit Resource", icon: Plus, href: "/admin/submit" },
-    { title: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 
 const workgroups = [
