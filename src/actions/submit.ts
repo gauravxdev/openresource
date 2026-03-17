@@ -102,12 +102,21 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
             headers: await headers()
         });
 
-        if (!session || !session.session) {
+        if (!session || !session.session || !session.user) {
             return {
                 success: false,
                 message: "You must be logged in to submit a resource."
             };
         }
+
+        const userStatus = session.user.status;
+        if (userStatus === "RESTRICTED" || userStatus === "BANNED") {
+            return {
+                success: false,
+                message: "Your account is currently restricted from submitting resources.",
+            };
+        }
+
         userId = session.user.id;
     }
 

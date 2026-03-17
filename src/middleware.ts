@@ -19,7 +19,14 @@ const roleBasedRoutes: Record<string, string[]> = {
 export default async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+    const isPublicRoute = PUBLIC_ROUTES.some((route) => {
+        if (route === "/") {
+            return pathname === "/";
+        }
+        return pathname === route || pathname.startsWith(`${route}/`);
+    });
+
+    if (isPublicRoute) {
         return NextResponse.next()
     }
 
