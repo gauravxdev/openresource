@@ -38,7 +38,7 @@ export async function getResources() {
                     categories: {
                         some: {
                             slug: {
-                                in: ["github-repo", "github-repos", "android-app", "android-apps"]
+                                in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
                             }
                         }
                     }
@@ -134,6 +134,39 @@ export async function getAndroidApps(): Promise<{ success: boolean; data: Resour
         return { success: true, data: resources };
     } catch (error) {
         console.error("[Android Apps] Get Error:", error);
+        return { success: false, data: [] };
+    }
+}
+
+export async function getWindowsApps(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+    try {
+        const resources = await db.resource.findMany({
+            where: {
+                status: "APPROVED",
+                categories: {
+                    some: {
+                        slug: {
+                            in: ["windows-app", "windows-apps"]
+                        }
+                    }
+                }
+            },
+            include: {
+                categories: {
+                    select: {
+                        name: true,
+                        slug: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        return { success: true, data: resources };
+    } catch (error) {
+        console.error("[Windows Apps] Get Error:", error);
         return { success: false, data: [] };
     }
 }

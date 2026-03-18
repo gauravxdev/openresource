@@ -7,7 +7,7 @@ import { useTheme } from "next-themes"
 import {
     Moon, Sun, Menu, X, LogIn, LogOut, User, Search, Plus, ChevronDown,
     Clock, Server, Rocket, ArrowLeftRight, FolderOpen, Layers, Scale,
-    Shield, LayoutDashboard
+    Shield, LayoutDashboard, Monitor
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,6 +35,7 @@ const browseOptions = [
     { href: "/browse/alternatives", label: "Alternatives", description: "Explore replacements for tools.", icon: ArrowLeftRight },
     { href: "/categories", label: "Categories", description: "Browse curated categories.", icon: FolderOpen },
     { href: "/android-apps", label: "Android Apps", description: "Discover apps for android.", icon: Layers },
+    { href: "/windows-apps", label: "Windows Apps", description: "Discover apps for windows.", icon: Monitor },
     { href: "/browse/licenses", label: "Licenses", description: "Filter by software licenses.", icon: Scale },
 ]
 
@@ -42,7 +43,8 @@ const navLinks = [
     { href: "/browse/alternatives", label: "Alternatives" },
     { href: "/github-repos", label: "GitHub Repos" },
     { href: "/categories", label: "Categories" },
-    { href: "/android-apps", label: "Android Apps" }
+    { href: "/android-apps", label: "Android Apps" },
+    { href: "/windows-apps", label: "Windows Apps" }
 ]
 
 // Removed mockSearchData

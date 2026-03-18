@@ -1,0 +1,36 @@
+"use client"
+
+import { Badge } from "@/components/ui/badge"
+import { type SortOption } from "@/lib/windows-apps-data"
+
+interface WindowsAppResultsSummaryProps {
+  filteredCount: number
+  totalCount: number
+  sortBy: SortOption
+  searchTerm: string
+}
+
+export const WindowsAppResultsSummary = ({
+  filteredCount,
+  totalCount,
+  sortBy,
+  searchTerm,
+}: WindowsAppResultsSummaryProps) => {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <p className="text-gray-400 text-sm">
+        Showing {filteredCount} of {totalCount} apps
+      </p>
+      <div className="flex gap-2">
+        <Badge variant="secondary" className="bg-gray-800/80 text-gray-300 border-gray-700/50">
+          {sortBy === "popular" ? "Popular" : sortBy}
+        </Badge>
+        {searchTerm && (
+          <Badge variant="outline" className="border-gray-700/50 text-gray-400">
+            &ldquo;{searchTerm}&rdquo;
+          </Badge>
+        )}
+      </div>
+    </div>
+  )
+}
