@@ -2,10 +2,7 @@ import React from "react"
 import dynamic from "next/dynamic"
 import { getGitHubRepos } from "@/actions/resources"
 
-// Lazy-load client for better bundle size
-const GitHubReposClient = dynamic(() => import("./github-repos-client"), {
-  loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
-})
+import GitHubReposClient from "./github-repos-client"
 
 export interface GitHubRepo {
   name: string

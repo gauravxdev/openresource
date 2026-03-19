@@ -10,10 +10,7 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-// Lazy-load MainContainer to keep initial bundle small
-const MainContainer = dynamic(() => import("@/components/MainContainer"), {
-    loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
-})
+import MainContainer from "@/components/MainContainer"
 
 export const revalidate = 60
 

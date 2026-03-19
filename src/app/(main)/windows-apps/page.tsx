@@ -3,10 +3,7 @@ import dynamic from "next/dynamic"
 import { getWindowsApps } from "@/actions/resources"
 import { type WindowsApp } from "@/lib/windows-apps-data"
 
-// Lazy-load client for better bundle size
-const WindowsAppsClient = dynamic(() => import("./windows-apps-client"), {
-  loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
-})
+import WindowsAppsClient from "./windows-apps-client"
 
 export const revalidate = 60
 

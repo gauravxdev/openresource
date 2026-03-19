@@ -3,10 +3,7 @@ import dynamic from "next/dynamic"
 import { getAndroidApps } from "@/actions/resources"
 import { type AndroidApp } from "@/lib/android-apps-data"
 
-// Lazy-load client for better bundle size
-const AndroidAppsClient = dynamic(() => import("./android-apps-client"), {
-  loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
-})
+import AndroidAppsClient from "./android-apps-client"
 
 export const revalidate = 60
 
