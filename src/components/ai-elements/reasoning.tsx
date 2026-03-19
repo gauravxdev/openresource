@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/prefer-nullish-coalescing */
 "use client";
 
 import type { ComponentProps, ReactNode } from "react";

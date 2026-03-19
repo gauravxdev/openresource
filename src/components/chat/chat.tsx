@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-floating-promises, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useChat } from "@ai-sdk/react";
@@ -99,10 +100,10 @@ export function Chat({
             <ChatHeader chatId={id} />
 
             <Messages
-                chatId={id}
-                isReadonly={false}
+                _chatId={id}
+                _isReadonly={false}
                 messages={messages}
-                setMessages={setMessages}
+                _setMessages={setMessages}
                 status={status}
             />
 

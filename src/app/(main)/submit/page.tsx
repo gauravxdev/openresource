@@ -6,7 +6,6 @@ import {
     Globe,
     Zap,
     ArrowRightLeft,
-    Grid2X2,
 } from "lucide-react"
 import {
     Breadcrumb,

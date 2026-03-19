@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { notFound } from "next/navigation";
 import { db } from "@/server/db";
 import { ResourceCard } from "@/components/ResourceCard";
@@ -5,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { timeAgo } from "@/lib/utils";
-import { Globe, Mail, Calendar, Package } from "lucide-react";
+import { Calendar, Package } from "lucide-react";
 
 interface PublicProfilePageProps {
     params: Promise<{ username: string }>;

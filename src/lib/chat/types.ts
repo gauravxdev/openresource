@@ -1,4 +1,4 @@
-import type { UIMessage, UIMessagePart } from "ai";
+import type { UIMessage } from "ai";
 import { z } from "zod";
 
 // ─────────────────────────────────────────────────────────────────────────────

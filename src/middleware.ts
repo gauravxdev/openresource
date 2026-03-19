@@ -56,7 +56,7 @@ export default async function middleware(request: NextRequest) {
 
         if (matchedRoute) {
             const allowedRoles = roleBasedRoutes[matchedRoute];
-            const userRole = sessionData.user.role || "user";
+            const userRole = sessionData.user.role ?? "user";
             if (allowedRoles && !allowedRoles.includes(userRole)) {
                 return NextResponse.redirect(new URL('/unauthorized', request.url));
             }

@@ -28,6 +28,7 @@ export async function logAudit({ action, userId, resourceId, details }: CreateAu
                 action,
                 userId,
                 resourceId,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 details: details ? JSON.parse(JSON.stringify(details)) : undefined, // Ensure it's valid JSON for Prisma
             },
         });

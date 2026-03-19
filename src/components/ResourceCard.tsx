@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, Clock, Bookmark, Box } from "lucide-react"
+import Image from "next/image"
 
 interface BookmarkItem {
   id: string | number
@@ -100,7 +101,13 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
           <div className="flex items-center gap-3">
             {resource.logo ? (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-                <img src={resource.logo} alt={resource.title} className="h-full w-full object-cover" />
+                <Image 
+                  src={resource.logo} 
+                  alt={resource.title} 
+                  width={32}
+                  height={32}
+                  className="h-full w-full object-cover" 
+                />
               </div>
             ) : (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 text-sm font-semibold text-white uppercase">

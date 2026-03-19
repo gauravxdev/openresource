@@ -22,8 +22,14 @@ export async function fetchWithErrorHandlers(
         const response = await fetch(input, init);
 
         if (!response.ok) {
-            const { code, cause } = await response.json();
-            throw new ChatError(code as ErrorCode, cause);
+            const errorData = (await response.json()) as {
+                code?: string;
+                cause?: string;
+            };
+            throw new ChatError(
+                (errorData.code ?? "bad_request:api") as ErrorCode,
+                errorData.cause,
+            );
         }
 
         return response;

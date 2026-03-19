@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element, @typescript-eslint/no-unused-vars */
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

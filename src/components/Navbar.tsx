@@ -333,7 +333,7 @@ export default function Navbar() {
                                             Profile
                                         </Link>
                                     </DropdownMenuItem>
-                                    {(session.user as any).role === "admin" && (
+                                    {(session.user as { role?: string }).role === "admin" && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/admin" className="flex items-center gap-2">
                                                 <Shield className="h-4 w-4" />
@@ -341,7 +341,7 @@ export default function Navbar() {
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
-                                    {(session.user as any).role === "contributor" && (
+                                    {(session.user as { role?: string }).role === "contributor" && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/dashboard" className="flex items-center gap-2">
                                                 <LayoutDashboard className="h-4 w-4" />

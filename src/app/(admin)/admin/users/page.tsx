@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/prefer-nullish-coalescing */
 import { getFilteredUsers } from "@/actions/admin/users";
 import { getLoginHistory } from "@/actions/admin/db-stats";
 import {

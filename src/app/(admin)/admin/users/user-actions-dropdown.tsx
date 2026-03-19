@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";

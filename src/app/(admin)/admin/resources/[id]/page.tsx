@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unused-vars */
 import { getAdminResourceById } from "@/actions/admin/resources";
 import { SubmitForm } from "@/components/submit-form";
 import { notFound } from "next/navigation";

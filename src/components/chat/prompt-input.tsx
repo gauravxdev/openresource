@@ -7,7 +7,6 @@ import type {
     HTMLAttributes,
     KeyboardEventHandler,
 } from "react";
-import { Children } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -34,8 +33,8 @@ export const PromptInputTextarea = ({
     onChange,
     className,
     placeholder = "What would you like to know?",
-    minHeight = 48,
-    maxHeight = 164,
+    minHeight: _minHeight = 48,
+    maxHeight: _maxHeight = 164,
     disableAutoResize = false,
     ...props
 }: PromptInputTextareaProps) => {

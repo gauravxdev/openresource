@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { memo } from "react";
 import { MoreHorizontalIcon, TrashIcon, PencilIcon, PinIcon, PinOffIcon } from "lucide-react";
 import {

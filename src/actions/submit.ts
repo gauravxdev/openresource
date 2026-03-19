@@ -102,7 +102,7 @@ export async function submitResource(formData: FormData): Promise<SubmissionResu
             headers: await headers()
         });
 
-        if (!session || !session.session || !session.user) {
+        if (!session?.session || !session.user) {
             return {
                 success: false,
                 message: "You must be logged in to submit a resource."

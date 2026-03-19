@@ -1,4 +1,3 @@
-
 import { getAdminResources } from "@/actions/admin/resources";
 import { ResourcesTable } from "@/components/admin/resources-table";
 import { Button } from "@/components/ui/button";
@@ -14,11 +13,11 @@ export default async function AdminResourcesPage({
     searchParams: Promise<{ q?: string; status?: string; category?: string; sortBy?: string; page?: string }>;
 }) {
     const params = await searchParams;
-    const query = params.q || "";
-    const status = params.status || "ALL";
-    const category = params.category || "ALL";
-    const sortBy = params.sortBy || "newest";
-    const page = parseInt(params.page || "1");
+    const query = params.q ?? "";
+    const status = params.status ?? "ALL";
+    const category = params.category ?? "ALL";
+    const sortBy = params.sortBy ?? "newest";
+    const page = parseInt(params.page ?? "1");
 
     const result = await getAdminResources({
         search: query,

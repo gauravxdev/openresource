@@ -29,7 +29,7 @@ import { api } from "@/trpc/react";
 import { Plus, Trash2, Settings2, Sparkles, RefreshCw } from "lucide-react";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
-import { MultiSelect, type CategoryOption } from "@/components/ui/multi-select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
     Dialog,
     DialogContent,
@@ -139,7 +139,7 @@ export function SubmitForm({ initialData, mode = "admin", onSuccess }: SubmitFor
         formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData || {
+        defaultValues: initialData ?? {
             id: "",
             name: "",
             shortDescription: "",

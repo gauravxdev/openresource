@@ -124,6 +124,7 @@ export async function saveMessages({
         id: string;
         chatId: string;
         role: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         parts: any;
         createdAt: Date;
     }>;

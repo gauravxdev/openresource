@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 "use client";
 
 import {
@@ -11,22 +12,22 @@ export function StatsCards({ data }: { data: any }) {
     const stats = [
         {
             title: "Total Resources",
-            value: data?.totalResources || 0,
+            value: data?.totalResources ?? 0,
             icon: FileText,
         },
         {
             title: "Total Users",
-            value: data?.totalUsers || 0,
+            value: data?.totalUsers ?? 0,
             icon: Users,
         },
         {
             title: "Pending Approvals",
-            value: data?.pendingSubmissions || 0,
+            value: data?.pendingSubmissions ?? 0,
             icon: Clock,
         },
         {
             title: "Subscribers",
-            value: data?.totalSubscribers || 0,
+            value: data?.totalSubscribers ?? 0,
             icon: Mail,
         },
     ];

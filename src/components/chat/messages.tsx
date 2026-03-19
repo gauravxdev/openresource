@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
@@ -8,26 +9,26 @@ import { Greeting } from "./greeting";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 type MessagesProps = {
-    chatId: string;
+    _chatId: string;
     status: UseChatHelpers<ChatMessage>["status"];
     messages: ChatMessage[];
-    setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-    isReadonly: boolean;
+    _setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+    _isReadonly: boolean;
 };
 
 function PureMessages({
-    chatId,
+    _chatId: _chatId,
     status,
     messages,
-    setMessages,
-    isReadonly,
+    _setMessages: _setMessages,
+    _isReadonly: _isReadonly,
 }: MessagesProps) {
     const {
         containerRef: messagesContainerRef,
         endRef: messagesEndRef,
         isAtBottom,
         scrollToBottom,
-        hasSentMessage,
+        hasSentMessage: _hasSentMessage,
     } = useMessages({
         status,
     });

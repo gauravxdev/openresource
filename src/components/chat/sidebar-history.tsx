@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-floating-promises, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
@@ -103,7 +104,7 @@ export function getChatHistoryPaginationKey(
     pageIndex: number,
     previousPageData: ChatHistory,
 ) {
-    if (previousPageData && previousPageData.hasMore === false) {
+    if (previousPageData?.hasMore === false) {
         return null;
     }
 

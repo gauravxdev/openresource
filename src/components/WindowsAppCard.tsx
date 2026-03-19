@@ -1,8 +1,10 @@
+ 
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Github, Bookmark } from "lucide-react"
 import type { WindowsApp } from "@/lib/windows-apps-data"
+import NextImage from "next/image"
 
 interface BookmarkItem {
   id: string | number
@@ -59,7 +61,7 @@ export const WindowsAppCard = ({ app }: WindowsAppCardProps) => {
           <div className="flex items-center gap-4">
             {app.logo ? (
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[9px] overflow-hidden bg-white/10">
-                <img src={app.logo} alt={app.title} className="h-full w-full object-cover" />
+                <NextImage src={app.logo} alt={app.title} width={48} height={48} className="h-full w-full object-cover" />
               </div>
             ) : (
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400 text-lg font-semibold text-[#032119] uppercase">

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { tool } from "ai";
 import { z } from "zod";
 import Exa from "exa-js";
@@ -28,7 +32,7 @@ export const exaSearch = tool({
                 return { error: "Tool call failed: the 'query' parameter was empty or missing. Please call this tool again with a non-empty 'query' string." };
             }
 
-            const exa = new Exa(process.env.EXA_API_KEY || "");
+            const exa = new Exa(process.env.EXA_API_KEY ?? "");
             const result = await exa.searchAndContents(actualQuery, {
                 type: args.type,
                 contents: {
@@ -45,7 +49,7 @@ export const exaSearch = tool({
             return { error: "Failed to fetch search results from Exa." };
         }
     }
-});
+} as any);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tavily Search Tool
@@ -69,7 +73,7 @@ export const tavilySearch = tool({
                 return { error: "Tool call failed: the 'query' parameter was empty or missing. Please call this tool again with a non-empty 'query' string." };
             }
 
-            const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY || "" });
+            const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY ?? "" });
             const result = await tvly.search(actualQuery, {
                 searchDepth: "basic",
                 includeAnswer: true,
@@ -83,7 +87,7 @@ export const tavilySearch = tool({
             return { error: "Failed to fetch search results from Tavily." };
         }
     }
-});
+} as any);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Serper (Google) Search Tool
@@ -110,7 +114,7 @@ export const serperSearch = tool({
             const response = await fetch("https://google.serper.dev/search", {
                 method: "POST",
                 headers: {
-                    "X-API-KEY": process.env.SERPER_API_KEY || "",
+                    "X-API-KEY": process.env.SERPER_API_KEY ?? "",
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
@@ -123,15 +127,26 @@ export const serperSearch = tool({
                 return { error: "Failed to fetch search results from Serper." };
             }
 
-            const data = await response.json();
+            const data = (await response.json()) as {
+                organic?: Array<{ title: string; link: string; snippet: string }>;
+                knowledgeGraph?: any;
+                answerBox?: any;
+            };
             return {
-                organic: data.organic?.map((r: any) => ({ title: r.title, link: r.link, snippet: r.snippet })).slice(0, 5) || [],
-                knowledgeGraph: data.knowledgeGraph || null,
-                answerBox: data.answerBox || null,
+                organic:
+                    data.organic
+                        ?.map((r) => ({
+                            title: r.title,
+                            link: r.link,
+                            snippet: r.snippet,
+                        }))
+                        .slice(0, 5) ?? [],
+                knowledgeGraph: data.knowledgeGraph ?? null,
+                answerBox: data.answerBox ?? null,
             };
         } catch (error) {
             console.error("Error executing Serper search:", error);
             return { error: "An error occurred while executing the search." };
         }
     },
-});
+} as any);

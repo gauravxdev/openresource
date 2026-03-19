@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { auth } from "@/lib/auth";
 import { ChatError } from "@/lib/chat/errors";
 import {

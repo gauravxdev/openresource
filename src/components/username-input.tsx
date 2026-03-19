@@ -72,10 +72,10 @@ export function UsernameInput({
                     onValidityChange(true);
                 } else {
                     setIsAvailable(false);
-                    setAvailabilityMessage(result.error || "Username is taken");
+                    setAvailabilityMessage(result.error ?? "Username is taken");
                     onValidityChange(false);
                 }
-            } catch (error) {
+            } catch {
                 if (!isMounted) return;
                 setIsAvailable(false);
                 setAvailabilityMessage("Error checking availability");
@@ -85,7 +85,7 @@ export function UsernameInput({
             }
         };
 
-        checkAvailability();
+        void checkAvailability();
 
         return () => {
             isMounted = false;

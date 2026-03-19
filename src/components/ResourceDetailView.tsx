@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { GitHubStatsSidebar, type GitHubStats } from "@/components/GitHubStatsSidebar";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ExternalLink, Globe, ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
 interface Resource {
     id: string;
@@ -105,9 +106,11 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                 {/* Logo/Icon */}
                                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-2xl font-bold text-neutral-900 dark:text-white uppercase shadow-lg overflow-hidden">
                                     {resource.logo ? (
-                                        <img
+                                        <Image
                                             src={resource.logo}
                                             alt={`${resource.name} logo`}
+                                            width={64}
+                                            height={64}
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
@@ -157,9 +160,11 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                         {/* Resource Image */}
                         {resource.image && (
                             <div className="rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800">
-                                <img
+                                <Image
                                     src={resource.image}
                                     alt={resource.name}
+                                    width={1200}
+                                    height={630}
                                     className="w-full h-auto object-cover"
                                 />
                             </div>
@@ -197,14 +202,16 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                         className="flex items-center gap-2 group/user hover:bg-muted/50 p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-border"
                                     >
                                         {resource.user.image ? (
-                                            <img 
+                                            <Image 
                                                 src={resource.user.image} 
                                                 className="w-8 h-8 rounded-full border border-border shadow-sm group-hover/user:scale-105 transition-transform" 
-                                                alt={resource.user.name || "User"} 
+                                                alt={resource.user.name ?? "User"} 
+                                                width={32}
+                                                height={32}
                                             />
                                         ) : (
                                             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs border border-primary/20">
-                                                {resource.user.name?.[0] || resource.user.username?.[0]?.toUpperCase() || "U"}
+                                                {resource.user.name?.[0] ?? resource.user.username?.[0]?.toUpperCase() ?? "U"}
                                             </div>
                                         )}
                                         <div className="flex flex-col -space-y-0.5">

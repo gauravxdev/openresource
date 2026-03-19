@@ -39,10 +39,8 @@ export const chatModels: ChatModel[] = [
 export const modelsByProvider = chatModels.reduce(
     (acc, model) => {
         const provider = model.provider;
-        if (!acc[provider]) {
-            acc[provider] = [];
-        }
-        acc[provider]!.push(model);
+        acc[provider] ??= [];
+        acc[provider].push(model);
         return acc;
     },
     {} as Record<string, ChatModel[]>,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument */
 "use client";
 
 import { useState } from "react";
@@ -47,13 +48,13 @@ export function EditResourceDialog({ resource, open, onOpenChange }: EditResourc
     } = useForm<z.infer<typeof editSchema>>({
         resolver: zodResolver(editSchema),
         defaultValues: {
-            name: resource?.name || "",
-            slug: resource?.slug || "",
-            oneLiner: resource?.oneLiner || "",
-            description: resource?.description || "",
-            websiteUrl: resource?.websiteUrl || "",
-            repositoryUrl: resource?.repositoryUrl || "",
-            alternative: resource?.alternative || "",
+            name: resource?.name ?? "",
+            slug: resource?.slug ?? "",
+            oneLiner: resource?.oneLiner ?? "",
+            description: resource?.description ?? "",
+            websiteUrl: resource?.websiteUrl ?? "",
+            repositoryUrl: resource?.repositoryUrl ?? "",
+            alternative: resource?.alternative ?? "",
         },
     });
 
@@ -66,9 +67,9 @@ export function EditResourceDialog({ resource, open, onOpenChange }: EditResourc
                 onOpenChange(false);
                 router.refresh();
             } else {
-                toast.error(result.error || "Failed to update resource");
+                toast.error(result.error ?? "Failed to update resource");
             }
-        } catch (error) {
+        } catch {
             toast.error("An unexpected error occurred");
         } finally {
             setIsSubmitting(false);

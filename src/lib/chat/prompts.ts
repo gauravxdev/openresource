@@ -33,7 +33,7 @@ Bad outputs (never do this):
 - "Title: Weather" (no prefixes)
 - ""NYC Weather"" (no quotes)`;
 
-export const systemPrompt = ({ selectedChatModel }: { selectedChatModel: string }) => {
+export const systemPrompt = ({ selectedChatModel: _selectedChatModel }: { selectedChatModel: string }) => {
     const today = new Date().toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",

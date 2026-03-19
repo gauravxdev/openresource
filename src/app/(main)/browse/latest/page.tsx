@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { getLatestResources } from "@/actions/resources"
 import { ResourceCard } from "@/components/ResourceCard"
 import { FolderOpen } from "lucide-react"
@@ -51,7 +52,7 @@ export default async function LatestResourcesPage() {
                                     category: resource.categories[0]?.name || "Uncategorized",
                                     stars: resource.stars.toString(),
                                     forks: resource.forks.toString(),
-                                    lastCommit: (serializeDate(resource.createdAt).split('T')[0]) as string,
+                                    lastCommit: serializeDate(resource.createdAt).split('T')[0]!,
                                     image: resource.image || "/images/placeholder.png",
                                     logo: resource.logo,
                                 }}

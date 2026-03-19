@@ -36,7 +36,7 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
                         className="h-auto w-full cursor-pointer whitespace-normal rounded-xl border border-border/50 bg-background p-3 text-left text-sm text-muted-foreground shadow-xs transition-colors hover:bg-muted hover:text-foreground"
                         onClick={() => {
                             window.history.pushState({}, "", `/ai/chat/${chatId}`);
-                            sendMessage({
+                            void sendMessage({
                                 role: "user",
                                 parts: [{ type: "text", text: suggestedAction }],
                             });

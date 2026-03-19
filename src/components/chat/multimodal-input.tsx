@@ -1,26 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
+import { GlobeIcon, CheckIcon } from "lucide-react";
 import equal from "fast-deep-equal";
-import { CheckIcon, GlobeIcon } from "lucide-react";
 import {
-    type ChangeEvent,
     type Dispatch,
     memo,
     type SetStateAction,
     useCallback,
     useEffect,
     useRef,
-    useState,
 } from "react";
 import { toast } from "sonner";
-import {
-    chatModels,
-    DEFAULT_CHAT_MODEL,
-    modelsByProvider,
-} from "@/lib/chat/models";
-import type { Attachment, ChatMessage } from "@/lib/chat/types";
+import { chatModels, DEFAULT_CHAT_MODEL, modelsByProvider } from "@/lib/chat/models";
+import type { ChatMessage } from "@/lib/chat/types";
 import { cn } from "@/lib/utils";
 import {
     PromptInput,
@@ -115,7 +110,7 @@ function PureMultimodalInput({
     const submitForm = useCallback(() => {
         window.history.pushState({}, "", `/ai/chat/${chatId}`);
 
-        sendMessage({
+        void sendMessage({
             role: "user",
             parts: [
                 {
@@ -266,7 +261,7 @@ function PureModelSelectorCompact({
                 <SelectValue placeholder="Select model" />
             </SelectTrigger>
             <SelectContent>
-                {Object.entries(modelsByProvider).map(
+                {(Object.entries(modelsByProvider) as [string, any[]][]).map(
                     ([providerKey, providerModels]) => (
                         <SelectGroup key={providerKey}>
                             <SelectLabel className="text-xs font-semibold capitalize">
