@@ -139,9 +139,9 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
               </div>
             )}
             <div className="flex flex-1 items-center">
-              <h3 className="text-[1.25rem] font-semibold leading-tight text-neutral-900 dark:text-card-foreground">
+              <h2 className="text-[1.25rem] font-semibold leading-tight text-neutral-900 dark:text-card-foreground">
                 {resource.title}
-              </h3>
+              </h2>
             </div>
             <Button
               variant="outline"
@@ -152,6 +152,7 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
                 handleBookmarkClick()
               }}
               title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+              aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
             </Button>
