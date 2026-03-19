@@ -21,12 +21,14 @@ const fontMono = GeistMono;
 const righteousFont = localFont({
   src: "../../fonts/Righteous-Regular.ttf",
   variable: "--font-righteous",
+  display: "swap",
 });
 
 // Custom Lexend font configuration
 const lexendFont = localFont({
   src: "../../fonts/Lexend-VariableFont_wght.ttf",
   variable: "--font-lexend",
+  display: "swap",
 });
 
 const dottedBackgroundStyle: CSSProperties = {

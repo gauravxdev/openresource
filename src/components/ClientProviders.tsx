@@ -4,12 +4,7 @@ import dynamic from "next/dynamic";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/theme-provider";
 
-// Lazy-load client-only components with ssr: false is allowed here 
-// because this is a Client Component.
-const PostHogProvider = dynamic(
-  () => import("@/components/PostHogProvider").then((mod) => mod.PostHogProvider),
-  { ssr: false }
-);
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 const Toaster = dynamic(
   () => import("@/components/ui/sonner").then((mod) => mod.Toaster),
