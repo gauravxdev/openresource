@@ -133,7 +133,7 @@ export async function POST(request: Request) {
                     id: msg.id,
                     role: msg.role as "user" | "assistant",
                     content,
-                    parts: partsArray,
+                    parts: partsArray as any,
                 };
             });
         const modelMessages = await convertToModelMessages(uiMessages);

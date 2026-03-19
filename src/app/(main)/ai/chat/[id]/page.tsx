@@ -44,7 +44,7 @@ export default async function Page({
     const dbMessages = await getMessagesByChatId({ id });
     console.log(`[Chat ${id}] Loaded ${dbMessages.length} messages from DB`);
     if (dbMessages.length > 0) {
-        console.log(`[Chat ${id}] First message role: ${dbMessages[0].role}, parts:`, JSON.stringify(dbMessages[0].parts).substring(0, 200));
+        console.log(`[Chat ${id}] First message role: ${dbMessages[0]!.role}, parts:`, JSON.stringify(dbMessages[0]!.parts).substring(0, 200));
     }
 
     // Convert DB messages to UIMessages
