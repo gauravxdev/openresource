@@ -130,6 +130,7 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
                   alt={resource.title} 
                   width={32}
                   height={32}
+                  loading="lazy"
                   className="h-full w-full object-cover" 
                 />
               </div>

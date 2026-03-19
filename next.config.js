@@ -3,6 +3,7 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
+  reactStrictMode: false,
   async rewrites() {
     // Skip PostHog proxy if environment variable is set (for build troubleshooting)
     if (process.env.SKIP_POSTHOG_PROXY === 'true') {
@@ -95,6 +96,16 @@ const config = {
       "@hookform/resolvers",
       "class-variance-authority",
       "cmdk",
+      "better-auth",
+      "posthog-js",
+      "superjson",
+      "@tanstack/react-query",
+      "@trpc/client",
+      "@trpc/react-query",
+      "sonner",
+      "next-themes",
+      "zod",
+      "swr",
     ],
   },
   compiler: {

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Filter } from "lucide-react"
 
 interface SearchFiltersProps {
@@ -33,22 +32,23 @@ export const SearchFilters = ({
         />
       </div>
 
-      {/* Category Filter */}
+      {/* Category Filter — native select to avoid Radix Select bundle weight */}
       <div className="relative">
-        <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-[180px] pl-10">
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category === "all" ? "All Categories" : category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <select
+          value={selectedCategory}
+          onChange={(e) => onCategoryChange(e.target.value)}
+          className="h-9 w-[180px] rounded-md border border-input bg-transparent pl-10 pr-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring appearance-none cursor-pointer"
+          aria-label="Filter by category"
+        >
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category === "all" ? "All Categories" : category}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   )
 }
+
