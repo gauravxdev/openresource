@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
+export const dynamic = 'force-dynamic';
 import { getTrafficSummary, getTopResources, getUserActivityStats } from "@/actions/admin/posthog-stats";
 import { BarChart3, Users, Clock, ExternalLink, TrendingUp, Calendar } from "lucide-react";
 import { TopResourcesTable } from "@/components/admin/TopResourcesTable";

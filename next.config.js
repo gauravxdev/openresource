@@ -24,7 +24,11 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "image-937.pages.dev",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
       },
     ],
   },

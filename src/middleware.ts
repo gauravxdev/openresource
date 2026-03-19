@@ -7,7 +7,22 @@ type SessionData = {
     user: User & { role?: string };
 } | null;
 
-const PUBLIC_ROUTES = ["/", "/sign-in", "/sign-up", "/api/auth", "/api"];
+const PUBLIC_ROUTES = [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/api/auth",
+    "/api",
+    "/browse",
+    "/categories",
+    "/category",
+    "/android-apps",
+    "/windows-apps",
+    "/github-repos",
+    "/resource",
+    "/tags",
+    "/u"
+];
 
 const roleBasedRoutes: Record<string, string[]> = {
     "/admin": ["admin"],

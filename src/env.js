@@ -38,6 +38,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
+    // Client-side base URL for Better Auth. If missing, it defaults to the current window.location.origin
     NEXT_PUBLIC_BETTER_AUTH_URL: z.string().url().optional(),
     NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
   },
