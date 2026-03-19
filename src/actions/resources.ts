@@ -44,7 +44,27 @@ export async function getResources() {
                     }
                 }
             },
-            include: {
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                description: true,
+                shortDescription: true,
+                oneLiner: true,
+                websiteUrl: true,
+                repositoryUrl: true,
+                alternative: true,
+                stars: true,
+                forks: true,
+                lastCommit: true,
+                repositoryCreatedAt: true,
+                image: true,
+                logo: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+                addedBy: true,
+                license: true,
                 categories: {
                     select: {
                         name: true,
@@ -118,7 +138,27 @@ export async function getAndroidApps(): Promise<{ success: boolean; data: Resour
                     }
                 }
             },
-            include: {
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                description: true,
+                shortDescription: true,
+                oneLiner: true,
+                websiteUrl: true,
+                repositoryUrl: true,
+                alternative: true,
+                stars: true,
+                forks: true,
+                lastCommit: true,
+                repositoryCreatedAt: true,
+                image: true,
+                logo: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+                addedBy: true,
+                license: true,
                 categories: {
                     select: {
                         name: true,
@@ -151,7 +191,27 @@ export async function getWindowsApps(): Promise<{ success: boolean; data: Resour
                     }
                 }
             },
-            include: {
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                description: true,
+                shortDescription: true,
+                oneLiner: true,
+                websiteUrl: true,
+                repositoryUrl: true,
+                alternative: true,
+                stars: true,
+                forks: true,
+                lastCommit: true,
+                repositoryCreatedAt: true,
+                image: true,
+                logo: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+                addedBy: true,
+                license: true,
                 categories: {
                     select: {
                         name: true,
@@ -184,7 +244,27 @@ export async function getGitHubRepos(): Promise<{ success: boolean; data: Resour
                     }
                 }
             },
-            include: {
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                description: true,
+                shortDescription: true,
+                oneLiner: true,
+                websiteUrl: true,
+                repositoryUrl: true,
+                alternative: true,
+                stars: true,
+                forks: true,
+                lastCommit: true,
+                repositoryCreatedAt: true,
+                image: true,
+                logo: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+                addedBy: true,
+                license: true,
                 categories: {
                     select: {
                         name: true,

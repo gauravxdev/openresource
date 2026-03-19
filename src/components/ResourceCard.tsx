@@ -11,6 +11,28 @@ interface BookmarkItem {
   id: string | number
 }
 
+// Module-level bookmark cache to avoid redundant localStorage reads across multiple cards
+let bookmarkCache: BookmarkItem[] | null = null
+let bookmarkCacheTimestamp = 0
+
+function getBookmarks(): BookmarkItem[] {
+  const now = Date.now()
+  // Re-read from localStorage at most once per second
+  if (!bookmarkCache || now - bookmarkCacheTimestamp > 1000) {
+    try {
+      bookmarkCache = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
+    } catch {
+      bookmarkCache = []
+    }
+    bookmarkCacheTimestamp = now
+  }
+  return bookmarkCache
+}
+
+function invalidateBookmarkCache() {
+  bookmarkCache = null
+}
+
 interface Resource {
   id: number | string
   slug: string
@@ -34,19 +56,20 @@ interface ResourceCardProps {
 export const ResourceCard = ({ resource }: ResourceCardProps) => {
   const [isBookmarked, setIsBookmarked] = React.useState(false)
 
-  // Check if resource is already bookmarked on component mount
+  // Check if resource is already bookmarked on component mount (using shared cache)
   React.useEffect(() => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
+    const bookmarks = getBookmarks()
     setIsBookmarked(bookmarks.some((item) => item.id === resource.id))
   }, [resource.id])
 
   const handleBookmarkClick = () => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
+    const bookmarks = getBookmarks()
 
     if (isBookmarked) {
       // Remove bookmark
       const updatedBookmarks = bookmarks.filter((item) => item.id !== resource.id)
       localStorage.setItem('openstore-bookmarks', JSON.stringify(updatedBookmarks))
+      invalidateBookmarkCache()
       setIsBookmarked(false)
     } else {
       // Add bookmark (check limit first)
@@ -68,6 +91,7 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
 
       bookmarks.push(bookmarkData)
       localStorage.setItem('openstore-bookmarks', JSON.stringify(bookmarks))
+      invalidateBookmarkCache()
       setIsBookmarked(true)
     }
   }

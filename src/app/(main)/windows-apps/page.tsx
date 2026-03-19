@@ -3,7 +3,7 @@ import { getWindowsApps } from "@/actions/resources"
 import WindowsAppsClient from "./windows-apps-client"
 import { type WindowsApp } from "@/lib/windows-apps-data"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 60
 
 export default async function WindowsApps() {
   const { data: resources } = await getWindowsApps()

@@ -165,6 +165,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                                     alt={resource.name}
                                     width={1200}
                                     height={630}
+                                    priority
                                     className="w-full h-auto object-cover"
                                 />
                             </div>

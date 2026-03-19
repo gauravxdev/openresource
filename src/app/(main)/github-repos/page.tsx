@@ -2,7 +2,7 @@ import React from "react"
 import { getGitHubRepos } from "@/actions/resources"
 import GitHubReposClient, { type GitHubRepo } from "./github-repos-client"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 60
 
 export default async function GitHubRepos() {
   const { data: resources } = await getGitHubRepos()

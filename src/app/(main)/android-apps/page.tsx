@@ -3,7 +3,7 @@ import { getAndroidApps } from "@/actions/resources"
 import AndroidAppsClient from "./android-apps-client"
 import { type AndroidApp } from "@/lib/android-apps-data"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 60
 
 export default async function AndroidApps() {
   const { data: resources } = await getAndroidApps()

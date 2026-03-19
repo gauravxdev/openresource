@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar";
-import { TRPCReactProvider } from "@/trpc/react";
 
 export default function MainLayout({
     children,
@@ -7,7 +6,7 @@ export default function MainLayout({
     return (
         <>
             <Navbar />
-            <TRPCReactProvider>{children}</TRPCReactProvider>
+            {children}
         </>
     );
 }
