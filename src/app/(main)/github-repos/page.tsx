@@ -1,11 +1,27 @@
 import React from "react"
+import dynamic from "next/dynamic"
 import { getGitHubRepos } from "@/actions/resources"
-import GitHubReposClient, { type GitHubRepo } from "./github-repos-client"
+
+// Lazy-load client for better bundle size
+const GitHubReposClient = dynamic(() => import("./github-repos-client"), {
+  loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
+})
+
+export interface GitHubRepo {
+  name: string
+  description: string
+  language: string
+  stars: number
+  forks: number
+  url: string
+}
 
 export const revalidate = 60
 
-export default async function GitHubRepos() {
-  const { data: resources } = await getGitHubRepos()
+export default async function GitHubRepos({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageStr } = await searchParams
+  const currentPage = Number(pageStr) || 1
+  const { data: resources, totalCount } = await getGitHubRepos(currentPage)
 
   const repos: GitHubRepo[] = resources.map((resource) => ({
     name: resource.name,
@@ -16,5 +32,11 @@ export default async function GitHubRepos() {
     url: resource.repositoryUrl,
   }))
 
-  return <GitHubReposClient initialRepos={repos} />
+  return (
+    <GitHubReposClient 
+      initialRepos={repos} 
+      totalCount={totalCount || 0} 
+      currentPage={currentPage} 
+    />
+  )
 }

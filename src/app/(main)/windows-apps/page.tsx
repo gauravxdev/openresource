@@ -1,12 +1,19 @@
 import React from "react"
+import dynamic from "next/dynamic"
 import { getWindowsApps } from "@/actions/resources"
-import WindowsAppsClient from "./windows-apps-client"
 import { type WindowsApp } from "@/lib/windows-apps-data"
+
+// Lazy-load client for better bundle size
+const WindowsAppsClient = dynamic(() => import("./windows-apps-client"), {
+  loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
+})
 
 export const revalidate = 60
 
-export default async function WindowsApps() {
-  const { data: resources } = await getWindowsApps()
+export default async function WindowsApps({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageStr } = await searchParams
+  const currentPage = Number(pageStr) || 1
+  const { data: resources, totalCount } = await getWindowsApps(currentPage)
 
   // Map DB resources to WindowsApp interface
   const dbApps: WindowsApp[] = resources.map((resource) => {
@@ -40,5 +47,11 @@ export default async function WindowsApps() {
     }
   })
 
-  return <WindowsAppsClient initialApps={dbApps} />
+  return (
+    <WindowsAppsClient 
+      initialApps={dbApps} 
+      totalCount={totalCount || 0} 
+      currentPage={currentPage} 
+    />
+  )
 }

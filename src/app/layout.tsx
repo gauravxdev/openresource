@@ -5,10 +5,7 @@ import localFont from "next/font/local";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import type { CSSProperties } from "react";
-import { ThemeProvider } from "@/components/theme-provider";
-import { PostHogProvider } from "@/components/PostHogProvider";
-import { Toaster } from "@/components/ui/sonner";
-import { TRPCReactProvider } from "@/trpc/react";
+import { ClientProviders } from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
   title: "Openresource",
@@ -51,34 +48,24 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-transparent" suppressHydrationWarning>
-        <PostHogProvider>
-          <TRPCReactProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {/* Dynamic Background */}
-              <div className="min-h-screen w-full relative">
-                <div
-                  className="
-                    absolute inset-0 z-0
-                    bg-background
-                    [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
-                    dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
-                  "
-                  style={dottedBackgroundStyle}
-                />
+        <ClientProviders>
+          {/* Dynamic Background */}
+          <div className="min-h-screen w-full relative">
+            <div
+              className="
+                absolute inset-0 z-0
+                bg-background
+                [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
+                dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
+              "
+              style={dottedBackgroundStyle}
+            />
 
-                <div className="relative z-10">
-                  {children}
-                </div>
-                <Toaster />
-              </div>
-            </ThemeProvider>
-          </TRPCReactProvider>
-        </PostHogProvider>
+            <div className="relative z-10">
+              {children}
+            </div>
+          </div>
+        </ClientProviders>
       </body>
     </html>
   );

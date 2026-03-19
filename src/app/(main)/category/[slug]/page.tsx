@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
+import dynamic from "next/dynamic"
 import { getResourcesByCategory } from "@/actions/resources"
-import MainContainer from "@/components/MainContainer"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -10,11 +10,25 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
+// Lazy-load MainContainer to keep initial bundle small
+const MainContainer = dynamic(() => import("@/components/MainContainer"), {
+    loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
+})
+
 export const revalidate = 60
 
-export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CategoryPage({
+    params,
+    searchParams
+}: {
+    params: Promise<{ slug: string }>,
+    searchParams: Promise<{ page?: string }>
+}) {
     const { slug } = await params
-    const { success, data: resources, categoryName } = await getResourcesByCategory(slug)
+    const { page: pageStr } = await searchParams
+    const currentPage = Number(pageStr) || 1
+
+    const { success, data: resources, totalCount, categoryName } = await getResourcesByCategory(slug, currentPage)
 
     if (!success || !categoryName) {
         notFound()
@@ -46,13 +60,16 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                         {categoryName} Resources
                     </h1>
                     <p className="mt-2 text-muted-foreground">
-                        Explore {resources.length} open-source projects in the {categoryName} category.
+                        Explore projects in the {categoryName} category.
                     </p>
                 </div>
             </div>
 
-            {/* We reuse the MainContainer, filtering helps if search is needed within this category */}
-            <MainContainer initialResources={resources} />
+            <MainContainer
+                initialResources={resources}
+                totalCount={totalCount || 0}
+                currentPage={currentPage}
+            />
         </div>
     )
 }

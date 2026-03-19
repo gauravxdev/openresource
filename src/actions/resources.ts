@@ -29,63 +29,83 @@ export type ResourceWithCategories = {
     license: string | null;
 };
 
-export async function getResources() {
+export async function getResources(page = 1, limit = 20) {
     try {
-        const resources = await db.resource.findMany({
-            where: {
-                status: "APPROVED",
-                NOT: {
+        const skip = (page - 1) * limit;
+
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where: {
+                    status: "APPROVED",
+                    NOT: {
+                        categories: {
+                            some: {
+                                slug: {
+                                    in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
+                                }
+                            }
+                        }
+                    }
+                },
+                select: {
+                    id: true,
+                    slug: true,
+                    name: true,
+                    description: true,
+                    shortDescription: true,
+                    oneLiner: true,
+                    websiteUrl: true,
+                    repositoryUrl: true,
+                    alternative: true,
+                    stars: true,
+                    forks: true,
+                    lastCommit: true,
+                    repositoryCreatedAt: true,
+                    image: true,
+                    logo: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    addedBy: true,
+                    license: true,
                     categories: {
-                        some: {
-                            slug: {
-                                in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+            db.resource.count({
+                where: {
+                    status: "APPROVED",
+                    NOT: {
+                        categories: {
+                            some: {
+                                slug: {
+                                    in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
+                                }
                             }
                         }
                     }
                 }
-            },
-            select: {
-                id: true,
-                slug: true,
-                name: true,
-                description: true,
-                shortDescription: true,
-                oneLiner: true,
-                websiteUrl: true,
-                repositoryUrl: true,
-                alternative: true,
-                stars: true,
-                forks: true,
-                lastCommit: true,
-                repositoryCreatedAt: true,
-                image: true,
-                logo: true,
-                status: true,
-                createdAt: true,
-                updatedAt: true,
-                addedBy: true,
-                license: true,
-                categories: {
-                    select: {
-                        name: true,
-                        slug: true,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+            })
+        ]);
 
-        return { success: true, data: resources };
+        return { success: true, data: resources, totalCount };
     } catch (error) {
         console.error("[Products] Get Error:", error);
-        return { success: false, data: [] };
+        return { success: false, data: [], totalCount: 0 };
     }
 }
 
-export async function getResourcesByCategory(slug: string): Promise<{ success: boolean; data: ResourceWithCategories[], categoryName?: string }> {
-    if (!slug) return { success: false, data: [] };
+export async function getResourcesByCategory(slug: string, page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number, categoryName?: string }> {
+    if (!slug) return { success: false, data: [], totalCount: 0 };
 
     try {
         const category = await db.category.findUnique({
@@ -93,194 +113,264 @@ export async function getResourcesByCategory(slug: string): Promise<{ success: b
         });
 
         if (!category) {
-            return { success: false, data: [] };
+            return { success: false, data: [], totalCount: 0 };
         }
 
-        const resources = await db.resource.findMany({
-            where: {
-                status: "APPROVED",
-                categories: {
-                    some: {
-                        slug: slug
+        const skip = (page - 1) * limit;
+
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: slug
+                        }
                     }
-                }
-            },
-            include: {
-                categories: {
-                    select: {
-                        name: true,
-                        slug: true,
+                },
+                include: {
+                    categories: {
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
                     },
                 },
-            },
-            orderBy: {
-                stars: "desc", // Default sorting for category pages
-            },
-        });
+                orderBy: {
+                    stars: "desc", // Default sorting for category pages
+                },
+                skip,
+                take: limit,
+            }),
+            db.resource.count({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: slug
+                        }
+                    }
+                }
+            })
+        ]);
 
-        return { success: true, data: resources, categoryName: category.name };
+        return { success: true, data: resources, totalCount, categoryName: category.name };
     } catch (error) {
         console.error("[Category Resources] Get Error:", error);
-        return { success: false, data: [] };
+        return { success: false, data: [], totalCount: 0 };
     }
 }
 
-export async function getAndroidApps(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+export async function getAndroidApps(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
-        const resources = await db.resource.findMany({
-            where: {
-                status: "APPROVED",
-                categories: {
-                    some: {
-                        slug: {
-                            in: ["android-app", "android-apps"]
+        const skip = (page - 1) * limit;
+
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: {
+                                in: ["android-app", "android-apps"]
+                            }
+                        }
+                    }
+                },
+                select: {
+                    id: true,
+                    slug: true,
+                    name: true,
+                    description: true,
+                    shortDescription: true,
+                    oneLiner: true,
+                    websiteUrl: true,
+                    repositoryUrl: true,
+                    alternative: true,
+                    stars: true,
+                    forks: true,
+                    lastCommit: true,
+                    repositoryCreatedAt: true,
+                    image: true,
+                    logo: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    addedBy: true,
+                    license: true,
+                    categories: {
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+            db.resource.count({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: {
+                                in: ["android-app", "android-apps"]
+                            }
                         }
                     }
                 }
-            },
-            select: {
-                id: true,
-                slug: true,
-                name: true,
-                description: true,
-                shortDescription: true,
-                oneLiner: true,
-                websiteUrl: true,
-                repositoryUrl: true,
-                alternative: true,
-                stars: true,
-                forks: true,
-                lastCommit: true,
-                repositoryCreatedAt: true,
-                image: true,
-                logo: true,
-                status: true,
-                createdAt: true,
-                updatedAt: true,
-                addedBy: true,
-                license: true,
-                categories: {
-                    select: {
-                        name: true,
-                        slug: true,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+            })
+        ]);
 
-        return { success: true, data: resources };
+        return { success: true, data: resources, totalCount };
     } catch (error) {
         console.error("[Android Apps] Get Error:", error);
-        return { success: false, data: [] };
+        return { success: false, data: [], totalCount: 0 };
     }
 }
 
-export async function getWindowsApps(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+export async function getWindowsApps(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
-        const resources = await db.resource.findMany({
-            where: {
-                status: "APPROVED",
-                categories: {
-                    some: {
-                        slug: {
-                            in: ["windows-app", "windows-apps"]
+        const skip = (page - 1) * limit;
+
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: {
+                                in: ["windows-app", "windows-apps"]
+                            }
+                        }
+                    }
+                },
+                select: {
+                    id: true,
+                    slug: true,
+                    name: true,
+                    description: true,
+                    shortDescription: true,
+                    oneLiner: true,
+                    websiteUrl: true,
+                    repositoryUrl: true,
+                    alternative: true,
+                    stars: true,
+                    forks: true,
+                    lastCommit: true,
+                    repositoryCreatedAt: true,
+                    image: true,
+                    logo: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    addedBy: true,
+                    license: true,
+                    categories: {
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+            db.resource.count({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: {
+                                in: ["windows-app", "windows-apps"]
+                            }
                         }
                     }
                 }
-            },
-            select: {
-                id: true,
-                slug: true,
-                name: true,
-                description: true,
-                shortDescription: true,
-                oneLiner: true,
-                websiteUrl: true,
-                repositoryUrl: true,
-                alternative: true,
-                stars: true,
-                forks: true,
-                lastCommit: true,
-                repositoryCreatedAt: true,
-                image: true,
-                logo: true,
-                status: true,
-                createdAt: true,
-                updatedAt: true,
-                addedBy: true,
-                license: true,
-                categories: {
-                    select: {
-                        name: true,
-                        slug: true,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+            })
+        ]);
 
-        return { success: true, data: resources };
+        return { success: true, data: resources, totalCount };
     } catch (error) {
         console.error("[Windows Apps] Get Error:", error);
-        return { success: false, data: [] };
+        return { success: false, data: [], totalCount: 0 };
     }
 }
 
-export async function getGitHubRepos(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+export async function getGitHubRepos(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
-        const resources = await db.resource.findMany({
-            where: {
-                status: "APPROVED",
-                categories: {
-                    some: {
-                        slug: {
-                            in: ["github-repo", "github-repos"]
+        const skip = (page - 1) * limit;
+
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: {
+                                in: ["github-repo", "github-repos"]
+                            }
+                        }
+                    }
+                },
+                select: {
+                    id: true,
+                    slug: true,
+                    name: true,
+                    description: true,
+                    shortDescription: true,
+                    oneLiner: true,
+                    websiteUrl: true,
+                    repositoryUrl: true,
+                    alternative: true,
+                    stars: true,
+                    forks: true,
+                    lastCommit: true,
+                    repositoryCreatedAt: true,
+                    image: true,
+                    logo: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    addedBy: true,
+                    license: true,
+                    categories: {
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    stars: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+            db.resource.count({
+                where: {
+                    status: "APPROVED",
+                    categories: {
+                        some: {
+                            slug: {
+                                in: ["github-repo", "github-repos"]
+                            }
                         }
                     }
                 }
-            },
-            select: {
-                id: true,
-                slug: true,
-                name: true,
-                description: true,
-                shortDescription: true,
-                oneLiner: true,
-                websiteUrl: true,
-                repositoryUrl: true,
-                alternative: true,
-                stars: true,
-                forks: true,
-                lastCommit: true,
-                repositoryCreatedAt: true,
-                image: true,
-                logo: true,
-                status: true,
-                createdAt: true,
-                updatedAt: true,
-                addedBy: true,
-                license: true,
-                categories: {
-                    select: {
-                        name: true,
-                        slug: true,
-                    },
-                },
-            },
-            orderBy: {
-                stars: "desc",
-            },
-        });
+            })
+        ]);
 
-        return { success: true, data: resources };
+        return { success: true, data: resources, totalCount };
     } catch (error) {
         console.error("[GitHub Repos] Get Error:", error);
-        return { success: false, data: [] };
+        return { success: false, data: [], totalCount: 0 };
     }
 }
 
@@ -304,34 +394,47 @@ export async function getDailyResourceCount(): Promise<{ success: boolean; count
     }
 }
 
-export async function getLatestResources(): Promise<{ success: boolean; data: ResourceWithCategories[] }> {
+export async function getLatestResources(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const skip = (page - 1) * limit;
 
-        const resources = await db.resource.findMany({
-            where: {
-                status: "APPROVED",
-                createdAt: {
-                    gte: twentyFourHoursAgo,
-                },
-            },
-            include: {
-                categories: {
-                    select: {
-                        name: true,
-                        slug: true,
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where: {
+                    status: "APPROVED",
+                    createdAt: {
+                        gte: twentyFourHoursAgo,
                     },
                 },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+                include: {
+                    categories: {
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+            db.resource.count({
+                where: {
+                    status: "APPROVED",
+                    createdAt: {
+                        gte: twentyFourHoursAgo,
+                    },
+                },
+            })
+        ]);
 
-        return { success: true, data: resources };
+        return { success: true, data: resources, totalCount };
     } catch (error) {
         console.error("[Latest Resources] Get Error:", error);
-        return { success: false, data: [] };
+        return { success: false, data: [], totalCount: 0 };
     }
 }
 

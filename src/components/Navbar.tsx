@@ -2,31 +2,41 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import dynamic from "next/dynamic"
 import { useTheme } from "next-themes"
 import {
-    Moon, Sun, Menu, X, LogIn, LogOut, User, Search, Plus, ChevronDown,
-    Clock, Server, Rocket, ArrowLeftRight, FolderOpen, Layers, Scale,
-    Shield, LayoutDashboard, Monitor
+    Moon, Sun, Menu, X, Plus, ChevronDown, LogIn,
+    Clock, Server, Rocket, ArrowLeftRight, FolderOpen, Layers, Scale, Monitor
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { authClient } from "@/lib/auth-client"
-import { searchResources, type ResourceWithCategories } from "@/actions/resources"
+
+// Lazy-load heavy sub-components (search dialog imports Dialog + Input + searchResources action,
+// user menu imports auth-client + Avatar + DropdownMenu)
+const NavbarSearchDialog = dynamic(
+    () => import("@/components/NavbarSearchDialog").then((mod) => mod.NavbarSearchDialog),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="h-9 w-9 rounded-md bg-muted/30 animate-pulse" />
+        ),
+    }
+)
+
+const NavbarUserMenu = dynamic(
+    () => import("@/components/NavbarUserMenu").then((mod) => mod.NavbarUserMenu),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="h-9 w-16 animate-pulse rounded-md bg-muted" />
+        ),
+    }
+)
 
 const browseOptions = [
     { href: "/browse/latest", label: "Latest", description: "Fresh arrivals added recently.", icon: Clock },
@@ -47,91 +57,14 @@ const navLinks = [
     { href: "/windows-apps", label: "Windows Apps" }
 ]
 
-// Removed mockSearchData
-
-
 export default function Navbar() {
-    const router = useRouter()
     const { theme, setTheme } = useTheme()
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
-    const [searchOpen, setSearchOpen] = React.useState(false)
-    const [searchQuery, setSearchQuery] = React.useState("")
-    const [searchResults, setSearchResults] = React.useState<ResourceWithCategories[]>([])
-    const [isSearching, setIsSearching] = React.useState(false)
     const [browseOpen, setBrowseOpen] = React.useState(false)
-    const [isMounted, setIsMounted] = React.useState(false)
-    const { data: session, isPending, refetch: refetchSession } = authClient.useSession()
-
-    React.useEffect(() => {
-        setIsMounted(true)
-    }, [])
-
-    // Local state for avatar image to enable instant updates
-    const [avatarImage, setAvatarImage] = React.useState<string | null | undefined>(session?.user?.image)
-
-    // Sync avatarImage with session when session changes (e.g., on initial load)
-    React.useEffect(() => {
-        if (session?.user?.image !== undefined) {
-            setAvatarImage(session.user.image)
-        }
-    }, [session?.user?.image])
-
-    // Listen for session refresh events with optional image URL payload
-    React.useEffect(() => {
-        const handleSessionRefresh = (event: Event) => {
-            const customEvent = event as CustomEvent<{ imageUrl?: string | null }>
-            if (customEvent.detail?.imageUrl !== undefined) {
-                // Direct update with new image URL
-                setAvatarImage(customEvent.detail.imageUrl)
-            }
-            // Also refetch session for other data
-            void refetchSession()
-        }
-        window.addEventListener('session-refresh', handleSessionRefresh)
-        return () => window.removeEventListener('session-refresh', handleSessionRefresh)
-    }, [refetchSession])
-
     const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark")
-    }
-
-    // Fetch real search results with debounce
-    React.useEffect(() => {
-        const fetchResults = async () => {
-            if (!searchQuery.trim()) {
-                setSearchResults([])
-                return
-            }
-
-            setIsSearching(true)
-            try {
-                const result = await searchResources(searchQuery)
-                if (result.success && result.data) {
-                    setSearchResults(result.data)
-                } else {
-                    setSearchResults([])
-                }
-            } catch (error) {
-                console.error("Search failed:", error)
-                setSearchResults([])
-            } finally {
-                setIsSearching(false)
-            }
-        }
-
-        const timer = setTimeout(() => {
-            void fetchResults()
-        }, 300)
-
-        return () => clearTimeout(timer)
-    }, [searchQuery])
-
-    const handleSearchSelect = (href: string) => {
-        setSearchOpen(false)
-        setSearchQuery("")
-        router.push(href)
     }
 
     // Hover handlers for Browse dropdown
@@ -145,13 +78,7 @@ export default function Navbar() {
     const handleBrowseMouseLeave = () => {
         hoverTimeoutRef.current = setTimeout(() => {
             setBrowseOpen(false)
-        }, 150) // Small delay to allow moving to dropdown content
-    }
-
-    const handleSignOut = async () => {
-        await authClient.signOut()
-        router.refresh()
-        router.push("/")
+        }, 150)
     }
 
     return (
@@ -214,78 +141,8 @@ export default function Navbar() {
 
                     {/* Right side: Search, Theme, Submit, Auth */}
                     <div className="flex items-center space-x-1">
-                        {/* Search Button with Filtered Results */}
-                        <Dialog open={searchOpen} onOpenChange={(open) => {
-                            setSearchOpen(open)
-                            if (!open) setSearchQuery("")
-                        }}>
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9">
-                                    <Search className="h-4 w-4" />
-                                    <span className="sr-only">Search</span>
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>Search Resources</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-3">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search open-source resources..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="pl-10"
-                                            autoFocus
-                                        />
-                                    </div>
-
-                                    {/* Filtered Results */}
-                                    {searchQuery.trim() && (
-                                        <div className="max-h-64 overflow-y-auto rounded-md border border-border">
-                                            {isSearching ? (
-                                                <div className="p-4 text-center text-sm text-muted-foreground animate-pulse">
-                                                    Searching...
-                                                </div>
-                                            ) : searchResults.length > 0 ? (
-                                                <div className="divide-y divide-border">
-                                                    {searchResults.map((result) => (
-                                                        <button
-                                                            key={result.id}
-                                                            onClick={() => handleSearchSelect(`/resource/${result.slug}`)}
-                                                            className="w-full flex flex-col items-start gap-1 p-3 text-left hover:bg-muted/50 transition-colors"
-                                                        >
-                                                            <div className="flex items-center justify-between w-full">
-                                                                <span className="font-medium">{result.name}</span>
-                                                                {result.categories[0] && (
-                                                                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                                                                        {result.categories[0].name}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            {result.oneLiner && (
-                                                                <span className="text-xs text-muted-foreground line-clamp-1">{result.oneLiner}</span>
-                                                            )}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="p-4 text-center text-sm text-muted-foreground">
-                                                    No results found for &ldquo;{searchQuery}&rdquo;
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {!searchQuery.trim() && (
-                                        <p className="text-xs text-muted-foreground text-center">
-                                            Start typing to search resources...
-                                        </p>
-                                    )}
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                        {/* Search Button - Lazy loaded */}
+                        <NavbarSearchDialog />
 
                         {/* Theme Toggle */}
                         <Button
@@ -307,62 +164,8 @@ export default function Navbar() {
                             </Link>
                         </Button>
 
-                        {/* Auth Buttons */}
-                        {(!isMounted || isPending) ? (
-                            <div className="h-9 w-16 animate-pulse rounded-md bg-muted" />
-                        ) : session ? (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage
-                                                src={avatarImage ?? undefined}
-                                                alt={session.user?.name || "User"}
-                                                className="object-cover"
-                                            />
-                                            <AvatarFallback>
-                                                {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/profile" className="flex items-center gap-2">
-                                            <User className="h-4 w-4" />
-                                            Profile
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    {(session.user as { role?: string }).role === "admin" && (
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/admin" className="flex items-center gap-2">
-                                                <Shield className="h-4 w-4" />
-                                                Admin Panel
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    )}
-                                    {(session.user as { role?: string }).role === "contributor" && (
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/dashboard" className="flex items-center gap-2">
-                                                <LayoutDashboard className="h-4 w-4" />
-                                                Dashboard
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    )}
-                                    <DropdownMenuItem
-                                        onClick={handleSignOut}
-                                        className="flex items-center gap-2 text-destructive focus:text-destructive"
-                                    >
-                                        <LogOut className="h-4 w-4" />
-                                        Sign Out
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        ) : (
-                            <Button size="sm" asChild className="hidden sm:flex">
-                                <Link href="/sign-in">Sign In</Link>
-                            </Button>
-                        )}
+                        {/* Auth Buttons - Lazy loaded */}
+                        <NavbarUserMenu />
 
                         {/* Mobile Menu Button */}
                         <Button
@@ -420,7 +223,7 @@ export default function Navbar() {
 
                             <div className="border-t border-border/40 my-2" />
 
-                            {/* Submit & Auth */}
+                            {/* Submit */}
                             <Link
                                 href="/submit"
                                 className="flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80 px-2 py-2"
@@ -430,16 +233,14 @@ export default function Navbar() {
                                 Submit Resource
                             </Link>
 
-                            {!session && (
-                                <Link
-                                    href="/sign-in"
-                                    className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground px-2 py-2"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    <LogIn className="h-4 w-4" />
-                                    Sign In
-                                </Link>
-                            )}
+                            <Link
+                                href="/sign-in"
+                                className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground px-2 py-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <LogIn className="h-4 w-4" />
+                                Sign In
+                            </Link>
                         </div>
                     </div>
                 )}

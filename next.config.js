@@ -68,6 +68,40 @@ const config = {
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-navigation-menu",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-tooltip",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-checkbox",
+      "@radix-ui/react-collapsible",
+      "@radix-ui/react-alert-dialog",
+      "@radix-ui/react-separator",
+      "@radix-ui/react-scroll-area",
+      "@radix-ui/react-hover-card",
+      "@radix-ui/react-label",
+      "@radix-ui/react-progress",
+      "@radix-ui/react-slot",
+      "framer-motion",
+      "motion",
+      "date-fns",
+      "recharts",
+      "react-hook-form",
+      "@hookform/resolvers",
+      "class-variance-authority",
+      "cmdk",
+    ],
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
+  },
+  compress: true,
+  poweredByHeader: false,
 };
 
 export default config;

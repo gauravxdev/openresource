@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { AndroidAppCard } from "@/components/AndroidAppCard"
 import { AndroidAppFilters } from "@/components/AndroidAppFilters"
 import { AndroidAppResultsSummary } from "@/components/AndroidAppResultsSummary"
@@ -19,78 +20,32 @@ import { type AndroidApp, type SortOption } from "@/lib/android-apps-data"
 
 interface AndroidAppsClientProps {
     initialApps: AndroidApp[]
+    totalCount: number
+    currentPage: number
 }
 
-export default function AndroidAppsClient({ initialApps }: AndroidAppsClientProps) {
+export default function AndroidAppsClient({ initialApps, totalCount, currentPage }: AndroidAppsClientProps) {
+    const router = useRouter()
     const [searchTerm, setSearchTerm] = useState("")
     const [sortBy, setSortBy] = useState<SortOption>("popular")
-    const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 6
+    const itemsPerPage = 20
 
-    const filteredAndSortedApps = useMemo(() => {
-        const filtered = initialApps.filter(app =>
-            app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.developer.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-
-        switch (sortBy) {
-            case "atoz":
-                filtered.sort((a, b) => a.title.localeCompare(b.title))
-                break
-            case "ztoa":
-                filtered.sort((a, b) => b.title.localeCompare(a.title))
-                break
-            case "rating":
-                filtered.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
-                break
-            case "downloads":
-                // For DB data we might use forks as downloads proxy, or if it's "1B+" string format logic
-                // We'll keep existing logic but be robust to different formats
-                filtered.sort((a, b) => {
-                    const getVal = (val: string) => {
-                        if (!val) return 0;
-                        if (val.includes('B')) return parseFloat(val) * 1000000000;
-                        if (val.includes('M')) return parseFloat(val) * 1000000;
-                        if (val.includes('k')) return parseFloat(val) * 1000;
-                        return parseFloat(val) || 0;
-                    }
-                    return getVal(b.downloads) - getVal(a.downloads);
-                })
-                break
-            case "popular":
-            default:
-                // Default sort logic
-                filtered.sort((a, b) => {
-                    const getVal = (val: string) => {
-                        if (!val) return 0;
-                        if (val.includes('B')) return parseFloat(val) * 1000000000;
-                        if (val.includes('M')) return parseFloat(val) * 1000000;
-                        if (val.includes('k')) return parseFloat(val) * 1000;
-                        return parseFloat(val) || 0;
-                    }
-                    return getVal(b.downloads) - getVal(a.downloads);
-                })
-                break
-        }
-
-        return filtered
-    }, [searchTerm, sortBy, initialApps])
-
-    const totalPages = Math.ceil(filteredAndSortedApps.length / itemsPerPage)
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const paginatedApps = filteredAndSortedApps.slice(startIndex, startIndex + itemsPerPage)
+    const totalPages = Math.ceil(totalCount / itemsPerPage)
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page)
+        const params = new URLSearchParams(window.location.search)
+        params.set("page", page.toString())
+        router.push(`${window.location.pathname}?${params.toString()}`, { scroll: false })
     }
 
-    React.useEffect(() => {
-        if (currentPage > totalPages && totalPages > 0) {
-            setCurrentPage(1)
-        }
-    }, [searchTerm, sortBy, currentPage, totalPages])
+    // Client-side filtering within the current page (simple for speed)
+    const filteredApps = useMemo(() => {
+        return initialApps.filter(app =>
+            app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            app.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            app.category.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    }, [searchTerm, initialApps])
 
     return (
         <div className="w-full bg-background min-h-screen">
@@ -124,15 +79,15 @@ export default function AndroidAppsClient({ initialApps }: AndroidAppsClientProp
                 />
 
                 <AndroidAppResultsSummary
-                    filteredCount={paginatedApps.length}
-                    totalCount={filteredAndSortedApps.length}
+                    filteredCount={filteredApps.length}
+                    totalCount={totalCount}
                     sortBy={sortBy}
                     searchTerm={searchTerm}
                 />
 
-                {filteredAndSortedApps.length > 0 ? (
+                {filteredApps.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {paginatedApps.map((app) => (
+                        {filteredApps.map((app) => (
                             <AndroidAppCard key={app.id} app={app} />
                         ))}
                     </div>
@@ -147,7 +102,7 @@ export default function AndroidAppsClient({ initialApps }: AndroidAppsClientProp
                                 className="rounded-full border-neutral-300 bg-neutral-200 px-5 text-sm text-neutral-700 hover:bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900/70 dark:text-neutral-200 dark:hover:bg-neutral-800"
                                 onClick={() => {
                                     setSearchTerm("")
-                                    setSortBy("popular")
+                                    router.push(window.location.pathname)
                                 }}
                             >
                                 Clear Filters
@@ -156,7 +111,7 @@ export default function AndroidAppsClient({ initialApps }: AndroidAppsClientProp
                     </Card>
                 )}
 
-                {filteredAndSortedApps.length > 0 && totalPages > 1 && (
+                {totalCount > itemsPerPage && (
                     <div className="mt-8">
                         <Pagination
                             currentPage={currentPage}

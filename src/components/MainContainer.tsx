@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { SearchFilters } from "./SearchFilters"
 import { ResourceCard } from "./ResourceCard"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Pagination } from "@/components/ui/pagination-wrapper"
@@ -13,15 +13,25 @@ import type { ResourceWithCategories } from "@/actions/resources"
 
 interface MainContainerProps {
   initialResources: ResourceWithCategories[];
+  totalCount: number;
+  currentPage: number;
 }
 
-const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
+const MainContainer = ({ initialResources = [], totalCount = 0, currentPage = 1 }: MainContainerProps) => {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = React.useState("")
-  const [selectedCategory, setSelectedCategory] = React.useState("all")
-  const [currentPage, setCurrentPage] = React.useState(1)
-  const itemsPerPage = 9 // 3x3 grid
+  const itemsPerPage = 20
 
-  // Extract all unique categories from resources
+  const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(window.location.search)
+    params.set("page", page.toString())
+    router.push(`${window.location.pathname}?${params.toString()}`, { scroll: false })
+  }
+
+  // Categories are now just for display/links, or we could fetch them too
+  // For now, let's keep the basic category extraction from the current page's results
   const categories = React.useMemo(() => {
     const allCategories = new Set<string>();
     initialResources.forEach(r => {
@@ -29,32 +39,6 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
     });
     return ["all", ...Array.from(allCategories).sort()];
   }, [initialResources]);
-
-  const filteredResources = React.useMemo(() => {
-    return initialResources.filter(resource => {
-      const matchesSearch = resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.description.toLowerCase().includes(searchTerm.toLowerCase())
-
-      const matchesCategory = selectedCategory === "all" ||
-        resource.categories.some(c => c.name === selectedCategory);
-
-      return matchesSearch && matchesCategory
-    })
-  }, [initialResources, searchTerm, selectedCategory]);
-
-  // Reset to first page when filters change
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedCategory]);
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredResources.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedResources = filteredResources.slice(startIndex, startIndex + itemsPerPage)
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
 
   return (
     <div className="w-full bg-background min-h-screen">
@@ -65,32 +49,22 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
         <SearchFilters
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
+          selectedCategory="all" // Server-side filtering by category is handled by specific pages
+          onCategoryChange={() => undefined} // Disabled for now, handled by separate pages
           categories={categories}
         />
 
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-gray-400 text-sm">
-            Showing {filteredResources.length} of {initialResources.length} resources
+            Showing resources {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}
           </p>
-          <div className="flex gap-2">
-            <Badge variant="secondary" className="bg-gray-800/80 text-gray-300 border-gray-700/50">
-              {selectedCategory === "all" ? "All" : selectedCategory}
-            </Badge>
-            {searchTerm && (
-              <Badge variant="outline" className="border-gray-700/50 text-gray-400">
-                &ldquo;{searchTerm}&rdquo;
-              </Badge>
-            )}
-          </div>
         </div>
 
         {/* Resource Cards Grid */}
-        {filteredResources.length > 0 ? (
+        {initialResources.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {paginatedResources.map((resource) => (
+            {initialResources.map((resource) => (
               <ResourceCard
                 key={resource.id}
                 resource={{
@@ -122,7 +96,7 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
                 className="rounded-full border-neutral-300 bg-neutral-200 px-5 text-sm text-neutral-700 hover:bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900/70 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 onClick={() => {
                   setSearchTerm("")
-                  setSelectedCategory("all")
+                  router.push(window.location.pathname)
                 }}
               >
                 Clear Filters
@@ -131,8 +105,8 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
           </Card>
         )}
 
-        {/* Pagination - Always at bottom */}
-        {filteredResources.length > 0 && totalPages > 1 && (
+        {/* Pagination */}
+        {totalCount > itemsPerPage && (
           <div className="mt-8">
             <Pagination
               currentPage={currentPage}
@@ -145,5 +119,6 @@ const MainContainer = ({ initialResources = [] }: MainContainerProps) => {
     </div>
   )
 }
+
 
 export default MainContainer

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { GitHubRepoCard } from "@/components/GitHubRepoCard"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -29,60 +30,34 @@ export interface GitHubRepo {
 
 interface GitHubReposClientProps {
     initialRepos: GitHubRepo[]
+    totalCount: number
+    currentPage: number
 }
 
 type SortOption = "trending" | "newest" | "oldest" | "atoz" | "ztoa" | "stars" | "forks"
 
-export default function GitHubReposClient({ initialRepos }: GitHubReposClientProps) {
+export default function GitHubReposClient({ initialRepos, totalCount, currentPage }: GitHubReposClientProps) {
+    const router = useRouter()
     const [searchTerm, setSearchTerm] = useState("")
     const [sortBy, setSortBy] = useState<SortOption>("trending")
-    const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 9 // Increased from 3 for better view with real data
+    const itemsPerPage = 20
 
-    const filteredAndSortedRepos = useMemo(() => {
-        const filtered = initialRepos.filter(repo =>
+    const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+    const handlePageChange = (page: number) => {
+        const params = new URLSearchParams(window.location.search)
+        params.set("page", page.toString())
+        router.push(`${window.location.pathname}?${params.toString()}`, { scroll: false })
+    }
+
+    // Client-side filtering within the current page
+    const filteredRepos = useMemo(() => {
+        return initialRepos.filter(repo =>
             repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             repo.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
             repo.language.toLowerCase().includes(searchTerm.toLowerCase())
         )
-
-        switch (sortBy) {
-            case "atoz":
-                filtered.sort((a, b) => a.name.localeCompare(b.name))
-                break
-            case "ztoa":
-                filtered.sort((a, b) => b.name.localeCompare(a.name))
-                break
-            case "stars":
-                filtered.sort((a, b) => b.stars - a.stars)
-                break
-            case "forks":
-                filtered.sort((a, b) => b.forks - a.forks)
-                break
-            case "trending":
-            default:
-                filtered.sort((a, b) => b.stars - a.stars)
-                break
-        }
-
-        return filtered
-    }, [searchTerm, sortBy, initialRepos])
-
-    // Calculate pagination
-    const totalPages = Math.ceil(filteredAndSortedRepos.length / itemsPerPage)
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const paginatedRepos = filteredAndSortedRepos.slice(startIndex, startIndex + itemsPerPage)
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page)
-    }
-
-    // Reset to first page when filters change
-    React.useEffect(() => {
-        if (currentPage > totalPages && totalPages > 0) {
-            setCurrentPage(1)
-        }
-    }, [searchTerm, sortBy, currentPage, totalPages])
+    }, [searchTerm, initialRepos])
 
     return (
         <div className="w-full bg-background min-h-screen">
@@ -145,7 +120,7 @@ export default function GitHubReposClient({ initialRepos }: GitHubReposClientPro
                 {/* Results Summary - Exact same layout as MainContainer */}
                 <div className="flex items-center justify-between mb-4">
                     <p className="text-gray-400 text-sm">
-                        Showing {paginatedRepos.length} of {filteredAndSortedRepos.length} repositories
+                        Showing {filteredRepos.length} of {totalCount} repositories
                     </p>
                     <div className="flex gap-2">
                         {sortBy !== "trending" && (
@@ -167,9 +142,9 @@ export default function GitHubReposClient({ initialRepos }: GitHubReposClientPro
                 </div>
 
                 {/* Repository Cards Grid */}
-                {filteredAndSortedRepos.length > 0 ? (
+                {filteredRepos.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {paginatedRepos.map((repo, index) => (
+                        {filteredRepos.map((repo, index) => (
                             <GitHubRepoCard
                                 key={index}
                                 name={repo.name}
@@ -192,7 +167,7 @@ export default function GitHubReposClient({ initialRepos }: GitHubReposClientPro
                                 className="rounded-full border-neutral-300 bg-neutral-200 px-5 text-sm text-neutral-700 hover:bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900/70 dark:text-neutral-200 dark:hover:bg-neutral-800"
                                 onClick={() => {
                                     setSearchTerm("")
-                                    setSortBy("trending")
+                                    router.push(window.location.pathname)
                                 }}
                             >
                                 Clear Filters
@@ -201,8 +176,8 @@ export default function GitHubReposClient({ initialRepos }: GitHubReposClientPro
                     </Card>
                 )}
 
-                {/* Pagination - Always at bottom */}
-                {filteredAndSortedRepos.length > 0 && totalPages > 1 && (
+                {/* Pagination */}
+                {totalCount > itemsPerPage && (
                     <div className="mt-8">
                         <Pagination
                             currentPage={currentPage}

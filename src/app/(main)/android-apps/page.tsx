@@ -1,12 +1,19 @@
 import React from "react"
+import dynamic from "next/dynamic"
 import { getAndroidApps } from "@/actions/resources"
-import AndroidAppsClient from "./android-apps-client"
 import { type AndroidApp } from "@/lib/android-apps-data"
+
+// Lazy-load client for better bundle size
+const AndroidAppsClient = dynamic(() => import("./android-apps-client"), {
+  loading: () => <div className="mx-auto max-w-[1152px] h-96 animate-pulse bg-muted/20" />
+})
 
 export const revalidate = 60
 
-export default async function AndroidApps() {
-  const { data: resources } = await getAndroidApps()
+export default async function AndroidApps({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageStr } = await searchParams
+  const currentPage = Number(pageStr) || 1
+  const { data: resources, totalCount } = await getAndroidApps(currentPage)
 
   // Map DB resources to AndroidApp interface
   const dbApps: AndroidApp[] = resources.map((resource) => {
@@ -32,7 +39,7 @@ export default async function AndroidApps() {
       lastUpdated: lastUpdatedStr,
       image: resource.image ?? "/api/placeholder/300/200", // Fallback image
       logo: resource.logo,
-      developer: resource.addedBy ?? "Unknown", // Or use a field if available, 'addedBy' is user ID so might want 'Unknown' for now
+      developer: resource.addedBy ?? "Unknown", 
       license: resource.license ?? "Free",
       stars: resource.stars ? `${(resource.stars / 1000).toFixed(1)}k` : "0",
       tags: resource.categories.map(c => c.name), // Use categories as tags
@@ -40,11 +47,11 @@ export default async function AndroidApps() {
     }
   })
 
-  // Combine mock data (if needed) or just use DB data. 
-  // User asked to "make android-apps route data also dynamic render with db's data"
-  // implies replacing or adding. Usually replacing is the goal of "dynamic render".
-  // However, if DB is empty, maybe fallback? For now, let's just use DB data.
-  // If no DB data, it will show empty state which is correct behavior.
-
-  return <AndroidAppsClient initialApps={dbApps} />
+  return (
+    <AndroidAppsClient 
+      initialApps={dbApps} 
+      totalCount={totalCount || 0} 
+      currentPage={currentPage} 
+    />
+  )
 }
