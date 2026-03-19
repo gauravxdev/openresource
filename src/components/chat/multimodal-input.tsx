@@ -252,6 +252,8 @@ function PureModelSelectorCompact({
         chatModels.find((m) => m.id === DEFAULT_CHAT_MODEL) ??
         chatModels[0];
 
+    if (!selectedModel) return null;
+
     return (
         <Select
             value={selectedModel.id}

@@ -132,7 +132,7 @@ export const PreviewMessage = ({
                         <Reasoning isStreaming={isReasoningStreaming}>
                             <ReasoningTrigger />
                             <ReasoningContent>
-                                <Markdown>{reasoningText}</Markdown>
+                                {reasoningText}
                             </ReasoningContent>
                         </Reasoning>
                     )}

@@ -52,9 +52,9 @@ export function Chat({
         sendMessage,
         status,
         stop,
-    } = useChat<ChatMessage>({
+    } = useChat({
         id,
-        initialMessages: initialMessages ?? [],
+        initialMessages: initialMessages as ChatMessage[] ?? [],
         generateId: generateUUID,
         transport: new DefaultChatTransport({
             api: "/api/chat",
@@ -73,7 +73,7 @@ export function Chat({
                 };
             },
         }),
-        onError: (error) => {
+        onError: (error: any) => {
             if (error instanceof ChatError) {
                 toast.error(error.message);
             } else {
@@ -84,13 +84,13 @@ export function Chat({
             // Refresh sidebar history after message completes
             mutate(unstable_serialize(getChatHistoryPaginationKey));
         },
-    });
+    } as any) as any;
 
     // Force-set initial messages from server on mount
     // The useChat hook's internal store may ignore initialMessages if it has stale state
     useEffect(() => {
         if (initialMessages && initialMessages.length > 0) {
-            setMessages(initialMessages);
+            setMessages(initialMessages as ChatMessage[]);
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

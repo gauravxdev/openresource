@@ -34,7 +34,6 @@ export function Markdown({ className, children, ...props }: MarkdownProps) {
             <ReactMarkdown
                 {...props}
                 components={{
-                    // @ts-expect-error - inline prop exists in react-markdown v9 but types might be weird
                     code({ node, inline, className, children, ...props }: any) {
                         const match = /language-(\w+)/.exec(className || "");
                         if (!inline && match) {

@@ -149,8 +149,6 @@ export async function POST(request: Request) {
                         tavilySearch,
                         serperSearch,
                     } : undefined,
-                    maxSteps: allowSearch ? 5 : 1,
-                    toolCallStreaming: true,
                     onChunk: ({ chunk }: { chunk: any }) => {
                         if (chunk.type === 'tool-call' || chunk.type === 'tool-call-streaming-start' || chunk.type === 'tool-call-delta') {
                             console.log("[onChunk]", chunk.type, JSON.stringify(chunk));
@@ -168,7 +166,7 @@ export async function POST(request: Request) {
                                 if (typeof assistantMessage.content === "string") {
                                     assistantParts.push({ type: "text", text: assistantMessage.content });
                                 } else if (Array.isArray(assistantMessage.content)) {
-                                    for (const part of assistantMessage.content) {
+                                    for (const part of (assistantMessage.content as any[])) {
                                         if (part.type === "text") {
                                             assistantParts.push({ type: "text", text: part.text });
                                         } else if (part.type === "tool-call") {
