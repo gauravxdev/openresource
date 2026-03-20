@@ -5,20 +5,18 @@ import { Input } from "@/components/ui/input"
 import { Search, Filter } from "lucide-react"
 
 interface SearchFiltersProps {
-  searchTerm: string
-  onSearchChange: (value: string) => void
   selectedCategory: string
   onCategoryChange: (value: string) => void
   categories: string[]
 }
 
 export const SearchFilters = React.memo(function SearchFilters({
-  searchTerm,
-  onSearchChange,
   selectedCategory,
   onCategoryChange,
   categories
 }: SearchFiltersProps) {
+  const [searchTerm, setSearchTerm] = React.useState("")
+
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
       {/* Search Input */}
@@ -27,7 +25,7 @@ export const SearchFilters = React.memo(function SearchFilters({
         <Input
           placeholder="Search resources..."
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10"
         />
       </div>

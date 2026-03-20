@@ -1,13 +1,8 @@
-"use client"
-
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { SearchFilters } from "./SearchFilters"
 import { ResourceCard } from "./ResourceCard"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Pagination } from "@/components/ui/pagination-wrapper"
 import { Separator } from "@/components/ui/separator"
+import { MainPagination } from "@/components/MainPagination"
+import { SearchFilters } from "./SearchFilters"
 import { timeAgo } from "@/lib/utils"
 import type { ResourceWithCategories } from "@/actions/resources"
 
@@ -18,27 +13,14 @@ interface MainContainerProps {
 }
 
 const MainContainer = ({ initialResources = [], totalCount = 0, currentPage = 1 }: MainContainerProps) => {
-  const router = useRouter()
-  const [searchTerm, setSearchTerm] = React.useState("")
   const itemsPerPage = 20
 
-  const totalPages = Math.ceil(totalCount / itemsPerPage)
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(window.location.search)
-    params.set("page", page.toString())
-    router.push(`${window.location.pathname}?${params.toString()}`, { scroll: false })
-  }
-
-  // Categories are now just for display/links, or we could fetch them too
-  // For now, let's keep the basic category extraction from the current page's results
-  const categories = React.useMemo(() => {
-    const allCategories = new Set<string>();
-    initialResources.forEach(r => {
-      r.categories.forEach(c => allCategories.add(c.name));
-    });
-    return ["all", ...Array.from(allCategories).sort()];
-  }, [initialResources]);
+  // Categories are now just for display/links
+  const allCategories = new Set<string>();
+  initialResources.forEach(r => {
+    r.categories.forEach(c => allCategories.add(c.name));
+  });
+  const categories = ["all", ...Array.from(allCategories).sort()];
 
   return (
     <div className="w-full bg-background min-h-screen">
@@ -47,10 +29,8 @@ const MainContainer = ({ initialResources = [], totalCount = 0, currentPage = 1 
       <div className="mx-auto max-w-[1152px] px-5 pb-20 pt-8 md:px-6 md:pt-12">
         {/* Search and Filters */}
         <SearchFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedCategory="all" // Server-side filtering by category is handled by specific pages
-          onCategoryChange={() => undefined} // Disabled for now, handled by separate pages
+          selectedCategory="all"
+          onCategoryChange={() => undefined}
           categories={categories}
         />
 
@@ -91,30 +71,16 @@ const MainContainer = ({ initialResources = [], totalCount = 0, currentPage = 1 
               <p className="text-lg text-neutral-600 dark:text-neutral-400">
                 No resources found matching your criteria.
               </p>
-              <Button
-                variant="outline"
-                className="rounded-full border-neutral-300 bg-neutral-200 px-5 text-sm text-neutral-700 hover:bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900/70 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                onClick={() => {
-                  setSearchTerm("")
-                  router.push(window.location.pathname)
-                }}
-              >
-                Clear Filters
-              </Button>
             </CardContent>
           </Card>
         )}
 
         {/* Pagination */}
-        {totalCount > itemsPerPage && (
-          <div className="mt-8">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        )}
+        <MainPagination
+          currentPage={currentPage}
+          totalCount={totalCount}
+          itemsPerPage={itemsPerPage}
+        />
       </div>
     </div>
   )

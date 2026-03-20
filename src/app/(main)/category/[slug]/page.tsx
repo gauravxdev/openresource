@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation"
-import dynamic from "next/dynamic"
 import { getResourcesByCategory } from "@/actions/resources"
 import {
     Breadcrumb,
@@ -9,8 +8,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-
-const MainContainer = dynamic(() => import("@/components/MainContainer"))
+import MainContainer from "@/components/MainContainer"
 
 export const revalidate = 60
 

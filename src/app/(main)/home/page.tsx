@@ -1,8 +1,6 @@
 import HeroSection from "@/components/HeroSection"
-import dynamic from "next/dynamic"
 import { getResources } from "@/actions/resources"
-
-const MainContainer = dynamic(() => import("@/components/MainContainer"))
+import MainContainer from "@/components/MainContainer"
 
 export const revalidate = 60
 
