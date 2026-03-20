@@ -10,7 +10,7 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-import MainContainer from "@/components/MainContainer"
+const MainContainer = dynamic(() => import("@/components/MainContainer"))
 
 export const revalidate = 60
 

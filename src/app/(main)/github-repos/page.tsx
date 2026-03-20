@@ -2,7 +2,7 @@ import React from "react"
 import dynamic from "next/dynamic"
 import { getGitHubRepos } from "@/actions/resources"
 
-import GitHubReposClient from "./github-repos-client"
+const GitHubReposClient = dynamic(() => import("./github-repos-client"))
 
 export interface GitHubRepo {
   name: string

@@ -53,7 +53,7 @@ interface ResourceCardProps {
   resource: Resource
 }
 
-export const ResourceCard = ({ resource }: ResourceCardProps) => {
+export const ResourceCard = React.memo(({ resource }: ResourceCardProps) => {
   const [isBookmarked, setIsBookmarked] = React.useState(false)
 
   // Check if resource is already bookmarked on component mount (using shared cache)
@@ -118,7 +118,7 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
   ] as const
 
   return (
-    <Link href={`/resource/${resource.slug}`} className="block h-full">
+    <Link href={`/resource/${resource.slug}`} className="block h-full" prefetch={false}>
       <Card className="group relative h-full flex flex-col p-0 gap-0 overflow-hidden rounded-[12px] border border-neutral-150 bg-transparent transition-all duration-200 hover:outline-[3px] hover:outline-neutral-200 dark:border-neutral-800 dark:hover:outline-neutral-800">
         <div className="pointer-events-none absolute inset-[2px] rounded-[10px] bg-neutral-50 dark:bg-[#141414]" />
         <CardContent className="relative flex h-full flex-col p-4">
@@ -209,4 +209,4 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
       </Card>
     </Link>
   )
-}
+})

@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, ExternalLink, Bookmark } from "lucide-react"
 import * as React from "react"
-import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 interface BookmarkItem {
   id: string | number
@@ -18,14 +17,14 @@ interface GitHubRepoCardProps {
   url: string
 }
 
-export function GitHubRepoCard({
+export const GitHubRepoCard = React.memo(({
   name,
   description,
   language,
   stars,
   forks,
   url
-}: GitHubRepoCardProps) {
+}: GitHubRepoCardProps) => {
   const [isBookmarked, setIsBookmarked] = React.useState(false)
 
   // Check if repo is already bookmarked on component mount
@@ -76,9 +75,9 @@ export function GitHubRepoCard({
               {name}
             </CardTitle>
             <div className="text-sm text-muted-foreground line-clamp-3">
-              <MarkdownRenderer
-                content={description || "A comprehensive open source project with modern development practices and community contributions."}
-              />
+              <p>
+                {description || "A comprehensive open source project with modern development practices and community contributions."}
+              </p>
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
@@ -131,4 +130,4 @@ export function GitHubRepoCard({
       </CardContent>
     </Card>
   )
-}
+})

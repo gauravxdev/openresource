@@ -12,7 +12,7 @@ interface SearchFiltersProps {
   categories: string[]
 }
 
-export const SearchFilters = ({
+export const SearchFilters = React.memo(({
   searchTerm,
   onSearchChange,
   selectedCategory,
@@ -50,5 +50,5 @@ export const SearchFilters = ({
       </div>
     </div>
   )
-}
+})
 
