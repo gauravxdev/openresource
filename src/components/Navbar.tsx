@@ -11,8 +11,6 @@ import {
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -38,15 +36,22 @@ const NavbarUserMenu = dynamic(
     }
 )
 
+const NavbarBrowseMenu = dynamic(
+    () => import("@/components/NavbarBrowseMenu").then((mod) => mod.NavbarBrowseMenu),
+    {
+        ssr: false,
+    }
+)
+
 const browseOptions = [
-    { href: "/browse/latest", label: "Latest", description: "Fresh arrivals added recently.", icon: Clock },
-    { href: "/browse/self-hosted", label: "Self-hosted", description: "Deploy on your own infra.", icon: Server },
-    { href: "/browse/coming-soon", label: "Coming Soon", description: "Projects launching soon.", icon: Rocket },
-    { href: "/browse/alternatives", label: "Alternatives", description: "Explore replacements for tools.", icon: ArrowLeftRight },
-    { href: "/categories", label: "Categories", description: "Browse curated categories.", icon: FolderOpen },
-    { href: "/android-apps", label: "Android Apps", description: "Discover apps for android.", icon: Layers },
-    { href: "/windows-apps", label: "Windows Apps", description: "Discover apps for windows.", icon: Monitor },
-    { href: "/browse/licenses", label: "Licenses", description: "Filter by software licenses.", icon: Scale },
+    { href: "/browse/latest", label: "Latest", icon: Clock },
+    { href: "/browse/self-hosted", label: "Self-hosted", icon: Server },
+    { href: "/browse/coming-soon", label: "Coming Soon", icon: Rocket },
+    { href: "/browse/alternatives", label: "Alternatives", icon: ArrowLeftRight },
+    { href: "/categories", label: "Categories", icon: FolderOpen },
+    { href: "/android-apps", label: "Android Apps", icon: Layers },
+    { href: "/windows-apps", label: "Windows Apps", icon: Monitor },
+    { href: "/browse/licenses", label: "Licenses", icon: Scale },
 ]
 
 const navLinks = [
@@ -106,24 +111,10 @@ export default function Navbar() {
                                         <ChevronDown className="h-3.5 w-3.5" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    align="start"
-                                    className="w-64"
+                                <NavbarBrowseMenu 
                                     onMouseEnter={handleBrowseMouseEnter}
                                     onMouseLeave={handleBrowseMouseLeave}
-                                >
-                                    {browseOptions.map((option) => (
-                                        <DropdownMenuItem key={option.href} asChild>
-                                            <Link href={option.href} className="flex items-start gap-3 p-2">
-                                                <option.icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                                <div>
-                                                    <p className="font-medium">{option.label}</p>
-                                                    <p className="text-xs text-muted-foreground">{option.description}</p>
-                                                </div>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
+                                />
                             </DropdownMenu>
                         </div>
 

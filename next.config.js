@@ -106,6 +106,9 @@ const config = {
       "next-themes",
       "zod",
       "swr",
+      "clsx",
+      "tailwind-merge",
+      "lucide-react"
     ],
   },
   compiler: {

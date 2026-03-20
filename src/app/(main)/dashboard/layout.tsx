@@ -33,8 +33,8 @@ export default function DashboardLayout({
 
     return (
         <div className="min-h-[calc(100vh-3.5rem)] bg-background">
-            <div className="mx-auto max-w-[1152px] px-5 md:px-6">
-                <div className="flex gap-8 py-8">
+            <div className="mx-auto max-w-[1152px] px-4 md:px-6">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 py-4 md:py-8">
                     {/* Sidebar */}
                     <aside className="hidden md:flex w-[220px] shrink-0 flex-col gap-2">
                         <div className="flex items-center gap-2 mb-6">

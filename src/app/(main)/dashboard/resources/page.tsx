@@ -42,14 +42,14 @@ export default async function DashboardResourcesPage({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight">My Resources</h1>
-                    <p className="text-muted-foreground mt-1">
+                    <p className="text-muted-foreground mt-1 text-sm">
                         Manage your submitted resources. Total: {metadata.total}
                     </p>
                 </div>
-                <Button asChild className="gap-2">
+                <Button asChild className="gap-2 w-full sm:w-auto">
                     <Link href="/submit">
                         <Plus className="h-4 w-4" />
                         Submit New

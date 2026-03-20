@@ -44,15 +44,18 @@ interface BookmarkButtonProps {
 
 export function BookmarkButton({ resource }: BookmarkButtonProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false)
+  const [mounted, setMounted] = React.useState(false)
 
   // Check if resource is already bookmarked on component mount (using shared cache)
   React.useEffect(() => {
+    setMounted(true)
     const bookmarks = getBookmarks()
     setIsBookmarked(bookmarks.some((item) => item.id === resource.id))
   }, [resource.id])
 
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.preventDefault()
+    if (!mounted) return
     const bookmarks = getBookmarks()
 
     if (isBookmarked) {
@@ -84,6 +87,19 @@ export function BookmarkButton({ resource }: BookmarkButtonProps) {
       invalidateBookmarkCache()
       setIsBookmarked(true)
     }
+  }
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className="shrink-0 border-border opacity-50 cursor-wait"
+        disabled
+      >
+        <Bookmark className="h-4 w-4" />
+      </Button>
+    )
   }
 
   return (

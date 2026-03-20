@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/server/db";
+import { Prisma } from "@prisma/client";
 
 export type ResourceWithCategories = {
     id: string;
@@ -29,24 +30,44 @@ export type ResourceWithCategories = {
     license: string | null;
 };
 
-export async function getResources(page = 1, limit = 20) {
+export async function getResources(page = 1, limit = 20, category?: string, query?: string): Promise<{ success: boolean; data: ResourceWithCategories[]; totalCount: number }> {
     try {
         const skip = (page - 1) * limit;
 
-        const [resources, totalCount] = await Promise.all([
-            db.resource.findMany({
-                where: {
-                    status: "APPROVED",
-                    NOT: {
-                        categories: {
-                            some: {
-                                slug: {
-                                    in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
-                                }
-                            }
+        const where: Prisma.ResourceWhereInput = {
+            status: "APPROVED",
+            NOT: {
+                categories: {
+                    some: {
+                        slug: {
+                            in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
                         }
                     }
-                },
+                }
+            },
+            ...(category && category !== "all" ? {
+                categories: {
+                    some: {
+                        OR: [
+                            { name: { equals: category, mode: Prisma.QueryMode.insensitive } },
+                            { slug: { equals: category, mode: Prisma.QueryMode.insensitive } }
+                        ]
+                    }
+                }
+            } : {}),
+            ...(query ? {
+                OR: [
+                    { name: { contains: query, mode: Prisma.QueryMode.insensitive } },
+                    { description: { contains: query, mode: Prisma.QueryMode.insensitive } },
+                    { shortDescription: { contains: query, mode: Prisma.QueryMode.insensitive } },
+                    { oneLiner: { contains: query, mode: Prisma.QueryMode.insensitive } },
+                ]
+            } : {})
+        };
+
+        const [resources, totalCount] = await Promise.all([
+            db.resource.findMany({
+                where,
                 select: {
                     id: true,
                     slug: true,
@@ -81,23 +102,10 @@ export async function getResources(page = 1, limit = 20) {
                 skip,
                 take: limit,
             }),
-            db.resource.count({
-                where: {
-                    status: "APPROVED",
-                    NOT: {
-                        categories: {
-                            some: {
-                                slug: {
-                                    in: ["github-repo", "github-repos", "android-app", "android-apps", "windows-app", "windows-apps"]
-                                }
-                            }
-                        }
-                    }
-                }
-            })
+            db.resource.count({ where })
         ]);
 
-        return { success: true, data: resources, totalCount };
+        return { success: true, data: resources as ResourceWithCategories[], totalCount };
     } catch (error) {
         console.error("[Products] Get Error:", error);
         return { success: false, data: [], totalCount: 0 };

@@ -10,23 +10,8 @@
   --font-lexend: var(--font-lexend), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Custom font-face for Righteous-Regular */
-@font-face {
-  font-family: 'Righteous-Regular';
-  src: url('../../fonts/Righteous-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Custom font-face for Lexend Variable */
-@font-face {
-  font-family: 'Lexend';
-  src: url('../../fonts/Lexend-VariableFont_wght.ttf') format('truetype-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* Performance: Fonts are already loaded via next/font in layout.tsx. 
+   Removing redundant @font-face declarations to prevent double-fetching. */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

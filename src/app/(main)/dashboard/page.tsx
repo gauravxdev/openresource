@@ -68,7 +68,7 @@ export default async function DashboardOverviewPage() {
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat) => (
                     <div
                         key={stat.label}
@@ -102,11 +102,11 @@ export default async function DashboardOverviewPage() {
                         {recentResources.map((resource: any) => (
                             <div
                                 key={resource.id}
-                                className="flex items-center justify-between rounded-xl border border-border/50 bg-card/50 backdrop-blur p-4 hover:bg-muted/30 transition-all duration-200"
+                                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-border/50 bg-card/50 backdrop-blur p-4 hover:bg-muted/30 transition-all duration-200"
                             >
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-3">
-                                        <p className="font-medium truncate">{resource.name}</p>
+                                    <div className="flex items-center flex-wrap gap-2">
+                                        <p className="font-medium truncate max-w-[200px] sm:max-w-none">{resource.name}</p>
                                         <Badge
                                             variant={
                                                 resource.status === "APPROVED"

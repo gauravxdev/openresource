@@ -6,21 +6,25 @@ import { SearchFilters } from "./SearchFilters"
 import { timeAgo } from "@/lib/utils"
 import type { ResourceWithCategories } from "@/actions/resources"
 
+import { Suspense } from "react"
+
 interface MainContainerProps {
   initialResources: ResourceWithCategories[];
   totalCount: number;
   currentPage: number;
+  categories?: string[];
+  selectedCategory?: string;
+  searchTerm?: string;
 }
 
-const MainContainer = ({ initialResources = [], totalCount = 0, currentPage = 1 }: MainContainerProps) => {
+const MainContainer = ({ 
+  initialResources = [], 
+  totalCount = 0, 
+  currentPage = 1,
+  categories = ["all"],
+  selectedCategory = "all",
+}: MainContainerProps) => {
   const itemsPerPage = 20
-
-  // Categories are now just for display/links
-  const allCategories = new Set<string>();
-  initialResources.forEach(r => {
-    r.categories.forEach(c => allCategories.add(c.name));
-  });
-  const categories = ["all", ...Array.from(allCategories).sort()];
 
   return (
     <div className="w-full bg-background min-h-screen">
@@ -28,11 +32,12 @@ const MainContainer = ({ initialResources = [], totalCount = 0, currentPage = 1 
       {/* Main content container with same width as navbar */}
       <div className="mx-auto max-w-[1152px] px-5 pb-20 pt-8 md:px-6 md:pt-12">
         {/* Search and Filters */}
-        <SearchFilters
-          selectedCategory="all"
-          onCategoryChange={() => undefined}
-          categories={categories}
-        />
+        <Suspense fallback={<div className="h-10 w-full animate-pulse bg-muted rounded-md mb-6" />}>
+          <SearchFilters
+            selectedCategory={selectedCategory}
+            categories={Array.from(new Set(["all", ...categories]))}
+          />
+        </Suspense>
 
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-4">

@@ -28,12 +28,17 @@ import {
     Globe,
     Pencil,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { formatDistanceToNow } from "date-fns";
 import { deleteContributorResource } from "@/actions/contributor/resources";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { EditResourceDialog } from "./edit-resource-dialog";
+
+const EditResourceDialog = dynamic(() => import("./edit-resource-dialog").then((mod) => mod.EditResourceDialog), {
+    ssr: false,
+    loading: () => null,
+});
 
 export function ContributorResourcesTable({ resources }: { resources: any[] }) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -62,7 +67,7 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
                     <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Added</TableHead>
+                        <TableHead className="hidden sm:table-cell">Added</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -90,7 +95,7 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
                                     {resource.status}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-muted-foreground whitespace-nowrap text-sm">
+                            <TableCell className="text-muted-foreground whitespace-nowrap text-sm hidden sm:table-cell">
                                 {formatDistanceToNow(new Date(resource.createdAt), {
                                     addSuffix: true,
                                 })}

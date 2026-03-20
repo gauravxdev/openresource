@@ -129,7 +129,7 @@ export default async function DashboardAnalyticsPage() {
                                     {approvedResources.map((resource: any) => (
                                         <div
                                             key={resource.id}
-                                            className="flex items-center justify-between rounded-lg border border-border/40 bg-card/30 p-3"
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-border/40 bg-card/30 p-3"
                                         >
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-medium text-sm truncate">{resource.name}</p>
@@ -137,7 +137,7 @@ export default async function DashboardAnalyticsPage() {
                                                     {resource.oneLiner || resource.slug}
                                                 </p>
                                             </div>
-                                            <div className="flex items-center gap-2 shrink-0">
+                                            <div className="flex items-center flex-wrap gap-2 shrink-0">
                                                 {resource.categories?.map((cat: any) => (
                                                     <Badge key={cat.slug} variant="outline" className="text-[10px]">
                                                         {cat.name}
@@ -161,7 +161,7 @@ export default async function DashboardAnalyticsPage() {
                                     {pendingResources.map((resource: any) => (
                                         <div
                                             key={resource.id}
-                                            className="flex items-center justify-between rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-3"
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-3"
                                         >
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-medium text-sm truncate">{resource.name}</p>
@@ -169,7 +169,7 @@ export default async function DashboardAnalyticsPage() {
                                                     {resource.oneLiner || resource.slug}
                                                 </p>
                                             </div>
-                                            <Badge variant="secondary" className="text-[10px] shrink-0">
+                                            <Badge variant="secondary" className="text-[10px] shrink-0 w-fit">
                                                 PENDING
                                             </Badge>
                                         </div>
