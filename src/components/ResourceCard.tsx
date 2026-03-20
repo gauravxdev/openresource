@@ -53,7 +53,7 @@ interface ResourceCardProps {
   resource: Resource
 }
 
-export const ResourceCard = React.memo(({ resource }: ResourceCardProps) => {
+export const ResourceCard = React.memo(function ResourceCard({ resource }: ResourceCardProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false)
 
   // Check if resource is already bookmarked on component mount (using shared cache)

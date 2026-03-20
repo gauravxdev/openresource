@@ -12,13 +12,13 @@ interface SearchFiltersProps {
   categories: string[]
 }
 
-export const SearchFilters = React.memo(({
+export const SearchFilters = React.memo(function SearchFilters({
   searchTerm,
   onSearchChange,
   selectedCategory,
   onCategoryChange,
   categories
-}: SearchFiltersProps) => {
+}: SearchFiltersProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
       {/* Search Input */}

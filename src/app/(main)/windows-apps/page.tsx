@@ -3,7 +3,7 @@ import dynamic from "next/dynamic"
 import { getWindowsApps } from "@/actions/resources"
 import { type WindowsApp } from "@/lib/windows-apps-data"
 
-import WindowsAppsClient from "./windows-apps-client"
+const WindowsAppsClient = dynamic(() => import("./windows-apps-client"))
 
 export const revalidate = 60
 

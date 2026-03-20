@@ -17,14 +17,14 @@ interface GitHubRepoCardProps {
   url: string
 }
 
-export const GitHubRepoCard = React.memo(({
+export const GitHubRepoCard = React.memo(function GitHubRepoCard({
   name,
   description,
   language,
   stars,
   forks,
   url
-}: GitHubRepoCardProps) => {
+}: GitHubRepoCardProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false)
 
   // Check if repo is already bookmarked on component mount

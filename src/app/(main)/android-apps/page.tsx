@@ -3,7 +3,7 @@ import dynamic from "next/dynamic"
 import { getAndroidApps } from "@/actions/resources"
 import { type AndroidApp } from "@/lib/android-apps-data"
 
-import AndroidAppsClient from "./android-apps-client"
+const AndroidAppsClient = dynamic(() => import("./android-apps-client"))
 
 export const revalidate = 60
 
