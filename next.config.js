@@ -1,4 +1,3 @@
-
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
@@ -6,7 +5,7 @@ const config = {
   reactStrictMode: false,
   async rewrites() {
     // Skip PostHog proxy if environment variable is set (for build troubleshooting)
-    if (process.env.SKIP_POSTHOG_PROXY === 'true') {
+    if (process.env.SKIP_POSTHOG_PROXY === "true") {
       return [];
     }
 
@@ -25,7 +24,8 @@ const config = {
     return [
       {
         // Cache static assets (fonts, images, JS, CSS) for 1 year
-        source: "/:all*(svg|jpg|jpeg|png|gif|ico|webp|mp4|ttf|otf|woff|woff2|js|css)",
+        source:
+          "/:all*(svg|jpg|jpeg|png|gif|ico|webp|mp4|ttf|otf|woff|woff2|js|css)",
         headers: [
           {
             key: "Cache-Control",
@@ -88,7 +88,6 @@ const config = {
       "@radix-ui/react-label",
       "@radix-ui/react-progress",
       "@radix-ui/react-slot",
-      "framer-motion",
       "motion",
       "date-fns",
       "recharts",
@@ -108,11 +107,13 @@ const config = {
       "swr",
       "clsx",
       "tailwind-merge",
-      "lucide-react"
     ],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
   },
   compress: true,
   poweredByHeader: false,

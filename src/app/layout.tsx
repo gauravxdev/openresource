@@ -6,6 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import type { CSSProperties } from "react";
 import { ClientProviders } from "@/components/ClientProviders";
+import { AppShell } from "@/components/AppShell";
 
 export const metadata: Metadata = {
   title: "Openresource",
@@ -21,14 +22,14 @@ const fontMono = GeistMono;
 const righteousFont = localFont({
   src: "../../fonts/Righteous-Regular.ttf",
   variable: "--font-righteous",
-  display: "swap",
+  display: "optional",
 });
 
 // Custom Lexend font configuration
 const lexendFont = localFont({
   src: "../../fonts/Lexend-VariableFont_wght.ttf",
   variable: "--font-lexend",
-  display: "swap",
+  display: "optional",
 });
 
 const dottedBackgroundStyle: CSSProperties = {
@@ -51,22 +52,17 @@ export default function RootLayout({
     >
       <body className="bg-transparent" suppressHydrationWarning>
         <ClientProviders>
-          {/* Dynamic Background */}
-          <div className="min-h-screen w-full relative">
-            <div
-              className="
-                absolute inset-0 z-0
-                bg-background
-                [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)]
-                dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]
-              "
-              style={dottedBackgroundStyle}
-            />
+          <AppShell>
+            {/* Dynamic Background */}
+            <div className="relative min-h-screen w-full">
+              <div
+                className="bg-background absolute inset-0 z-0 [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)] dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]"
+                style={dottedBackgroundStyle}
+              />
 
-            <div className="relative z-10">
-              {children}
+              <div className="relative z-10">{children}</div>
             </div>
-          </div>
+          </AppShell>
         </ClientProviders>
       </body>
     </html>

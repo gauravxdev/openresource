@@ -1,7 +1,6 @@
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
-import { motion } from "framer-motion";
 import { memo } from "react";
 import type { ChatMessage } from "@/lib/chat/types";
 import { Button } from "@/components/ui/button";
@@ -25,12 +24,10 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
             data-testid="suggested-actions"
         >
             {suggestedActions.map((suggestedAction, index) => (
-                <motion.div
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    initial={{ opacity: 0, y: 20 }}
+                <div
+                    className="animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both"
                     key={suggestedAction}
-                    transition={{ delay: 0.05 * index }}
+                    style={{ animationDelay: `${index * 50}ms` }}
                 >
                     <Button
                         className="h-auto w-full cursor-pointer whitespace-normal rounded-xl border border-border/50 bg-background p-3 text-left text-sm text-muted-foreground shadow-xs transition-colors hover:bg-muted hover:text-foreground"
@@ -45,7 +42,7 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
                     >
                         {suggestedAction}
                     </Button>
-                </motion.div>
+                </div>
             ))}
         </div>
     );

@@ -28,7 +28,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { createHighlighter } from "shiki";
 
 // Shiki uses bitflags for font styles: 1=italic, 2=bold, 4=underline
 const isItalic = (fontStyle: number | undefined) => fontStyle && (fontStyle & 1);
@@ -130,7 +129,7 @@ const getTokensCacheKey = (code: string, language: BundledLanguage) => {
   return `${language}:${code.length}:${start}:${end}`;
 };
 
-const getHighlighter = (
+const getHighlighter = async (
   language: BundledLanguage
 ): Promise<HighlighterGeneric<BundledLanguage, BundledTheme>> => {
   const cached = highlighterCache.get(language);
@@ -138,10 +137,14 @@ const getHighlighter = (
     return cached;
   }
 
-  const highlighterPromise = createHighlighter({
-    langs: [language],
-    themes: ["github-light", "github-dark"],
-  });
+  // Dynamically import shiki only when needed
+  const highlighterPromise = (async () => {
+    const { createHighlighter } = await import("shiki");
+    return createHighlighter({
+      langs: [language],
+      themes: ["github-light", "github-dark"],
+    });
+  })();
 
   highlighterCache.set(language, highlighterPromise);
   return highlighterPromise;

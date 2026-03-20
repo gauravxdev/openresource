@@ -1,33 +1,21 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { SparklesIcon } from "./icons";
 
 export const Greeting = () => {
     return (
         <div
             className="mx-auto mt-4 flex size-full max-w-3xl flex-col justify-center px-4 md:mt-16 md:px-8"
-            key="overview"
         >
-            <motion.div
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 font-semibold text-xl md:text-2xl"
-                exit={{ opacity: 0, y: 10 }}
-                initial={{ opacity: 0, y: 10 }}
-                transition={{ delay: 0.5 }}
-            >
+            <div className="flex animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both items-center gap-2 font-semibold text-xl md:text-2xl"
+                 style={{ animationDelay: "500ms" }}>
                 <SparklesIcon size={24} />
                 OpenResource AI
-            </motion.div>
-            <motion.div
-                animate={{ opacity: 1, y: 0 }}
-                className="text-xl text-zinc-500 md:text-2xl"
-                exit={{ opacity: 0, y: 10 }}
-                initial={{ opacity: 0, y: 10 }}
-                transition={{ delay: 0.6 }}
-            >
+            </div>
+            <div className="text-xl animate-in fade-in slide-in-from-bottom-2 duration-1000 fill-mode-both text-zinc-500 md:text-2xl"
+                 style={{ animationDelay: "600ms" }}>
                 How can I help you today?
-            </motion.div>
+            </div>
         </div>
     );
 };

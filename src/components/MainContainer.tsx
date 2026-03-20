@@ -1,12 +1,12 @@
-import { ResourceCard } from "./ResourceCard"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { MainPagination } from "@/components/MainPagination"
-import { SearchFilters } from "./SearchFilters"
-import { timeAgo } from "@/lib/utils"
-import type { ResourceWithCategories } from "@/actions/resources"
+import { ResourceCard } from "./ResourceCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { MainPagination } from "@/components/MainPagination";
+import { SearchFilters } from "./SearchFilters";
+import { timeAgo } from "@/lib/utils";
+import type { ResourceWithCategories } from "@/actions/resources";
 
-import { Suspense } from "react"
+import { Suspense } from "react";
 
 interface MainContainerProps {
   initialResources: ResourceWithCategories[];
@@ -17,22 +17,26 @@ interface MainContainerProps {
   searchTerm?: string;
 }
 
-const MainContainer = ({ 
-  initialResources = [], 
-  totalCount = 0, 
+const MainContainer = ({
+  initialResources = [],
+  totalCount = 0,
   currentPage = 1,
   categories = ["all"],
   selectedCategory = "all",
 }: MainContainerProps) => {
-  const itemsPerPage = 20
+  const itemsPerPage = 12;
 
   return (
-    <div className="w-full bg-background min-h-screen">
+    <div className="bg-background min-h-screen w-full">
       <Separator />
       {/* Main content container with same width as navbar */}
-      <div className="mx-auto max-w-[1152px] px-5 pb-20 pt-8 md:px-6 md:pt-12">
+      <div className="mx-auto max-w-[1152px] px-5 pt-8 pb-20 md:px-6 md:pt-12">
         {/* Search and Filters */}
-        <Suspense fallback={<div className="h-10 w-full animate-pulse bg-muted rounded-md mb-6" />}>
+        <Suspense
+          fallback={
+            <div className="bg-muted mb-6 h-10 w-full animate-pulse rounded-md" />
+          }
+        >
           <SearchFilters
             selectedCategory={selectedCategory}
             categories={Array.from(new Set(["all", ...categories]))}
@@ -40,9 +44,10 @@ const MainContainer = ({
         </Suspense>
 
         {/* Results Summary */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-gray-400 text-sm">
-            Showing resources {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm text-gray-400">
+            Showing resources {(currentPage - 1) * itemsPerPage + 1} -{" "}
+            {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}
           </p>
         </div>
 
@@ -65,7 +70,7 @@ const MainContainer = ({
                   forks: resource.forks.toString(),
                   lastCommit: timeAgo(resource.lastCommit),
                   logo: resource.logo,
-                  image: resource.image ?? "/api/placeholder/300/200"
+                  image: resource.image ?? "/api/placeholder/300/200",
                 }}
               />
             ))}
@@ -88,8 +93,7 @@ const MainContainer = ({
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-
-export default MainContainer
+export default MainContainer;

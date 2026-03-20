@@ -5,15 +5,19 @@ import type { ComponentProps } from "react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 import { FileIcon } from "lucide-react";
-import {
-    CodeBlock,
-    CodeBlockActions,
-    CodeBlockCopyButton,
-    CodeBlockFilename,
-    CodeBlockHeader,
-    CodeBlockTitle,
-} from "@/components/ai-elements/code-block";
+import dynamic from "next/dynamic";
 import type { BundledLanguage } from "shiki";
+
+const CodeBlock = dynamic(() => import("@/components/ai-elements/code-block").then(mod => mod.CodeBlock), {
+    ssr: false,
+    loading: () => <div className="h-32 w-full animate-pulse bg-muted rounded-md my-4" />
+});
+
+const CodeBlockHeader = dynamic(() => import("@/components/ai-elements/code-block").then(mod => mod.CodeBlockHeader), { ssr: false });
+const CodeBlockTitle = dynamic(() => import("@/components/ai-elements/code-block").then(mod => mod.CodeBlockTitle), { ssr: false });
+const CodeBlockFilename = dynamic(() => import("@/components/ai-elements/code-block").then(mod => mod.CodeBlockFilename), { ssr: false });
+const CodeBlockActions = dynamic(() => import("@/components/ai-elements/code-block").then(mod => mod.CodeBlockActions), { ssr: false });
+const CodeBlockCopyButton = dynamic(() => import("@/components/ai-elements/code-block").then(mod => mod.CodeBlockCopyButton), { ssr: false });
 
 type MarkdownProps = ComponentProps<typeof ReactMarkdown> & {
     className?: string;
