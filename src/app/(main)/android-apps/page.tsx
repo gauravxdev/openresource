@@ -10,7 +10,7 @@ export const revalidate = 60
 export default async function AndroidApps({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const { page: pageStr } = await searchParams
   const currentPage = Number(pageStr) || 1
-  const { data: resources, totalCount } = await getAndroidApps(currentPage)
+  const { data: resources, totalCount } = await getAndroidApps(currentPage, 12)
 
   // Map DB resources to AndroidApp interface
   const dbApps: AndroidApp[] = resources.map((resource) => {

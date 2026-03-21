@@ -12,9 +12,11 @@ export interface LLMWriterInput {
 
 export interface LLMWriterOutput {
     shortDescription: string;
-    oneLiner: string; // [NEW] added oneLiner
+    oneLiner: string;
     longDescription: string;
     categories: string[];
+    tags: string[];
+    builtWith: { name: string; slug: string }[];
     model: string;
 }
 
@@ -58,9 +60,19 @@ Your task is to analyze the provided repository signals and generate a structure
 - Focus strictly on facts from the signals.
 - No fluff or introductory filler.
 
-### 3. Categories
+### 4. Categories
 - Suggest 3-5 relevant categories (e.g., "Developer Tools", "AI Coding Assistants", "Terminal Apps")
 - Capitalize properly
+
+### 5. Tags
+- Provide 5-8 relevant SEO-friendly tags (e.g., "llm", "automation", "cli")
+- Lowercase, no spaces (use hyphens if needed)
+
+### 6. Built With (Tech Stack)
+- Identify the core technologies, frameworks, and tools used.
+- For each, provide the human-readable name (e.g., "Next.js") and a "slug" that matches the [Simple Icons](https://simpleicons.org/) slug (e.g., "nextdotjs").
+- Include 4-10 items.
+- Examples: { "name": "React", "slug": "react" }, { "name": "PostgreSQL", "slug": "postgresql" }
 
 ## General Guidelines
 - Be accurate - only mention features evident from the signals.
@@ -72,6 +84,11 @@ const descriptionSchema = z.object({
     oneLiner: z.string().describe("A punchy 1-sentence one-liner description."),
     longDescription: z.string().describe("A detailed description in MDX format with headings and formatting."),
     categories: z.array(z.string()).describe("3-5 relevant categories for the resource."),
+    tags: z.array(z.string()).describe("5-8 relevant tags."),
+    builtWith: z.array(z.object({
+        name: z.string().describe("Human readable name of the technology."),
+        slug: z.string().describe("Simple Icons slug for the technology."),
+    })).describe("The tech stack used to build the project."),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -97,6 +114,8 @@ export async function writeDescriptionWithLLM(
         oneLiner: object.oneLiner,
         longDescription: object.longDescription,
         categories: object.categories,
+        tags: object.tags,
+        builtWith: object.builtWith,
         model: response.modelId ?? MODEL,
     };
 }

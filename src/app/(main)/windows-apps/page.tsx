@@ -10,7 +10,7 @@ export const revalidate = 60
 export default async function WindowsApps({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const { page: pageStr } = await searchParams
   const currentPage = Number(pageStr) || 1
-  const { data: resources, totalCount } = await getWindowsApps(currentPage)
+  const { data: resources, totalCount } = await getWindowsApps(currentPage, 12)
 
   // Map DB resources to WindowsApp interface
   const dbApps: WindowsApp[] = resources.map((resource) => {

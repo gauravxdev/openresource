@@ -7,7 +7,7 @@ import { Streamdown } from "streamdown";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
-import { mermaid } from "@streamdown/mermaid";
+import { mermaid } from "@/lib/mermaid-plugin";
 import type { ReasoningContentProps } from "./reasoning";
 
 export const ReasoningContentInner = memo(
@@ -15,8 +15,8 @@ export const ReasoningContentInner = memo(
     <CollapsibleContent
       className={cn(
         "mt-4 text-sm",
-        "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-muted-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
-        className
+        "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-muted-foreground data-[state=closed]:animate-out data-[state=open]:animate-in outline-none",
+        className,
       )}
       {...props}
     >
@@ -24,7 +24,7 @@ export const ReasoningContentInner = memo(
         {children}
       </Streamdown>
     </CollapsibleContent>
-  )
+  ),
 );
 
 ReasoningContentInner.displayName = "ReasoningContentInner";

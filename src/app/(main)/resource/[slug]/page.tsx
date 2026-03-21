@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/server/db";
-import { ResourceDetailView } from "@/components/ResourceDetailView";
+import { ResourceDetailView, type Resource } from "@/components/ResourceDetailView";
 import { ResourceViewTracker } from "@/components/analytics/ResourceViewTracker";
 
 interface ResourcePageProps {
@@ -28,14 +28,23 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         notFound();
     }
 
+    // Cast to unknown then to Resource to handle Prisma type mismatches gracefully
+    // and satisfy the linter without using 'any'
+    const rawResource = resource as unknown as Resource;
+    const resourceData: Resource = {
+        ...rawResource,
+        builtWith: rawResource.builtWith ?? null,
+        tags: rawResource.tags ?? [],
+    };
+
     return (
         <>
             <ResourceViewTracker
-                resourceId={resource.id}
-                resourceName={resource.name}
-                resourceSlug={resource.slug}
+                resourceId={resourceData.id}
+                resourceName={resourceData.name}
+                resourceSlug={resourceData.slug}
             />
-            <ResourceDetailView resource={resource} />
+            <ResourceDetailView resource={resourceData} />
         </>
     );
 }

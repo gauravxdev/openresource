@@ -20,7 +20,7 @@ import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ExternalLink, Globe, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 
-interface Resource {
+export interface Resource {
   id: string;
   slug: string;
   name: string;
@@ -37,6 +37,8 @@ interface Resource {
   license: string | null;
   image?: string | null;
   logo?: string | null;
+  tags: string[];
+  builtWith: { name: string; slug: string }[] | null;
   createdAt: Date;
   updatedAt: Date;
   user?: {
@@ -45,6 +47,9 @@ interface Resource {
     image: string | null;
   } | null;
 }
+
+import { TechStack, type TechItem } from "@/components/TechStack";
+import { ShareSection } from "@/components/ShareSection";
 
 interface ResourceDetailViewProps {
   resource: Resource;
@@ -61,6 +66,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
   };
 
   const primaryCategory = resource.categories[0];
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <div className="bg-background min-h-screen w-full">
@@ -204,21 +210,59 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
               />
             </div>
 
-            {/* Categories */}
-            <div className="space-y-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
-              <h3 className="text-foreground text-lg font-semibold">
-                Categories
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {resource.categories.map((cat) => (
-                  <Badge
-                    key={cat.id}
-                    variant="secondary"
-                    className="bg-neutral-100 px-3 py-1 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-                  >
-                    {cat.name}
-                  </Badge>
-                ))}
+            {/* Tags & Categories & Tech Stack */}
+            <div className="space-y-8 border-t border-neutral-200 pt-8 dark:border-neutral-800">
+              {/* Categories */}
+              <div className="space-y-3">
+                <h3 className="text-foreground text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Categories
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {resource.categories.map((cat) => (
+                    <Badge
+                      key={cat.id}
+                      variant="secondary"
+                      className="bg-neutral-100 px-3 py-1 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                    >
+                      {cat.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tags */}
+              {resource.tags && resource.tags.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-foreground text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">
+                    Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-x-3 gap-y-2">
+                    {resource.tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/tags?filter=${encodeURIComponent(tag)}`}
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Built with */}
+              {resource.builtWith && (resource.builtWith as TechItem[]).length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-foreground text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">
+                    Built with
+                  </h3>
+                  <TechStack items={resource.builtWith as TechItem[]} />
+                </div>
+              )}
+
+              {/* Share Section */}
+              <div className="pt-2">
+                <ShareSection url={shareUrl} title={resource.name} />
               </div>
             </div>
 

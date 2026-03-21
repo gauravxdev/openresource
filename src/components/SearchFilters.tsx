@@ -41,18 +41,20 @@ export const SearchFilters = React.memo(function SearchFilters({
 
   // Update URL when debounced search term changes
   React.useEffect(() => {
+    const currentQuery = searchParams.get("q") ?? ""
+    
+    // Only update if the search term actually changed
+    if (debouncedSearch === currentQuery) return
+
     const params = new URLSearchParams(searchParams.toString())
     if (debouncedSearch) {
       params.set("q", debouncedSearch)
     } else {
       params.delete("q")
     }
-    params.set("page", "1") // Reset to page 1 on search
+    params.set("page", "1") // Reset to page 1 on new search
     
-    // Only push if the search term actually changed in the URL
-    if (params.get("q") !== (searchParams.get("q") ?? "")) {
-      router.push(`${pathname}?${params.toString()}`, { scroll: false })
-    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }, [debouncedSearch, pathname, router, searchParams])
 
   const handleSortChange = (value: string) => {

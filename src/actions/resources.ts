@@ -200,7 +200,7 @@ export async function getResourcesByCategory(slug: string, page = 1, limit = 20)
     }
 }
 
-export async function getAndroidApps(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
+export async function getAndroidApps(page = 1, limit = 12): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
         const skip = (page - 1) * limit;
 
@@ -271,7 +271,7 @@ export async function getAndroidApps(page = 1, limit = 20): Promise<{ success: b
     }
 }
 
-export async function getWindowsApps(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
+export async function getWindowsApps(page = 1, limit = 12): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
         const skip = (page - 1) * limit;
 
@@ -342,7 +342,7 @@ export async function getWindowsApps(page = 1, limit = 20): Promise<{ success: b
     }
 }
 
-export async function getGitHubRepos(page = 1, limit = 20): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
+export async function getGitHubRepos(page = 1, limit = 12): Promise<{ success: boolean; data: ResourceWithCategories[], totalCount: number }> {
     try {
         const skip = (page - 1) * limit;
 

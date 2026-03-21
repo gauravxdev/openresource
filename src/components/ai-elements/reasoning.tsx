@@ -7,8 +7,8 @@ import dynamic from "next/dynamic";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
   Collapsible,
-  CollapsibleContent,
   CollapsibleTrigger,
+  type CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { BrainIcon, ChevronDownIcon } from "lucide-react";

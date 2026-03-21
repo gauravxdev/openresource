@@ -18,7 +18,7 @@ export const revalidate = 60
 export default async function GitHubRepos({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const { page: pageStr } = await searchParams
   const currentPage = Number(pageStr) || 1
-  const { data: resources, totalCount } = await getGitHubRepos(currentPage)
+  const { data: resources, totalCount } = await getGitHubRepos(currentPage, 12)
 
   const repos: GitHubRepo[] = resources.map((resource) => ({
     name: resource.name,
