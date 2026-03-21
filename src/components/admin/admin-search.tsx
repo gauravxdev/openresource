@@ -7,60 +7,63 @@ import { useEffect, useState, useTransition } from "react";
 import { useDebounce } from "use-debounce";
 
 export function AdminSearch({ defaultValue = "" }: { defaultValue?: string }) {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const [isPending, startTransition] = useTransition();
-    const [text, setText] = useState(defaultValue);
-    const [query] = useDebounce(text, 500);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [text, setText] = useState(defaultValue);
+  const [query] = useDebounce(text, 500);
 
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        const currentQuery = params.get("q") ?? "";
+  // Use stable string reference to prevent infinite loops
+  const queryString = searchParams.toString();
 
-        // Only update if search query has actually changed
-        if (query === currentQuery) return;
+  useEffect(() => {
+    const params = new URLSearchParams(queryString);
+    const currentQuery = params.get("q") ?? "";
 
-        if (query) {
-            params.set("q", query);
-        } else {
-            params.delete("q");
-        }
-        // Always reset to page 1 on NEW search
-        params.set("page", "1");
+    // Only update if search query has actually changed
+    if (query === currentQuery) return;
 
-        startTransition(() => {
-            router.push(`${pathname}?${params.toString()}`);
-        });
-    }, [query, pathname, router, searchParams]);
+    if (query) {
+      params.set("q", query);
+    } else {
+      params.delete("q");
+    }
+    // Always reset to page 1 on NEW search
+    params.set("page", "1");
 
-    const handleClear = () => {
-        setText("");
-    };
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
+  }, [query, pathname, router, queryString]);
 
-    return (
-        <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-                type="search"
-                placeholder="Search resources..."
-                className="pl-8 pr-20 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-neutral-900/50 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-ms-clear]:display-none"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-            />
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                {isPending ? (
-                    <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full mx-1" />
-                ) : text ? (
-                    <button
-                        onClick={handleClear}
-                        className="text-muted-foreground hover:text-foreground p-1 transition-colors"
-                        title="Clear search"
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
-                ) : null}
-            </div>
-        </div>
-    );
+  const handleClear = () => {
+    setText("");
+  };
+
+  return (
+    <div className="relative max-w-md min-w-[200px] flex-1">
+      <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+      <Input
+        type="search"
+        placeholder="Search resources..."
+        className="[&::-ms-clear]:display-none border-none bg-neutral-900/50 pr-20 pl-8 focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <div className="absolute top-1/2 right-2.5 flex -translate-y-1/2 items-center gap-1">
+        {isPending ? (
+          <div className="border-primary mx-1 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+        ) : text ? (
+          <button
+            onClick={handleClear}
+            className="text-muted-foreground hover:text-foreground p-1 transition-colors"
+            title="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
 }
