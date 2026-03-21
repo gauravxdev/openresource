@@ -52,7 +52,6 @@ export default function RootLayout({
     >
       <body className="bg-transparent" suppressHydrationWarning>
         <ClientProviders>
-          <AppShell>
             {/* Dynamic Background */}
             <div className="relative min-h-screen w-full">
               <div
@@ -60,9 +59,10 @@ export default function RootLayout({
                 style={dottedBackgroundStyle}
               />
 
-              <div className="relative z-10">{children}</div>
+              <div className="relative z-10">
+                <AppShell>{children}</AppShell>
+              </div>
             </div>
-          </AppShell>
         </ClientProviders>
       </body>
     </html>
