@@ -30,7 +30,7 @@ export type ResourceWithCategories = {
     license: string | null;
 };
 
-export async function getResources(page = 1, limit = 20, category?: string, query?: string): Promise<{ success: boolean; data: ResourceWithCategories[]; totalCount: number }> {
+export async function getResources(page = 1, limit = 20, category?: string, query?: string, sortBy?: string): Promise<{ success: boolean; data: ResourceWithCategories[]; totalCount: number }> {
     try {
         const skip = (page - 1) * limit;
 
@@ -65,6 +65,39 @@ export async function getResources(page = 1, limit = 20, category?: string, quer
             } : {})
         };
 
+        // Determine sorting logic
+        let orderBy: Prisma.ResourceOrderByWithRelationInput = { createdAt: "desc" };
+        
+        if (sortBy) {
+            switch (sortBy) {
+                case "latest":
+                    orderBy = { createdAt: "desc" };
+                    break;
+                case "popularity":
+                case "stars":
+                    orderBy = { stars: "desc" };
+                    break;
+                case "alphabetical":
+                    orderBy = { name: "asc" };
+                    break;
+                case "alphabetical-reverse":
+                    orderBy = { name: "desc" };
+                    break;
+                case "forks":
+                    orderBy = { forks: "desc" };
+                    break;
+                case "last-commit":
+                    orderBy = { lastCommit: "desc" };
+                    break;
+                case "repository-age":
+                case "age":
+                    orderBy = { repositoryCreatedAt: "asc" };
+                    break;
+                default:
+                    orderBy = { createdAt: "desc" };
+            }
+        }
+
         const [resources, totalCount] = await Promise.all([
             db.resource.findMany({
                 where,
@@ -96,9 +129,7 @@ export async function getResources(page = 1, limit = 20, category?: string, quer
                         },
                     },
                 },
-                orderBy: {
-                    createdAt: "desc",
-                },
+                orderBy,
                 skip,
                 take: limit,
             }),

@@ -15,6 +15,7 @@ interface MainContainerProps {
   categories?: string[];
   selectedCategory?: string;
   searchTerm?: string;
+  selectedSort?: string;
 }
 
 const MainContainer = ({
@@ -23,6 +24,7 @@ const MainContainer = ({
   currentPage = 1,
   categories = ["all"],
   selectedCategory = "all",
+  selectedSort = "latest",
 }: MainContainerProps) => {
   const itemsPerPage = 12;
 
@@ -38,8 +40,7 @@ const MainContainer = ({
           }
         >
           <SearchFilters
-            selectedCategory={selectedCategory}
-            categories={Array.from(new Set(["all", ...categories]))}
+            selectedSort={selectedSort}
           />
         </Suspense>
 

@@ -2,18 +2,34 @@
 
 import * as React from "react"
 import { Input } from "@/components/ui/input"
-import { Search, Filter } from "lucide-react"
+import { Search, ArrowUpDown } from "lucide-react"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useDebounce } from "@/hooks/use-debounce"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface SearchFiltersProps {
-  selectedCategory: string
-  categories: string[]
+  selectedSort: string
 }
 
+const SORT_OPTIONS = [
+  { label: "Latest", value: "latest" },
+  { label: "Most Popular", value: "popularity" },
+  { label: "Name (A to Z)", value: "alphabetical" },
+  { label: "Name (Z to A)", value: "alphabetical-reverse" },
+  { label: "Most Stars", value: "stars" },
+  { label: "Most Forks", value: "forks" },
+  { label: "Last Commit", value: "last-commit" },
+  { label: "Repository Age", value: "age" },
+]
+
 export const SearchFilters = React.memo(function SearchFilters({
-  selectedCategory,
-  categories
+  selectedSort,
 }: SearchFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -39,12 +55,12 @@ export const SearchFilters = React.memo(function SearchFilters({
     }
   }, [debouncedSearch, pathname, router, searchParams])
 
-  const handleCategoryChange = (value: string) => {
+  const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (value === "all") {
-      params.delete("category")
+    if (value === "latest") {
+      params.delete("sort")
     } else {
-      params.set("category", value)
+      params.set("sort", value)
     }
     params.set("page", "1") // Reset to page 1 on filter
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
@@ -59,25 +75,31 @@ export const SearchFilters = React.memo(function SearchFilters({
           placeholder="Search resources..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 h-10 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50"
         />
       </div>
 
-      {/* Category Filter — native select to avoid Radix Select bundle weight */}
-      <div className="relative">
-        <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <select
-          value={selectedCategory}
-          onChange={(e) => handleCategoryChange(e.target.value)}
-          className="h-9 w-[180px] rounded-md border border-input bg-transparent pl-10 pr-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring appearance-none cursor-pointer"
-          aria-label="Filter by category"
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category === "all" ? "All Categories" : category}
-            </option>
-          ))}
-        </select>
+      {/* Sort Select — Premium UI with Shadcn Select */}
+      <div className="flex items-center gap-2">
+        <Select value={selectedSort} onValueChange={handleSortChange}>
+          <SelectTrigger className="w-[200px] h-10 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50">
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+              <SelectValue placeholder="Order by" />
+            </div>
+          </SelectTrigger>
+          <SelectContent className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800">
+            {SORT_OPTIONS.map((option) => (
+              <SelectItem 
+                key={option.value} 
+                value={option.value}
+                className="focus:bg-neutral-100 dark:focus:bg-neutral-900 cursor-pointer"
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )
