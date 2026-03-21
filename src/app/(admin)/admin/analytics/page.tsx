@@ -14,19 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { TopResourcesTable } from "@/components/admin/TopResourcesTable";
-import dynamicImport from "next/dynamic";
-
-const UserActivityCharts = dynamicImport(() =>
-  import("@/components/admin/UserActivityCharts").then(
-    (m) => m.UserActivityCharts,
-  ),
-);
-
-const TrafficIntensityChart = dynamicImport(() =>
-  import("@/components/admin/UserActivityCharts").then(
-    (m) => m.TrafficIntensityChart,
-  ),
-);
+import { UserActivityCharts, TrafficIntensityChart } from "@/components/admin/UserActivityCharts";
 
 export default async function AnalyticsPage() {
   const [trafficResult, topResourcesResult, userActivity] = await Promise.all([

@@ -12,9 +12,6 @@ export const metadata: Metadata = {
   title: "Openresource",
   description: "By Gaurav Sharma",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
-  other: {
-    "link:preload:font": "preload",
-  },
 };
 
 // Geist font configuration
@@ -28,12 +25,11 @@ const righteousFont = localFont({
   display: "optional",
 });
 
-// Custom Lexend font configuration - LCP font, use swap for immediate render
+// Custom Lexend font configuration
 const lexendFont = localFont({
   src: "../../fonts/Lexend-VariableFont_wght.ttf",
   variable: "--font-lexend",
-  display: "swap",
-  preload: true,
+  display: "optional",
 });
 
 const dottedBackgroundStyle: CSSProperties = {
