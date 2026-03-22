@@ -11,7 +11,10 @@ import { AppShell } from "@/components/AppShell";
 export const metadata: Metadata = {
   title: "Openresource",
   description: "By Gaurav Sharma",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [
+    { rel: "icon", url: "/favicon.svg", type: "image/svg+xml" },
+    { rel: "icon", url: "/favicon.ico" },
+  ],
 };
 
 // Geist font configuration
@@ -52,17 +55,17 @@ export default function RootLayout({
     >
       <body className="bg-transparent" suppressHydrationWarning>
         <ClientProviders>
-            {/* Dynamic Background */}
-            <div className="relative min-h-screen w-full">
-              <div
-                className="bg-background absolute inset-0 z-0 [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)] dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]"
-                style={dottedBackgroundStyle}
-              />
+          {/* Dynamic Background */}
+          <div className="relative min-h-screen w-full">
+            <div
+              className="bg-background absolute inset-0 z-0 [--dot-color-1:rgba(0,0,0,0.45)] [--dot-color-2:rgba(0,0,0,0.15)] dark:[--dot-color-1:#222222] dark:[--dot-color-2:#111111]"
+              style={dottedBackgroundStyle}
+            />
 
-              <div className="relative z-10">
-                <AppShell>{children}</AppShell>
-              </div>
+            <div className="relative z-10">
+              <AppShell>{children}</AppShell>
             </div>
+          </div>
         </ClientProviders>
       </body>
     </html>

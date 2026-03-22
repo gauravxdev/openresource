@@ -6,6 +6,8 @@ export { AdminAnalyticsSkeleton } from "./admin-analytics-skeleton";
 export { ContributorDashboardSkeleton } from "./contributor-dashboard-skeleton";
 export { ContributorResourcesSkeleton } from "./contributor-resources-skeleton";
 export { ContributorAnalyticsSkeleton } from "./contributor-analytics-skeleton";
+export { LatestResourcesSkeleton } from "./latest-resources-skeleton";
+export { HomeSkeleton } from "./home-skeleton";
 export {
   StatCardSkeleton,
   ContributorStatCardSkeleton,
