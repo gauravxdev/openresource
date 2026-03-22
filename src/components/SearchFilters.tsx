@@ -35,12 +35,19 @@ export const SearchFilters = React.memo(function SearchFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const initialSearch = searchParams.get("q") ?? "";
-  const [searchTerm, setSearchTerm] = React.useState(initialSearch);
+  const [searchTerm, setSearchTerm] = React.useState(
+    searchParams.get("q") ?? "",
+  );
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   // Use stable string reference to prevent infinite loops from searchParams object identity changes
   const queryString = searchParams.toString();
+
+  // Sync searchTerm state when URL q param changes externally (e.g., browser navigation)
+  const urlQuery = searchParams.get("q") ?? "";
+  React.useEffect(() => {
+    setSearchTerm((prev) => (prev !== urlQuery ? urlQuery : prev));
+  }, [urlQuery]);
 
   // Update URL when debounced search term changes
   React.useEffect(() => {
