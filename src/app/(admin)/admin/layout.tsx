@@ -5,23 +5,24 @@ import { DashboardSidebar } from "@/components/admin/sidebar";
 import { DashboardHeader } from "@/components/admin/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/use-session";
 
 export default function AdminLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    const { data: session } = authClient.useSession();
+  const { data: session } = useSession();
 
-    return (
-        <SidebarProvider className="bg-sidebar">
-            <DashboardSidebar />
-            <div className="h-svh overflow-hidden lg:p-2 w-full">
-                <div className="lg:border lg:rounded-md overflow-hidden flex flex-col items-center justify-start bg-container h-full w-full bg-background relative">
-                    <DashboardHeader />
-                    {children}
-                </div>
-            </div>
-        </SidebarProvider>
-    );
+  return (
+    <SidebarProvider className="bg-sidebar">
+      <DashboardSidebar />
+      <div className="h-svh w-full overflow-hidden lg:p-2">
+        <div className="bg-container bg-background relative flex h-full w-full flex-col items-center justify-start overflow-hidden lg:rounded-md lg:border">
+          <DashboardHeader />
+          {children}
+        </div>
+      </div>
+    </SidebarProvider>
+  );
 }

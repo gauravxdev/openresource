@@ -22,6 +22,7 @@ const PUBLIC_ROUTES = [
   "/resource",
   "/tags",
   "/u",
+  "/ingest",
 ];
 
 const roleBasedRoutes: Record<string, string[]> = {
@@ -52,7 +53,7 @@ export default async function middleware(request: NextRequest) {
 
   if (!hasSessionCookie) {
     // No session cookie, redirect to sign in immediately
-    const signInUrl = new URL("sign-in", request.url);
+    const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
@@ -75,7 +76,7 @@ export default async function middleware(request: NextRequest) {
     // redirect to sign in if not authenticated
     const sessionData = (await response.json()) as SessionData;
     if (!sessionData?.user) {
-      const signInUrl = new URL("sign-in", request.url);
+      const signInUrl = new URL("/sign-in", request.url);
       signInUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(signInUrl);
     }
@@ -103,6 +104,6 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+    "/((?!api|ingest|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };

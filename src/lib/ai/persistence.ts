@@ -17,16 +17,18 @@ import type { RepoSignals } from "./signals";
 export type AiConfidence = "low" | "medium" | "high";
 
 export interface AiDescriptionRecord {
-    repoUrl: string;
-    descriptionMdx: string;
-    shortDescription: string;
-    oneLiner: string; // [NEW]
-    categories: string[];
-    repoType: RepoType;
-    signals: RepoSignals;
-    model: string;
-    aiConfidence: AiConfidence;
-    generatedAt: string;
+  repoUrl: string;
+  descriptionMdx: string;
+  shortDescription: string;
+  oneLiner: string;
+  categories: string[];
+  tags: string[];
+  builtWith: { name: string; slug: string }[];
+  repoType: RepoType;
+  signals: RepoSignals;
+  model: string;
+  aiConfidence: AiConfidence;
+  generatedAt: string;
 }
 
 /**
@@ -34,8 +36,8 @@ export interface AiDescriptionRecord {
  * Implement this to connect to your actual database.
  */
 export interface AiDescriptionRepository {
-    save(record: AiDescriptionRecord): Promise<void>;
-    findByRepoUrl(repoUrl: string): Promise<AiDescriptionRecord | null>;
+  save(record: AiDescriptionRecord): Promise<void>;
+  findByRepoUrl(repoUrl: string): Promise<AiDescriptionRecord | null>;
 }
 
 // -----------------------------------------------------------------------------
@@ -46,7 +48,8 @@ export interface AiDescriptionRepository {
  * Fallback text that indicates project goal is not clearly documented.
  * Used to determine if projectGoal was properly extracted.
  */
-const UNDOCUMENTED_GOAL_TEXT = "The purpose of this project is not clearly documented.";
+const UNDOCUMENTED_GOAL_TEXT =
+  "The purpose of this project is not clearly documented.";
 
 // -----------------------------------------------------------------------------
 // Confidence Scoring
@@ -69,31 +72,34 @@ const UNDOCUMENTED_GOAL_TEXT = "The purpose of this project is not clearly docum
  * @returns Confidence level
  */
 export function calculateAiConfidence(signals: RepoSignals): AiConfidence {
-    let score = 0;
+  let score = 0;
 
-    // +1 if projectGoal is clearly documented
-    if (signals.projectGoal && signals.projectGoal.trim() !== UNDOCUMENTED_GOAL_TEXT) {
-        score += 1;
-    }
+  // +1 if projectGoal is clearly documented
+  if (
+    signals.projectGoal &&
+    signals.projectGoal.trim() !== UNDOCUMENTED_GOAL_TEXT
+  ) {
+    score += 1;
+  }
 
-    // +1 if techStack is not empty
-    if (signals.techStack && signals.techStack.length > 0) {
-        score += 1;
-    }
+  // +1 if techStack is not empty
+  if (signals.techStack && signals.techStack.length > 0) {
+    score += 1;
+  }
 
-    // +1 if maintenance is active
-    if (signals.maintenance === "active") {
-        score += 1;
-    }
+  // +1 if maintenance is active
+  if (signals.maintenance === "active") {
+    score += 1;
+  }
 
-    // Map score to confidence level
-    if (score === 3) {
-        return "high";
-    } else if (score === 2) {
-        return "medium";
-    } else {
-        return "low";
-    }
+  // Map score to confidence level
+  if (score === 3) {
+    return "high";
+  } else if (score === 2) {
+    return "medium";
+  } else {
+    return "low";
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -105,15 +111,15 @@ export function calculateAiConfidence(signals: RepoSignals): AiConfidence {
  * Replace with actual database implementation in production.
  */
 class InMemoryRepository implements AiDescriptionRepository {
-    private records = new Map<string, AiDescriptionRecord>();
+  private records = new Map<string, AiDescriptionRecord>();
 
-    async save(record: AiDescriptionRecord): Promise<void> {
-        this.records.set(record.repoUrl, record);
-    }
+  async save(record: AiDescriptionRecord): Promise<void> {
+    this.records.set(record.repoUrl, record);
+  }
 
-    async findByRepoUrl(repoUrl: string): Promise<AiDescriptionRecord | null> {
-        return this.records.get(repoUrl) ?? null;
-    }
+  async findByRepoUrl(repoUrl: string): Promise<AiDescriptionRecord | null> {
+    return this.records.get(repoUrl) ?? null;
+  }
 }
 
 // Default repository instance (can be replaced via dependency injection)
@@ -124,14 +130,14 @@ let repository: AiDescriptionRepository = new InMemoryRepository();
  * Use this to inject a database-backed repository in production.
  */
 export function setRepository(repo: AiDescriptionRepository): void {
-    repository = repo;
+  repository = repo;
 }
 
 /**
  * Gets the current repository implementation.
  */
 export function getRepository(): AiDescriptionRepository {
-    return repository;
+  return repository;
 }
 
 /**
@@ -141,27 +147,31 @@ export function getRepository(): AiDescriptionRepository {
  * @returns Complete AI description record
  */
 export function createAiDescriptionRecord(params: {
-    repoUrl: string;
-    descriptionMdx: string;
-    shortDescription: string;
-    oneLiner: string; // [NEW]
-    categories: string[];
-    repoType: RepoType;
-    signals: RepoSignals;
-    model: string;
+  repoUrl: string;
+  descriptionMdx: string;
+  shortDescription: string;
+  oneLiner: string;
+  categories: string[];
+  tags: string[];
+  builtWith: { name: string; slug: string }[];
+  repoType: RepoType;
+  signals: RepoSignals;
+  model: string;
 }): AiDescriptionRecord {
-    return {
-        repoUrl: params.repoUrl,
-        descriptionMdx: params.descriptionMdx,
-        shortDescription: params.shortDescription,
-        oneLiner: params.oneLiner, // [NEW]
-        categories: params.categories,
-        repoType: params.repoType,
-        signals: params.signals,
-        model: params.model,
-        aiConfidence: calculateAiConfidence(params.signals),
-        generatedAt: new Date().toISOString(),
-    };
+  return {
+    repoUrl: params.repoUrl,
+    descriptionMdx: params.descriptionMdx,
+    shortDescription: params.shortDescription,
+    oneLiner: params.oneLiner,
+    categories: params.categories,
+    tags: params.tags,
+    builtWith: params.builtWith,
+    repoType: params.repoType,
+    signals: params.signals,
+    model: params.model,
+    aiConfidence: calculateAiConfidence(params.signals),
+    generatedAt: new Date().toISOString(),
+  };
 }
 
 /**
@@ -169,8 +179,10 @@ export function createAiDescriptionRecord(params: {
  *
  * @param record - The complete record to save
  */
-export async function saveAiDescription(record: AiDescriptionRecord): Promise<void> {
-    await repository.save(record);
+export async function saveAiDescription(
+  record: AiDescriptionRecord,
+): Promise<void> {
+  await repository.save(record);
 }
 
 /**
@@ -179,6 +191,8 @@ export async function saveAiDescription(record: AiDescriptionRecord): Promise<vo
  * @param repoUrl - The repository URL to search for
  * @returns The stored record or null if not found
  */
-export async function findAiDescription(repoUrl: string): Promise<AiDescriptionRecord | null> {
-    return await repository.findByRepoUrl(repoUrl);
+export async function findAiDescription(
+  repoUrl: string,
+): Promise<AiDescriptionRecord | null> {
+  return await repository.findByRepoUrl(repoUrl);
 }
