@@ -82,12 +82,14 @@ interface SubmitFormProps {
   initialData?: Partial<FormData>;
   mode?: "admin" | "public";
   onSuccess?: () => void;
+  hideHeader?: boolean;
 }
 
 export function SubmitForm({
   initialData,
   mode = "admin",
   onSuccess,
+  hideHeader = false,
 }: SubmitFormProps) {
   const { theme } = useTheme();
   const [isPending, startTransition] = useTransition();
@@ -258,7 +260,7 @@ export function SubmitForm({
         mode === "admin" ? "bg-background p-4 sm:p-6" : "bg-transparent",
       )}
     >
-      {mode === "admin" && (
+      {mode === "admin" && !hideHeader && (
         <div className="w-full space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight">Admin Submit</h2>
           <p className="text-muted-foreground">
