@@ -6,7 +6,7 @@ interface AppListSkeletonProps {
 }
 
 export function AppListSkeleton({
-  pageName = "Apps",
+  pageName: _pageName = "Apps",
   cardCount = 6,
 }: AppListSkeletonProps) {
   return (

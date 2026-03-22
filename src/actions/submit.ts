@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/server/db";
 import { getRepoDetails } from "@/lib/github";
 import { logAudit } from "@/lib/audit";
+import type { Prisma } from "@prisma/client";
 
 const submissionSchema = z.object({
   id: z.string().optional(),
@@ -258,7 +259,9 @@ export async function submitResource(
           repositoryCreatedAt: stats.repositoryCreatedAt ?? null,
           license: stats.license ?? null,
           tags: parsedTags,
-          builtWith: parsedBuiltWith.length ? (parsedBuiltWith as any) : null,
+          builtWith: parsedBuiltWith.length
+            ? (parsedBuiltWith as Prisma.InputJsonValue)
+            : undefined,
           categories: {
             set: [], // Disconnect old categories
             connectOrCreate: validatedData.categories.map((cat) => ({
@@ -294,7 +297,9 @@ export async function submitResource(
           repositoryCreatedAt: stats.repositoryCreatedAt ?? null,
           license: stats.license ?? null,
           tags: parsedTags,
-          builtWith: parsedBuiltWith.length ? (parsedBuiltWith as any) : null,
+          builtWith: parsedBuiltWith.length
+            ? (parsedBuiltWith as Prisma.InputJsonValue)
+            : undefined,
           status: rawData.mode === "admin" ? "APPROVED" : "PENDING",
           addedBy: rawData.mode === "admin" ? "ADMIN" : "USER",
           userId: rawData.userId ?? null,
