@@ -3,192 +3,264 @@
 
 import { useState } from "react";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-    MoreHorizontal,
-    Trash2,
-    Github,
-    Globe,
-    Pencil,
+  MoreHorizontal,
+  Trash2,
+  Github,
+  Globe,
+  Pencil,
+  Eye,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { deleteAdminResource, updateAdminResourceStatus } from "@/actions/admin/resources";
+import {
+  deleteAdminResource,
+  updateAdminResourceStatus,
+} from "@/actions/admin/resources";
 import { toast } from "sonner";
 import { AdminEditResourceDialog } from "./edit-resource-dialog";
+import { ViewResourceDialog } from "./view-resource-dialog";
+import { RejectResourceDialog } from "./reject-resource-dialog";
 
 export function ResourcesTable({ resources }: { resources: any[] }) {
-    const [isDeleting, setIsDeleting] = useState<string | null>(null);
-    const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
-    const [editingResource, setEditingResource] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
+  const [editingResource, setEditingResource] = useState<any | null>(null);
+  const [viewingResource, setViewingResource] = useState<any | null>(null);
+  const [rejectingResource, setRejectingResource] = useState<any | null>(null);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this resource?")) return;
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this resource?")) return;
 
-        setIsDeleting(id);
-        const result = await deleteAdminResource(id);
-        setIsDeleting(null);
+    setIsDeleting(id);
+    const result = await deleteAdminResource(id);
+    setIsDeleting(null);
 
-        if (result.success) {
-            toast.success("Resource deleted successfully");
-        } else {
-            toast.error(result.error ?? "Failed to delete resource");
-        }
-    };
+    if (result.success) {
+      toast.success("Resource deleted successfully");
+    } else {
+      toast.error(result.error ?? "Failed to delete resource");
+    }
+  };
 
-    const handleStatusUpdate = async (id: string, status: "PENDING" | "APPROVED" | "REJECTED") => {
-        setIsUpdatingStatus(id);
-        const result = await updateAdminResourceStatus(id, status);
-        setIsUpdatingStatus(null);
-        
-        if (result.success) {
-            toast.success(`Resource status updated to ${status}`);
-        } else {
-            toast.error(result.error ?? "Failed to update resource status");
-        }
-    };
+  const handleStatusUpdate = async (
+    id: string,
+    status: "PENDING" | "APPROVED" | "REJECTED",
+  ) => {
+    setIsUpdatingStatus(id);
+    const result = await updateAdminResourceStatus(id, status);
+    setIsUpdatingStatus(null);
 
-    return (
-        <div className="rounded-md border-none bg-card/30">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Submitted By</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Added</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {resources?.map((resource) => (
-                        <TableRow key={resource.id}>
-                            <TableCell className="font-medium">
-                                <div className="flex flex-col">
-                                    <span>{resource.name}</span>
-                                    <span className="text-xs text-muted-foreground font-normal line-clamp-1">
-                                        {resource.slug}
-                                    </span>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-medium">{resource.user?.name ?? "Admin / Unknown"}</span>
-                                    <span className="text-xs text-muted-foreground">{resource.user?.email ?? "No email"}</span>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <Badge
-                                    variant={
-                                        resource.status === "APPROVED"
-                                            ? "default"
-                                            : resource.status === "PENDING"
-                                                ? "secondary"
-                                                : "destructive"
-                                    }
-                                >
-                                    {resource.status}
-                                </Badge>
-                            </TableCell>
-                            <TableCell className="text-muted-foreground whitespace-nowrap">
-                                {formatDistanceToNow(new Date(resource.createdAt), {
-                                    addSuffix: true,
-                                })}
-                            </TableCell>
-                            <TableCell className="text-right">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                            <span className="sr-only">Open menu</span>
-                                            <MoreHorizontal className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                        <DropdownMenuItem onClick={() => setEditingResource(resource)}>
-                                            <Pencil className="mr-2 h-4 w-4" />
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem 
-                                            onClick={() => handleStatusUpdate(resource.id, "APPROVED")}
-                                            disabled={isUpdatingStatus === resource.id || resource.status === "APPROVED"}
-                                        >
-                                            <span className="text-green-600">Approve</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            onClick={() => handleStatusUpdate(resource.id, "PENDING")}
-                                            disabled={isUpdatingStatus === resource.id || resource.status === "PENDING"}
-                                        >
-                                            <span className="text-yellow-600">Mark Pending</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            onClick={() => handleStatusUpdate(resource.id, "REJECTED")}
-                                            disabled={isUpdatingStatus === resource.id || resource.status === "REJECTED"}
-                                        >
-                                            <span className="text-red-600">Reject</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem
-                                            className="text-destructive focus:text-destructive"
-                                            disabled={isDeleting === resource.id}
-                                            onClick={() => handleDelete(resource.id)}
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            {isDeleting === resource.id ? "Deleting..." : "Delete"}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                            <a href={resource.repositoryUrl} target="_blank" rel="noopener noreferrer">
-                                                <Github className="mr-2 h-4 w-4" />
-                                                Repository
-                                            </a>
-                                        </DropdownMenuItem>
-                                        {resource.websiteUrl && (
-                                            <DropdownMenuItem asChild>
-                                                <a href={resource.websiteUrl} target="_blank" rel="noopener noreferrer">
-                                                    <Globe className="mr-2 h-4 w-4" />
-                                                    Website
-                                                </a>
-                                            </DropdownMenuItem>
-                                        )}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                    {(!resources || resources.length === 0) && (
-                        <TableRow>
-                            <TableCell colSpan={4} className="text-center py-10 text-muted-foreground">
-                                No resources found.
-                            </TableCell>
-                        </TableRow>
+    if (result.success) {
+      toast.success(`Resource status updated to ${status}`);
+    } else {
+      toast.error(result.error ?? "Failed to update resource status");
+    }
+  };
+
+  return (
+    <div className="bg-card/30 rounded-md border-none">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Submitted By</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Added</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {resources?.map((resource) => (
+            <TableRow key={resource.id}>
+              <TableCell className="font-medium">
+                <div className="flex flex-col">
+                  <span>{resource.name}</span>
+                  <span className="text-muted-foreground line-clamp-1 text-xs font-normal">
+                    {resource.slug}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">
+                    {resource.user?.name ?? "Admin / Unknown"}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {resource.user?.email ?? "No email"}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-col gap-1">
+                  <Badge
+                    variant={
+                      resource.status === "APPROVED"
+                        ? "default"
+                        : resource.status === "PENDING"
+                          ? "secondary"
+                          : "destructive"
+                    }
+                  >
+                    {resource.status}
+                  </Badge>
+                  {resource.status === "REJECTED" &&
+                    resource.rejectionReason && (
+                      <span
+                        className="text-destructive line-clamp-1 text-xs"
+                        title={resource.rejectionReason}
+                      >
+                        {resource.rejectionReason}
+                      </span>
                     )}
-                </TableBody>
-            </Table>
+                </div>
+              </TableCell>
+              <TableCell className="text-muted-foreground whitespace-nowrap">
+                {formatDistanceToNow(new Date(resource.createdAt), {
+                  addSuffix: true,
+                })}
+              </TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() => setViewingResource(resource)}
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Details
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setEditingResource(resource)}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() =>
+                        handleStatusUpdate(resource.id, "APPROVED")
+                      }
+                      disabled={
+                        isUpdatingStatus === resource.id ||
+                        resource.status === "APPROVED"
+                      }
+                    >
+                      <span className="text-green-600">Approve</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleStatusUpdate(resource.id, "PENDING")}
+                      disabled={
+                        isUpdatingStatus === resource.id ||
+                        resource.status === "PENDING"
+                      }
+                    >
+                      <span className="text-yellow-600">Mark Pending</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setRejectingResource(resource)}
+                      disabled={
+                        isUpdatingStatus === resource.id ||
+                        resource.status === "REJECTED"
+                      }
+                    >
+                      <span className="text-red-600">Reject with Reason</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
+                      disabled={isDeleting === resource.id}
+                      onClick={() => handleDelete(resource.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {isDeleting === resource.id ? "Deleting..." : "Delete"}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a
+                        href={resource.repositoryUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Github className="mr-2 h-4 w-4" />
+                        Repository
+                      </a>
+                    </DropdownMenuItem>
+                    {resource.websiteUrl && (
+                      <DropdownMenuItem asChild>
+                        <a
+                          href={resource.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Globe className="mr-2 h-4 w-4" />
+                          Website
+                        </a>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+          {(!resources || resources.length === 0) && (
+            <TableRow>
+              <TableCell
+                colSpan={4}
+                className="text-muted-foreground py-10 text-center"
+              >
+                No resources found.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
-            {editingResource && (
-                <AdminEditResourceDialog
-                    resource={editingResource}
-                    open={!!editingResource}
-                    onOpenChange={(open) => !open && setEditingResource(null)}
-                />
-            )}
-        </div>
-    );
+      {editingResource && (
+        <AdminEditResourceDialog
+          resource={editingResource}
+          open={!!editingResource}
+          onOpenChange={(open) => !open && setEditingResource(null)}
+        />
+      )}
+
+      {viewingResource && (
+        <ViewResourceDialog
+          resource={viewingResource}
+          open={!!viewingResource}
+          onOpenChange={(open) => !open && setViewingResource(null)}
+        />
+      )}
+
+      {rejectingResource && (
+        <RejectResourceDialog
+          resource={rejectingResource}
+          open={!!rejectingResource}
+          onOpenChange={(open) => !open && setRejectingResource(null)}
+        />
+      )}
+    </div>
+  );
 }

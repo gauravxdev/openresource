@@ -264,6 +264,9 @@ export async function submitResource(
           builtWith: parsedBuiltWith.length
             ? (parsedBuiltWith as Prisma.InputJsonValue)
             : undefined,
+          // Reset to pending for non-admin edits, clear rejection reason on resubmit
+          status: rawData.mode === "admin" ? undefined : "PENDING",
+          rejectionReason: null,
           categories: {
             set: [], // Disconnect old categories
             connectOrCreate: validatedData.categories.map((cat) => ({
@@ -274,7 +277,7 @@ export async function submitResource(
               },
             })),
           },
-        },
+        } as any,
       });
     } else {
       // Create new resource
