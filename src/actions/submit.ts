@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/server/db";
 import { getRepoDetails } from "@/lib/github";
 import { logAudit } from "@/lib/audit";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, Resource } from "@prisma/client";
 
 const submissionSchema = z.object({
   id: z.string().optional(),
@@ -220,7 +220,7 @@ export async function submitResource(
       }
     }
 
-    let resource;
+    let resource: Resource;
 
     // Parse tags from comma-separated string to array
     const parsedTags = validatedData.tags
@@ -277,7 +277,7 @@ export async function submitResource(
               },
             })),
           },
-        } as any,
+        },
       });
     } else {
       // Create new resource

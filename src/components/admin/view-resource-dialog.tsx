@@ -21,9 +21,36 @@ import {
   User,
   CalendarDays,
 } from "lucide-react";
+import Image from "next/image";
+
+interface ResourceWithRelations {
+  id: string;
+  name: string;
+  slug: string;
+  logo?: string | null;
+  status: string;
+  rejectionReason?: string | null;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  } | null;
+  oneLiner?: string | null;
+  shortDescription?: string | null;
+  description?: string | null;
+  repositoryUrl?: string | null;
+  websiteUrl?: string | null;
+  categories?: any[];
+  tags?: string[];
+  builtWith?: any;
+  alternative?: string | null;
+  license?: string | null;
+  stars?: number | null;
+  forks?: number | null;
+  addedBy?: string | null;
+}
 
 interface ViewResourceDialogProps {
-  resource: any;
+  resource: ResourceWithRelations;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -54,9 +81,11 @@ export function ViewResourceDialog({
               <DialogTitle className="flex min-w-0 flex-1 items-center gap-4">
                 {resource.logo && (
                   <div className="bg-background flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border shadow-sm">
-                    <img
+                    <Image
                       src={resource.logo}
                       alt={resource.name}
+                      width={48}
+                      height={48}
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -117,7 +146,7 @@ export function ViewResourceDialog({
             )}
 
             {/* Elevator Pitch */}
-            {(resource.oneLiner || resource.shortDescription) && (
+            {(resource.oneLiner ?? resource.shortDescription) && (
               <div className="space-y-6">
                 {resource.oneLiner && (
                   <div className="space-y-2">
@@ -173,7 +202,7 @@ export function ViewResourceDialog({
                     >
                       <Github className="text-muted-foreground group-hover:text-primary h-4 w-4 shrink-0 transition-colors" />
                       <span className="truncate">
-                        {getDisplayUrl(resource.repositoryUrl)}
+                        {getDisplayUrl(resource.repositoryUrl ?? "")}
                       </span>
                     </a>
                   )}
@@ -186,7 +215,7 @@ export function ViewResourceDialog({
                     >
                       <Globe className="text-muted-foreground group-hover:text-primary h-4 w-4 shrink-0 transition-colors" />
                       <span className="truncate">
-                        {getDisplayUrl(resource.websiteUrl)}
+                        {getDisplayUrl(resource.websiteUrl ?? "")}
                       </span>
                     </a>
                   )}
@@ -194,13 +223,13 @@ export function ViewResourceDialog({
               </div>
 
               {/* Categories */}
-              {resource.categories?.length > 0 && (
+              {(resource.categories?.length ?? 0) > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
                     Categories
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {resource.categories.map((cat: any) => (
+                    {resource.categories?.map((cat: any) => (
                       <Badge
                         key={cat.slug}
                         variant="secondary"
@@ -214,13 +243,13 @@ export function ViewResourceDialog({
               )}
 
               {/* Tags */}
-              {resource.tags?.length > 0 && (
+              {(resource.tags?.length ?? 0) > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
                     Tags
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
-                    {resource.tags.map((tag: string) => (
+                    {resource.tags?.map((tag: string) => (
                       <Badge
                         key={tag}
                         variant="outline"
@@ -236,13 +265,13 @@ export function ViewResourceDialog({
               {/* Stack / Built With */}
               {resource.builtWith &&
                 Array.isArray(resource.builtWith) &&
-                resource.builtWith.length > 0 && (
+                (resource.builtWith?.length ?? 0) > 0 && (
                   <div className="space-y-3">
                     <h4 className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
                       Built With
                     </h4>
                     <div className="flex flex-wrap gap-1.5">
-                      {resource.builtWith.map((tech: any) => (
+                      {resource.builtWith?.map((tech: any) => (
                         <Badge
                           key={tech.name ?? tech}
                           variant="outline"

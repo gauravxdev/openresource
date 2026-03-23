@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 "use client";
 
 import { useState } from "react";
@@ -16,7 +15,7 @@ import { updateAdminResourceStatus } from "@/actions/admin/resources";
 import { toast } from "sonner";
 
 interface RejectResourceDialogProps {
-  resource: any;
+  resource: { id: string; name: string };
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
