@@ -27,6 +27,7 @@ import {
   Github,
   Globe,
   Pencil,
+  MessageSquareWarning,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { formatDistanceToNow } from "date-fns";
@@ -34,6 +35,13 @@ import { deleteContributorResource } from "@/actions/contributor/resources";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const EditResourceDialog = dynamic(
   () => import("./edit-resource-dialog").then((mod) => mod.EditResourceDialog),
@@ -46,6 +54,10 @@ const EditResourceDialog = dynamic(
 export function ContributorResourcesTable({ resources }: { resources: any[] }) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [editingResource, setEditingResource] = useState<any>(null);
+  const [viewingReason, setViewingReason] = useState<{
+    reason: string;
+    name: string;
+  } | null>(null);
   const router = useRouter();
 
   const handleDelete = async (id: string) => {
@@ -91,7 +103,7 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
                   <Badge
                     variant={
                       resource.status === "APPROVED"
@@ -105,12 +117,20 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
                   </Badge>
                   {resource.status === "REJECTED" &&
                     resource.rejectionReason && (
-                      <span
-                        className="text-destructive line-clamp-2 text-xs"
-                        title={resource.rejectionReason}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive h-6 w-6"
+                        onClick={() =>
+                          setViewingReason({
+                            reason: resource.rejectionReason,
+                            name: resource.name,
+                          })
+                        }
+                        title="View rejection reason"
                       >
-                        Reason: {resource.rejectionReason}
-                      </span>
+                        <MessageSquareWarning className="h-4 w-4" />
+                      </Button>
                     )}
                 </div>
               </TableCell>
@@ -198,6 +218,31 @@ export function ContributorResourcesTable({ resources }: { resources: any[] }) {
           onOpenChange={(open) => !open && setEditingResource(null)}
         />
       )}
+
+      <Dialog
+        open={!!viewingReason}
+        onOpenChange={(open) => !open && setViewingReason(null)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquareWarning className="text-destructive h-5 w-5" />
+              Rejection Reason
+            </DialogTitle>
+            <DialogDescription>
+              Feedback for &quot;{viewingReason?.name}&quot;
+            </DialogDescription>
+          </DialogHeader>
+          <div className="bg-destructive/5 border-destructive/20 rounded-md border p-4">
+            <p className="text-sm whitespace-pre-wrap">
+              {viewingReason?.reason}
+            </p>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            Fix the issues mentioned above and resubmit for review.
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

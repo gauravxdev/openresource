@@ -83,7 +83,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                 <>
                   <BreadcrumbItem>
                     <BreadcrumbLink
-                      href={`/categories?filter=${encodeURIComponent(primaryCategory.name)}`}
+                      href={`/category/${primaryCategory.slug}`}
                     >
                       {primaryCategory.name}
                     </BreadcrumbLink>
@@ -219,13 +219,14 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {resource.categories.map((cat) => (
-                    <Badge
-                      key={cat.id}
-                      variant="secondary"
-                      className="bg-neutral-100 px-3 py-1 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-                    >
-                      {cat.name}
-                    </Badge>
+                    <Link key={cat.id} href={`/category/${cat.slug}`}>
+                      <Badge
+                        variant="secondary"
+                        className="bg-neutral-100 px-3 py-1 text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                      >
+                        {cat.name}
+                      </Badge>
+                    </Link>
                   ))}
                 </div>
               </div>

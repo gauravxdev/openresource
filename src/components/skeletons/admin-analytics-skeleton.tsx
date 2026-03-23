@@ -1,6 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-
 export function AdminAnalyticsSkeleton() {
   return (
     <main className="bg-background w-full flex-1 space-y-8 overflow-auto p-4 sm:p-6">
