@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { PaginationSkeleton } from "./skeleton-primitives";
+
 import {
   Table,
   TableBody,

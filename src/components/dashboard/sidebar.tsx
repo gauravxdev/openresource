@@ -23,7 +23,7 @@ import {
   ArrowLeft,
   Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
@@ -64,9 +64,9 @@ export function DashboardSidebar({
           className="hover:bg-sidebar-accent -m-1 flex w-full shrink-0 items-center gap-3 rounded-xl p-2 transition-colors"
         >
           <Avatar className="border-border size-7 border">
-            <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
+            <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
             <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
-              {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
+              {user?.name?.charAt(0) ?? user?.email?.charAt(0) ?? "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-1.5 group-data-[collapsible=icon]:hidden">

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { TabsSkeleton, TableSkeleton } from "./skeleton-primitives";
+import { TabsSkeleton } from "./skeleton-primitives";
 import {
   Table,
   TableBody,

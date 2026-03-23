@@ -101,7 +101,7 @@ async function TagResourcesView({ tag, page }: { tag: string; page: number }) {
     page,
     ITEMS_PER_PAGE,
   );
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
 
   return (
     <div className="bg-background min-h-screen w-full">
@@ -189,13 +189,13 @@ async function TagResourcesView({ tag, page }: { tag: string; page: number }) {
                       shortDescription: resource.shortDescription,
                       oneLiner: resource.oneLiner,
                       alternative: resource.alternative,
-                      category: resource.categories[0]?.name || "Uncategorized",
+                      category: resource.categories[0]?.name ?? "Uncategorized",
                       stars: resource.stars.toString(),
                       forks: resource.forks.toString(),
                       lastCommit: resource.lastCommit
                         ? serializeDate(resource.lastCommit).split("T")[0]!
                         : serializeDate(resource.createdAt).split("T")[0]!,
-                      image: resource.image || "/images/placeholder.png",
+                      image: resource.image ?? "/images/placeholder.png",
                       logo: resource.logo,
                     }}
                   />
