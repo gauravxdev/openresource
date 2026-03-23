@@ -47,7 +47,7 @@ export function AdminSearch({ defaultValue = "" }: { defaultValue?: string }) {
       <Input
         type="search"
         placeholder="Search resources..."
-        className="[&::-ms-clear]:display-none border-none bg-neutral-900/50 pr-20 pl-8 focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
+        className="[&::-ms-clear]:display-none bg-muted/50 border-none pr-20 pl-8 focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />

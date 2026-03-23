@@ -111,7 +111,7 @@ export function DashboardSidebar({
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-lg shadow-sm">
+                <SidebarMenuButton asChild className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground h-9 rounded-lg shadow-sm">
                   <Link href="/submit">
                     <Plus className="size-3.5" />
                     <span className="text-sm font-medium">Submit Resource</span>

@@ -113,13 +113,13 @@ export async function submitResource(
   const mode = get("mode") === "admin" ? "admin" : "public";
   let userId: string | undefined = undefined;
 
-  if (mode === "public") {
-    const { headers } = await import("next/headers");
-    const { auth } = await import("@/lib/auth");
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+  const { headers } = await import("next/headers");
+  const { auth } = await import("@/lib/auth");
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
+  if (mode === "public") {
     if (!session?.session || !session.user) {
       return {
         success: false,
@@ -135,7 +135,9 @@ export async function submitResource(
           "Your account is currently restricted from submitting resources.",
       };
     }
+  }
 
+  if (session?.user) {
     userId = session.user.id;
   }
 

@@ -32,7 +32,7 @@ export default function SubmitPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen w-full bg-black text-white">
+    <div className="text-foreground min-h-screen w-full">
       <div className="mx-auto max-w-[1152px] px-5 pt-4 pb-20 md:px-6 md:pt-6">
         {/* Breadcrumb Navigation */}
         <div className="mb-6">
@@ -41,14 +41,14 @@ export default function SubmitPage() {
               <BreadcrumbItem>
                 <BreadcrumbLink
                   href="/"
-                  className="text-gray-400 transition-colors hover:text-white"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Home
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator className="text-gray-600" />
+              <BreadcrumbSeparator className="text-border" />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-white">
+                <BreadcrumbPage className="text-foreground">
                   Submit Resource
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -60,7 +60,7 @@ export default function SubmitPage() {
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
             Submit your Resource
           </h1>
-          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-gray-400">
+          <p className="text-muted-foreground mx-auto max-w-3xl text-lg leading-relaxed">
             The ultimate hub for discovering open-source projects, websites, and
             developer tools.
             <br />
@@ -76,11 +76,11 @@ export default function SubmitPage() {
           </div>
 
           {/* Guidelines Section (Moved below form) */}
-          <div className="border-t border-gray-800 pt-12">
+          <div className="border-border border-t pt-12">
             <div className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold">Submission Guidelines</h2>
-                <p className="text-base leading-relaxed text-gray-400">
+                <p className="text-muted-foreground text-base leading-relaxed">
                   We review all submissions to ensure high quality and relevance
                   to the open-source community.
                 </p>
@@ -92,10 +92,10 @@ export default function SubmitPage() {
                     <Globe className="h-5 w-5 text-emerald-500" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-100">
+                    <p className="text-foreground font-semibold">
                       Public Repository
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-muted-foreground text-sm">
                       Must be hosted on GitHub and not archived.
                     </p>
                   </div>
@@ -106,8 +106,10 @@ export default function SubmitPage() {
                     <Globe className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-100">Custom Domain</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-foreground font-semibold">
+                      Custom Domain
+                    </p>
+                    <p className="text-muted-foreground text-sm">
                       No temporary subdomains (vercel.app, netlify.app, etc.).
                     </p>
                   </div>
@@ -118,8 +120,10 @@ export default function SubmitPage() {
                     <Zap className="h-5 w-5 text-amber-500" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-100">Available Now</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-foreground font-semibold">
+                      Available Now
+                    </p>
+                    <p className="text-muted-foreground text-sm">
                       No waitlist or &quot;coming soon&quot; products.
                     </p>
                   </div>
@@ -130,10 +134,10 @@ export default function SubmitPage() {
                     <ArrowRightLeft className="h-5 w-5 text-red-500" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-100">
+                    <p className="text-foreground font-semibold">
                       Clear Alternative
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-muted-foreground text-sm">
                       Must be an alternative to proprietary software.
                     </p>
                   </div>

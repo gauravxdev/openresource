@@ -9,7 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider className="bg-sidebar min-h-[calc(100svh-3.5rem)]">
+    <SidebarProvider className="bg-sidebar h-[calc(100svh-3.5rem)] overflow-hidden">
       <DashboardSidebar />
       <div className="h-[calc(100svh-3.5rem)] w-full overflow-hidden lg:p-2">
         <div className="bg-container bg-background relative flex h-full w-full flex-col items-center justify-start overflow-hidden lg:rounded-md lg:border">
