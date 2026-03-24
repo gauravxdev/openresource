@@ -26,6 +26,7 @@ model User {
   sessions      Session[]
   chats         Chat[]
   resources     Resource[]
+  bookmarks     Bookmark[]
 
   @@index([email])
   @@map("user")
@@ -120,6 +121,7 @@ model Resource {
   categories          Category[] @relation("CategoryToResource")
   tags                String[]   @default([])
   builtWith           Json?
+  bookmarks           Bookmark[]
 
   @@map("resource")
 }
@@ -185,4 +187,17 @@ model ChatMessage {
 
   @@index([chatId])
   @@map("chat_message")
+}
+
+model Bookmark {
+  id         String   @id @default(cuid())
+  userId     String
+  resourceId String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+  @@index([userId])
+  @@map("bookmark")
 }
