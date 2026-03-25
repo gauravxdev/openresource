@@ -202,3 +202,34 @@ export function ResourceListItemSkeleton() {
     </div>
   );
 }
+
+export function BookmarkCardSkeleton() {
+  return (
+    <div className="border-neutral-150 relative flex h-[180px] flex-col gap-0 overflow-hidden rounded-[12px] border bg-transparent p-0 dark:border-neutral-800">
+      <div className="pointer-events-none absolute inset-[2px] rounded-[10px] bg-neutral-50 dark:bg-[#141414]" />
+      <div className="relative flex h-full flex-col p-4">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-8 w-8 shrink-0 rounded-[8px]" />
+          <Skeleton className="h-6 w-32" />
+          <div className="ml-auto">
+            <Skeleton className="h-8 w-8 rounded-md" />
+          </div>
+        </div>
+        <div className="mt-2 flex-1">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="mt-1.5 h-4 w-3/4" />
+        </div>
+        <div className="mt-4 flex flex-col gap-1.5 border-t border-neutral-100 pt-3 dark:border-neutral-800/50">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="h-3.5 w-3.5 rounded-sm" />
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="mx-1 h-px flex-1" />
+              <Skeleton className="h-4 w-10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -7,6 +7,10 @@ import { ResourceCard } from "@/components/ResourceCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen, Bookmark } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
+import { Pagination } from "@/components/ui/pagination-wrapper";
+import { BookmarkCardSkeleton } from "@/components/skeletons/skeleton-primitives";
+
+const ITEMS_PER_PAGE = 9;
 
 interface LocalBookmarkItem {
   id: string | number;
@@ -38,6 +42,7 @@ export default function BookmarksPage() {
     LocalBookmarkItem[]
   >([]);
   const [loading, setLoading] = React.useState(true);
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   React.useEffect(() => {
     if (sessionLoading) return;
@@ -67,6 +72,23 @@ export default function BookmarksPage() {
     }
   }, [isLoggedIn]);
 
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [isLoggedIn]);
+
+  const totalItems = isLoggedIn ? dbBookmarks.length : localBookmarks.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  const paginatedDbBookmarks = dbBookmarks.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+  const paginatedLocalBookmarks = localBookmarks.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
   if (loading || sessionLoading) {
     return (
       <div className="mx-auto max-w-[1152px] px-4 py-8 md:px-6 md:py-12">
@@ -79,8 +101,8 @@ export default function BookmarksPage() {
           </p>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-muted h-48 animate-pulse rounded-xl" />
+          {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+            <BookmarkCardSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -118,46 +140,57 @@ export default function BookmarksPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {isLoggedIn
-            ? dbBookmarks.map((resource) => (
-                <div key={resource.id} className="h-full">
-                  <ResourceCard
-                    resource={{
-                      id: resource.id,
-                      slug: resource.slug,
-                      title: resource.name,
-                      description: resource.description,
-                      shortDescription: resource.shortDescription,
-                      oneLiner: resource.oneLiner,
-                      alternative: resource.alternative,
-                      category: resource.categories[0]?.name ?? "Uncategorized",
-                      stars: resource.stars.toString(),
-                      forks: resource.forks.toString(),
-                      lastCommit: timeAgo(resource.lastCommit),
-                      image: resource.image ?? "/api/placeholder/300/200",
-                      logo: resource.logo,
-                    }}
-                  />
-                </div>
-              ))
-            : localBookmarks.map((bookmark) => (
-                <div key={String(bookmark.id)} className="h-full">
-                  <ResourceCard
-                    resource={{
-                      id: bookmark.id,
-                      slug: String(bookmark.id),
-                      title: bookmark.title,
-                      description: bookmark.description,
-                      category: bookmark.category,
-                      stars: bookmark.stars,
-                      forks: bookmark.forks,
-                      lastCommit: bookmark.lastCommit,
-                      image: "/api/placeholder/300/200",
-                    }}
-                  />
-                </div>
-              ))}
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {isLoggedIn
+              ? paginatedDbBookmarks.map((resource) => (
+                  <div key={resource.id} className="h-full">
+                    <ResourceCard
+                      resource={{
+                        id: resource.id,
+                        slug: resource.slug,
+                        title: resource.name,
+                        description: resource.description,
+                        shortDescription: resource.shortDescription,
+                        oneLiner: resource.oneLiner,
+                        alternative: resource.alternative,
+                        category:
+                          resource.categories[0]?.name ?? "Uncategorized",
+                        stars: resource.stars.toString(),
+                        forks: resource.forks.toString(),
+                        lastCommit: timeAgo(resource.lastCommit),
+                        image: resource.image ?? "/api/placeholder/300/200",
+                        logo: resource.logo,
+                      }}
+                    />
+                  </div>
+                ))
+              : paginatedLocalBookmarks.map((bookmark) => (
+                  <div key={String(bookmark.id)} className="h-full">
+                    <ResourceCard
+                      resource={{
+                        id: bookmark.id,
+                        slug: String(bookmark.id),
+                        title: bookmark.title,
+                        description: bookmark.description,
+                        category: bookmark.category,
+                        stars: bookmark.stars,
+                        forks: bookmark.forks,
+                        lastCommit: bookmark.lastCommit,
+                        image: "/api/placeholder/300/200",
+                      }}
+                    />
+                  </div>
+                ))}
+          </div>
+
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       )}
     </div>
