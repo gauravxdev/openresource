@@ -35,12 +35,15 @@ function invalidateBookmarkCache() {
 interface BookmarkButtonProps {
   resource: {
     id: number | string;
+    slug: string;
     title: string;
     description: string;
     category: string;
     stars: string;
     forks: string;
     lastCommit: string;
+    image?: string;
+    logo?: string | null;
   };
 }
 
@@ -105,12 +108,15 @@ export function BookmarkButton({ resource }: BookmarkButtonProps) {
 
         const bookmarkData = {
           id: resource.id,
+          slug: resource.slug,
           title: resource.title,
           description: resource.description,
           category: resource.category,
           stars: resource.stars,
           forks: resource.forks,
           lastCommit: resource.lastCommit,
+          image: resource.image,
+          logo: resource.logo,
           bookmarkedAt: new Date().toISOString(),
         };
 

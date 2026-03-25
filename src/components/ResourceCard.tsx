@@ -89,12 +89,15 @@ export function ResourceCard({ resource }: ResourceCardProps) {
             <BookmarkButton
               resource={{
                 id: resource.id,
+                slug: resource.slug,
                 title: resource.title,
                 description: resource.description,
                 category: resource.category,
                 stars: resource.stars,
                 forks: resource.forks,
                 lastCommit: resource.lastCommit,
+                image: resource.image,
+                logo: resource.logo,
               }}
             />
           </div>

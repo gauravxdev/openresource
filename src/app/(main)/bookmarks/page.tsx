@@ -14,12 +14,15 @@ const ITEMS_PER_PAGE = 9;
 
 interface LocalBookmarkItem {
   id: string | number;
+  slug: string;
   title: string;
   description: string;
   category: string;
   stars: string;
   forks: string;
   lastCommit: string;
+  image?: string;
+  logo?: string | null;
   bookmarkedAt: string;
 }
 
@@ -170,14 +173,15 @@ export default function BookmarksPage() {
                     <ResourceCard
                       resource={{
                         id: bookmark.id,
-                        slug: String(bookmark.id),
+                        slug: bookmark.slug,
                         title: bookmark.title,
                         description: bookmark.description,
                         category: bookmark.category,
                         stars: bookmark.stars,
                         forks: bookmark.forks,
                         lastCommit: bookmark.lastCommit,
-                        image: "/api/placeholder/300/200",
+                        image: bookmark.image ?? "/api/placeholder/300/200",
+                        logo: bookmark.logo,
                       }}
                     />
                   </div>

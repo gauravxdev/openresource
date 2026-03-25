@@ -86,12 +86,17 @@ export default async function middleware(request: NextRequest) {
       (route) => pathname === route || pathname.startsWith(`${route}/`),
     );
 
+    const userRole = sessionData.user.role ?? "user";
+
     if (matchedRoute) {
       const allowedRoles = roleBasedRoutes[matchedRoute];
-      const userRole = sessionData.user.role ?? "user";
       if (allowedRoles && !allowedRoles.includes(userRole)) {
         return NextResponse.redirect(new URL("/unauthorized", request.url));
       }
+    }
+
+    if (userRole === "admin" && pathname === "/submit") {
+      return NextResponse.redirect(new URL("/admin/submit", request.url));
     }
 
     return NextResponse.next();
