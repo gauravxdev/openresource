@@ -8,6 +8,7 @@ export { ContributorResourcesSkeleton } from "./contributor-resources-skeleton";
 export { ContributorAnalyticsSkeleton } from "./contributor-analytics-skeleton";
 export { LatestResourcesSkeleton } from "./latest-resources-skeleton";
 export { HomeSkeleton } from "./home-skeleton";
+export { ChatSkeleton, ChatWithMessagesSkeleton } from "./chat-skeleton";
 export { TagsSkeleton, TagResourcesSkeleton } from "./tags-skeleton";
 export {
   StatCardSkeleton,

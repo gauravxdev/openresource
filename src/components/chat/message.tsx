@@ -173,7 +173,7 @@ export const PreviewMessage = ({
       >
         {/* Assistant avatar */}
         {!isUser && (
-          <div className="from-primary/80 to-primary text-primary-foreground mt-0.5 mr-3 flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br shadow-sm">
+          <div className="from-primary/80 to-primary text-primary-foreground mt-0.5 mr-3 hidden size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br shadow-sm sm:flex">
             <SparklesIcon size={14} />
           </div>
         )}
@@ -290,7 +290,7 @@ export const ThinkingMessage = () => {
       data-testid="message-assistant-loading"
     >
       <div className="flex items-start justify-start gap-3">
-        <div className="from-primary/80 to-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br shadow-sm">
+        <div className="from-primary/80 to-primary text-primary-foreground hidden size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br shadow-sm sm:flex">
           <div className="animate-pulse">
             <SparklesIcon size={14} />
           </div>
