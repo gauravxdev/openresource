@@ -23,7 +23,21 @@ import {
 } from "@/lib/chat/queries";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { exaSearch, tavilySearch, serperSearch } from "@/lib/chat/tools";
+import {
+  exaSearch,
+  tavilySearch,
+  serperSearch,
+  searchResources,
+  getCategories,
+  getTags,
+  getResourceDetails,
+  getResourcesByCategory,
+  getResourcesByTag,
+  getUserBookmarks,
+  getGitHubRepoDeepDive,
+  compareResources,
+  recommendResources,
+} from "@/lib/chat/tools";
 
 export const maxDuration = 60;
 
@@ -148,6 +162,16 @@ export async function POST(request: Request) {
           messages: modelMessages,
           stopWhen: stepCountIs(5),
           tools: {
+            searchResources,
+            getCategories,
+            getTags,
+            getResourceDetails,
+            getResourcesByCategory,
+            getResourcesByTag,
+            getUserBookmarks,
+            getGitHubRepoDeepDive,
+            compareResources,
+            recommendResources,
             exaSearch,
             tavilySearch,
             serperSearch,

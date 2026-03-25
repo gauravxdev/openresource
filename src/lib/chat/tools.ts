@@ -200,3 +200,20 @@ export const serperSearch = tool({
     }
   },
 } as any);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Database & Smart Tools
+// ─────────────────────────────────────────────────────────────────────────────
+
+export {
+  searchResources,
+  getCategories,
+  getTags,
+  getResourceDetails,
+  getResourcesByCategory,
+  getResourcesByTag,
+  getUserBookmarks,
+  getGitHubRepoDeepDive,
+  compareResources,
+  recommendResources,
+} from "./tools/index";
