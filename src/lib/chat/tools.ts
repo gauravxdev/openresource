@@ -26,7 +26,7 @@ const exaParameters = z.object({
 
 export const exaSearch = tool({
   description:
-    "Search the web for information using the Exa API. Best for finding specific sources, neural/semantic search, and deep dives. IMPORTANT: You MUST provide the 'query' parameter as a string.",
+    "Semantic/neural search for finding conceptually similar content. USE ONLY when: searching for companies/products by description, finding research papers, or when keyword search fails. For most queries, use serperSearch instead. IMPORTANT: You MUST provide the 'query' parameter as a string.",
   parameters: exaParameters,
   execute: async (args: z.infer<typeof exaParameters>) => {
     try {
@@ -82,7 +82,7 @@ const tavilyParameters = z.object({
 
 export const tavilySearch = tool({
   description:
-    "Search the web for real-time information and comprehensive answers using the Tavily API. Best for quick answers, news, and research. IMPORTANT: You MUST provide the 'query' parameter as a string.",
+    "AI-optimized search that returns a direct answer. USE ONLY when: you need a quick summarized answer, or for breaking news/very recent events. For general searches, use serperSearch instead. IMPORTANT: You MUST provide the 'query' parameter as a string.",
   parameters: tavilyParameters,
   execute: async (args: z.infer<typeof tavilyParameters>) => {
     try {
@@ -137,7 +137,7 @@ const serperParameters = z.object({
 
 export const serperSearch = tool({
   description:
-    "Search Google using the Serper API. Best for standard keyword searches, factual lookups, or when you need traditional Google results. IMPORTANT: You MUST provide the 'query' parameter as a string.",
+    "DEFAULT search tool - Google search for general purpose queries. Use this for: facts, definitions, how-to, products, news, latest info, any general question. This should be your FIRST choice for any search. IMPORTANT: You MUST provide the 'query' parameter as a string.",
   parameters: serperParameters,
   execute: async (args: z.infer<typeof serperParameters>) => {
     try {

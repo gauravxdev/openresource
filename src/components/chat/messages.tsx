@@ -9,71 +9,72 @@ import { Greeting } from "./greeting";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 type MessagesProps = {
-    _chatId: string;
-    status: UseChatHelpers<ChatMessage>["status"];
-    messages: ChatMessage[];
-    _setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-    _isReadonly: boolean;
+  _chatId: string;
+  status: UseChatHelpers<ChatMessage>["status"];
+  messages: ChatMessage[];
+  _setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  _isReadonly: boolean;
 };
 
 function PureMessages({
-    _chatId: _chatId,
-    status,
-    messages,
-    _setMessages: _setMessages,
-    _isReadonly: _isReadonly,
+  _chatId: _chatId,
+  status,
+  messages,
+  _setMessages: _setMessages,
+  _isReadonly: _isReadonly,
 }: MessagesProps) {
-    const {
-        containerRef: messagesContainerRef,
-        endRef: messagesEndRef,
-        isAtBottom,
-        scrollToBottom,
-        hasSentMessage: _hasSentMessage,
-    } = useMessages({
-        status,
-    });
+  const {
+    containerRef: messagesContainerRef,
+    endRef: messagesEndRef,
+    isAtBottom,
+    scrollToBottom,
+    hasSentMessage: _hasSentMessage,
+  } = useMessages({
+    status,
+  });
 
-    return (
-        <div className="relative flex-1 bg-background">
-            <div
-                className="absolute inset-0 touch-pan-y overflow-y-auto bg-background [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                ref={messagesContainerRef}
-            >
-                <div className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
-                    {messages.length === 0 && <Greeting />}
+  return (
+    <div className="bg-background relative flex-1">
+      <div
+        className="bg-background absolute inset-0 touch-pan-y overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        ref={messagesContainerRef}
+      >
+        <div className="mx-auto flex max-w-3xl min-w-0 flex-col gap-6 px-4 py-6 md:gap-8 md:px-6">
+          {messages.length === 0 && <Greeting />}
 
-                    {messages.map((message, index) => (
-                        <PreviewMessage
-                            isLoading={
-                                status === "streaming" && messages.length - 1 === index
-                            }
-                            key={message.id}
-                            message={message}
-                        />
-                    ))}
+          {messages.map((message, index) => (
+            <PreviewMessage
+              isLoading={
+                status === "streaming" && messages.length - 1 === index
+              }
+              key={message.id}
+              message={message}
+            />
+          ))}
 
-                    {status === "submitted" && <ThinkingMessage />}
+          {status === "submitted" && <ThinkingMessage />}
 
-                    <div
-                        className="min-h-[24px] min-w-[24px] shrink-0"
-                        ref={messagesEndRef}
-                    />
-                </div>
-            </div>
-
-            <button
-                aria-label="Scroll to bottom"
-                className={`absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border bg-background p-2 shadow-lg transition-all hover:bg-muted ${isAtBottom
-                    ? "pointer-events-none scale-0 opacity-0"
-                    : "pointer-events-auto scale-100 opacity-100"
-                    }`}
-                onClick={() => scrollToBottom("smooth")}
-                type="button"
-            >
-                <ArrowDownIcon className="size-4" />
-            </button>
+          <div
+            className="min-h-[24px] min-w-[24px] shrink-0"
+            ref={messagesEndRef}
+          />
         </div>
-    );
+      </div>
+
+      <button
+        aria-label="Scroll to bottom"
+        className={`border-border/50 bg-background/80 hover:bg-muted absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border p-2.5 shadow-lg backdrop-blur-sm transition-all duration-200 hover:shadow-xl ${
+          isAtBottom
+            ? "pointer-events-none scale-90 opacity-0"
+            : "pointer-events-auto scale-100 opacity-100"
+        }`}
+        onClick={() => scrollToBottom("smooth")}
+        type="button"
+      >
+        <ArrowDownIcon className="text-muted-foreground size-4" />
+      </button>
+    </div>
+  );
 }
 
 export const Messages = PureMessages;
