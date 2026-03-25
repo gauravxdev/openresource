@@ -51,7 +51,7 @@ export default function BookmarksPage() {
     if (sessionLoading) return;
 
     if (isLoggedIn) {
-      getUserBookmarks().then((result) => {
+      void getUserBookmarks().then((result) => {
         if (result.success) {
           setDbBookmarks(result.data);
         }

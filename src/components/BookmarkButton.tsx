@@ -60,7 +60,7 @@ export function BookmarkButton({ resource }: BookmarkButtonProps) {
     setMounted(true);
 
     if (isLoggedIn) {
-      checkBookmarkStatus(resourceId).then((result) => {
+      void checkBookmarkStatus(resourceId).then((result) => {
         if (result.success) {
           setIsBookmarked(result.bookmarked);
         }
