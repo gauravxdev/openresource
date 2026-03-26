@@ -6,3 +6,4 @@ export { getUserBookmarks } from "./bookmarks";
 export { getGitHubRepoDeepDive } from "./github";
 export { compareResources } from "./compare";
 export { recommendResources } from "./recommend";
+export { getTotalCount } from "./count";

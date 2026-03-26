@@ -216,4 +216,5 @@ export {
   getGitHubRepoDeepDive,
   compareResources,
   recommendResources,
+  getTotalCount,
 } from "./tools/index";

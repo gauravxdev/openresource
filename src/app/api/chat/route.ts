@@ -37,6 +37,7 @@ import {
   getGitHubRepoDeepDive,
   compareResources,
   recommendResources,
+  getTotalCount,
 } from "@/lib/chat/tools";
 
 export const maxDuration = 60;
@@ -175,6 +176,7 @@ export async function POST(request: Request) {
             exaSearch,
             tavilySearch,
             serperSearch,
+            getTotalCount,
           },
         });
 
