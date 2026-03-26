@@ -16,9 +16,177 @@ function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   return null;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Platform Detection from GitHub Data
+// ─────────────────────────────────────────────────────────────────────────────
+
+const PLATFORM_KEYWORDS: Record<string, string[]> = {
+  android: [
+    "android",
+    "android-app",
+    "apk",
+    "play store",
+    "google play",
+    "kotlin",
+  ],
+  ios: ["ios", "iphone", "ipad", "app store", "ipa", "swift", "xcode"],
+  windows: ["windows", "win32", "win64", "uwp", "wpf", "winforms"],
+  macos: ["macos", "mac os", "osx", "apple silicon", "cocoa", "appkit"],
+  linux: [
+    "linux",
+    "ubuntu",
+    "debian",
+    "fedora",
+    "flatpak",
+    "snap",
+    "appimage",
+    "gnome",
+    "kde",
+  ],
+  web: ["web", "browser", "pwa", "react", "vue", "angular", "nextjs", "nuxt"],
+};
+
+const ASSET_EXTENSIONS: Record<string, string[]> = {
+  android: [".apk", ".aab"],
+  windows: [".exe", ".msi", ".zip"],
+  macos: [".dmg", ".pkg", ".app.zip"],
+  linux: [".deb", ".rpm", ".appimage", ".flatpak", ".snap", ".tar.gz"],
+  ios: [".ipa"],
+};
+
+const DIR_PLATFORMS: Record<string, string> = {
+  android: "android",
+  ios: "ios",
+  linux: "linux",
+  windows: "windows",
+  macos: "macos",
+  mac: "macos",
+  darwin: "macos",
+};
+
+const LANG_PLATFORMS: Record<string, string> = {
+  Kotlin: "android",
+  Swift: "ios",
+  "Objective-C": "ios",
+  "C#": "windows",
+};
+
+interface PlatformEvidence {
+  platform: string;
+  source: string;
+  detail: string;
+}
+
+function detectPlatformsFromText(
+  text: string,
+  source: string,
+): PlatformEvidence[] {
+  const lower = text.toLowerCase();
+  const evidence: PlatformEvidence[] = [];
+
+  for (const [platform, keywords] of Object.entries(PLATFORM_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) {
+        evidence.push({
+          platform,
+          source,
+          detail: `Found "${kw}" in ${source}`,
+        });
+        break;
+      }
+    }
+  }
+
+  return evidence;
+}
+
+function detectPlatformsFromTopics(topics: string[]): PlatformEvidence[] {
+  const evidence: PlatformEvidence[] = [];
+
+  for (const topic of topics) {
+    const lower = topic.toLowerCase();
+    for (const [platform, keywords] of Object.entries(PLATFORM_KEYWORDS)) {
+      if (keywords.includes(lower)) {
+        evidence.push({
+          platform,
+          source: "topics",
+          detail: `Topic: "${topic}"`,
+        });
+      }
+    }
+  }
+
+  return evidence;
+}
+
+function detectPlatformsFromAssets(
+  assets: Array<{ name: string }>,
+): PlatformEvidence[] {
+  const evidence: PlatformEvidence[] = [];
+
+  for (const asset of assets) {
+    const lowerName = asset.name.toLowerCase();
+    for (const [platform, extensions] of Object.entries(ASSET_EXTENSIONS)) {
+      for (const ext of extensions) {
+        if (lowerName.endsWith(ext)) {
+          evidence.push({
+            platform,
+            source: "release",
+            detail: `Release asset: ${asset.name}`,
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  return evidence;
+}
+
+function detectPlatformsFromDirs(dirs: string[]): PlatformEvidence[] {
+  const evidence: PlatformEvidence[] = [];
+
+  for (const dir of dirs) {
+    const lower = dir.toLowerCase();
+    const platform = DIR_PLATFORMS[lower];
+    if (platform) {
+      evidence.push({
+        platform,
+        source: "directory",
+        detail: `Found /${dir} folder`,
+      });
+    }
+  }
+
+  return evidence;
+}
+
+function detectPlatformsFromLanguages(
+  languages: Record<string, number>,
+): PlatformEvidence[] {
+  const evidence: PlatformEvidence[] = [];
+
+  for (const lang of Object.keys(languages)) {
+    const platform = LANG_PLATFORMS[lang];
+    if (platform) {
+      evidence.push({
+        platform,
+        source: "language",
+        detail: `Primary language: ${lang}`,
+      });
+    }
+  }
+
+  return evidence;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tool Definition
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const getGitHubRepoDeepDive = tool({
   description:
-    "Deep dive into a GitHub repository: live stats, README content, programming languages, release count, recent commits, and open issues. Use this when the user wants detailed info about a specific resource's GitHub repo, asks about features mentioned in README, wants to check if a project is actively maintained, or asks technical questions about a repo.",
+    "Deep dive into a GitHub repository: live stats, README content, programming languages, release count, recent commits, open issues, AND platform support detection. Use this when: the user wants detailed info about a resource's GitHub repo, asks about features in README, wants to check if a project is actively maintained, OR needs to verify platform support (android, ios, windows, linux, macos). The detectedPlatforms field shows which platforms the project supports based on README, topics, releases, directory structure, and languages.",
   parameters: z.object({
     repositoryUrl: z
       .string()
@@ -53,6 +221,7 @@ export const getGitHubRepoDeepDive = tool({
           .catch(() => ({ data: [] })),
       ]);
 
+      // Fetch README
       let readme = "";
       try {
         const readmeResponse = await octokit.request(
@@ -77,6 +246,38 @@ export const getGitHubRepoDeepDive = tool({
         }
       } catch {
         readme = "README not available.";
+      }
+
+      // Fetch recent releases for platform detection
+      let releaseAssets: Array<{ name: string }> = [];
+      try {
+        const releasesResponse = await octokit.request(
+          "GET /repos/{owner}/{repo}/releases",
+          { owner, repo, per_page: 3 },
+        );
+        for (const release of releasesResponse.data) {
+          for (const asset of release.assets ?? []) {
+            releaseAssets.push({ name: asset.name });
+          }
+        }
+      } catch {
+        // No releases or error
+      }
+
+      // Fetch directory structure for platform detection
+      let dirNames: string[] = [];
+      try {
+        const contentsResponse = await octokit.request(
+          "GET /repos/{owner}/{repo}/contents",
+          { owner, repo },
+        );
+        if (Array.isArray(contentsResponse.data)) {
+          dirNames = contentsResponse.data
+            .filter((item: any) => item.type === "dir")
+            .map((item: any) => item.name as string);
+        }
+      } catch {
+        // Error fetching contents
       }
 
       const data = repoData.data;
@@ -110,6 +311,29 @@ export const getGitHubRepoDeepDive = tool({
           )
         : null;
 
+      // ─── Platform Detection ────────────────────────────────────────────
+      const allEvidence: PlatformEvidence[] = [
+        ...detectPlatformsFromText(readme, "readme"),
+        ...detectPlatformsFromText(data.description ?? "", "description"),
+        ...detectPlatformsFromTopics(data.topics ?? []),
+        ...detectPlatformsFromAssets(releaseAssets),
+        ...detectPlatformsFromDirs(dirNames),
+        ...detectPlatformsFromLanguages(languages),
+      ];
+
+      // Deduplicate evidence
+      const seen = new Set<string>();
+      const uniqueEvidence = allEvidence.filter((e) => {
+        const key = `${e.platform}-${e.source}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      const detectedPlatforms = [
+        ...new Set(uniqueEvidence.map((e) => e.platform)),
+      ];
+
       return {
         name: data.full_name,
         description: data.description,
@@ -140,6 +364,8 @@ export const getGitHubRepoDeepDive = tool({
                 : daysSinceUpdate <= 180
                   ? "low activity"
                   : "likely inactive",
+        detectedPlatforms,
+        platformEvidence: uniqueEvidence,
       };
     } catch (error: unknown) {
       const err = error as { status?: number };

@@ -56,6 +56,7 @@ export const getTags = tool({
       const resources = await db.resource.findMany({
         where: { status: "APPROVED" },
         select: { tags: true },
+        take: 500,
       });
 
       const tagCounts = new Map<string, number>();

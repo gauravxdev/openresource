@@ -39,6 +39,7 @@ export const compareResources = tool({
           builtWith: true,
           categories: { select: { name: true } },
         },
+        take: 5,
       });
 
       if (resources.length < 2) {

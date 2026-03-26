@@ -28,6 +28,7 @@ export const getUserBookmarks = tool({
           categories: { select: { name: true, slug: true } },
         },
         orderBy: { name: "asc" },
+        take: 50,
       });
 
       if (resources.length === 0) {
@@ -45,7 +46,7 @@ export const getUserBookmarks = tool({
           name: r.name,
           slug: r.slug,
           description: r.shortDescription ?? r.oneLiner ?? "",
-          url: r.websiteUrl ?? r.repositoryUrl,
+          url: `/resource/${r.slug}`,
           stars: r.stars,
           forks: r.forks,
           license: r.license,
