@@ -249,7 +249,7 @@ export const getGitHubRepoDeepDive = tool({
       }
 
       // Fetch recent releases for platform detection
-      let releaseAssets: Array<{ name: string }> = [];
+      const releaseAssets: Array<{ name: string }> = [];
       try {
         const releasesResponse = await octokit.request(
           "GET /repos/{owner}/{repo}/releases",
@@ -273,8 +273,8 @@ export const getGitHubRepoDeepDive = tool({
         );
         if (Array.isArray(contentsResponse.data)) {
           dirNames = contentsResponse.data
-            .filter((item: any) => item.type === "dir")
-            .map((item: any) => item.name as string);
+            .filter((item: { type: string }) => item.type === "dir")
+            .map((item: { name: string }) => item.name);
         }
       } catch {
         // Error fetching contents

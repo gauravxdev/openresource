@@ -153,6 +153,14 @@ const KEYWORD_SYNONYMS: Record<string, string[]> = {
   translate: ["translate", "translation", "translator"],
   translation: ["translate", "translation", "translator"],
   offline: ["offline", "local", "self-hosted"],
+  ios: ["ios", "iphone", "ipad", "apple", "mobile"],
+  android: ["android", "apk", "mobile"],
+  windows: ["windows", "win", "desktop"],
+  macos: ["macos", "mac", "desktop", "apple"],
+  linux: ["linux", "ubuntu", "debian", "fedora", "desktop"],
+  app: ["app", "application", "software", "tool"],
+  mobile: ["mobile", "ios", "android", "phone", "tablet"],
+  desktop: ["desktop", "windows", "macos", "linux"],
 };
 
 const STOP_WORDS = new Set([
@@ -342,8 +350,33 @@ function scoreResource(
     if (termMatched) matchedTerms++;
   }
 
+  // Bonus for matching multiple terms
   if (matchedTerms >= 2) score += matchedTerms * 5;
   if (matchedTerms >= 3) score += matchedTerms * 10;
+
+  // Bonus for platform keywords in descriptions
+  const platformKeywords = [
+    "ios",
+    "android",
+    "windows",
+    "macos",
+    "linux",
+    "mobile",
+    "desktop",
+  ];
+  const descriptionText = [
+    resource.description ?? "",
+    resource.shortDescription ?? "",
+    resource.oneLiner ?? "",
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  for (const keyword of platformKeywords) {
+    if (descriptionText.includes(keyword)) {
+      score += 3;
+    }
+  }
 
   return score;
 }
@@ -517,7 +550,7 @@ export const searchResources = tool({
       let usedFallback = false;
 
       // ── Query Level 2: At least 2 of original words match (relaxed AND) ──
-      if (rawResources.length === 0 && originalWords.length >= 3) {
+      if (rawResources.length === 0 && originalWords.length >= 2) {
         const pairConditions: Prisma.ResourceWhereInput[] = [];
         for (let i = 0; i < originalWords.length; i++) {
           for (let j = i + 1; j < originalWords.length; j++) {
