@@ -99,8 +99,10 @@ Bad outputs (never do this):
 
 export const systemPrompt = ({
   selectedChatModel: _selectedChatModel,
+  toolPerformanceContext,
 }: {
   selectedChatModel: string;
+  toolPerformanceContext?: string;
 }) => {
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -108,5 +110,13 @@ export const systemPrompt = ({
     month: "long",
     day: "numeric",
   });
-  return regularPrompt(today);
+
+  let prompt = regularPrompt(today);
+
+  // Append tool performance context if available
+  if (toolPerformanceContext && toolPerformanceContext.trim() !== "") {
+    prompt += "\n\n" + toolPerformanceContext;
+  }
+
+  return prompt;
 };

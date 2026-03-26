@@ -49,6 +49,7 @@ function PureMessages({
               }
               key={message.id}
               message={message}
+              chatId={_chatId}
             />
           ))}
 

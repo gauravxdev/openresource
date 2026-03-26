@@ -46,6 +46,7 @@ import {
   createTavilySearchTool,
 } from "@/lib/chat/tool-factories";
 import type { UserRole } from "@/lib/chat/rate-limit";
+import { getToolPerformanceContext } from "@/actions/admin/feedback-stats";
 
 export const maxDuration = 60;
 
@@ -187,9 +188,12 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
+        // Fetch tool performance context for AI
+        const toolPerformanceContext = await getToolPerformanceContext();
+
         const result = streamText({
           model: getLanguageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel }),
+          system: systemPrompt({ selectedChatModel, toolPerformanceContext }),
           messages: modelMessages,
           stopWhen: stepCountIs(5),
           tools,

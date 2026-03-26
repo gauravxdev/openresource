@@ -36,9 +36,11 @@ import { ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
 function MessageActions({
   message,
   isLoading,
+  chatId,
 }: {
   message: ChatMessage;
   isLoading: boolean;
+  chatId: string;
 }) {
   if (isLoading) return null;
 
@@ -55,6 +57,46 @@ function MessageActions({
     }
     await navigator.clipboard.writeText(textFromParts);
     toast.success("Copied to clipboard!");
+  };
+
+  const handleFeedback = async (type: "good" | "bad") => {
+    console.log("[Feedback] handleFeedback called with type:", type);
+    try {
+      console.log("[Feedback] Sending feedback:", {
+        messageId: message.id,
+        chatId,
+        type,
+      });
+
+      const response = await fetch("/api/chat/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messageId: message.id,
+          chatId,
+          type,
+        }),
+      });
+
+      console.log("[Feedback] Response status:", response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("[Feedback] Success:", data);
+        toast.success("Thanks for the feedback!");
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("[Feedback] Error response:", errorData);
+        toast.error(
+          `Failed to save feedback: ${errorData.error || response.statusText}`,
+        );
+      }
+    } catch (error) {
+      console.error("[Feedback] Error sending feedback:", error);
+      toast.error("Failed to save feedback");
+    }
   };
 
   if (message.role === "user") return null;
@@ -81,15 +123,17 @@ function MessageActions({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 size-7"
-              onClick={() => toast.success("Thanks for the feedback!")}
-              size="sm"
+            <button
+              className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 focus-visible:ring-ring inline-flex size-7 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+              onClick={() => {
+                alert("Thumbs up clicked!");
+                console.log("[Feedback] Thumbs up clicked!");
+                handleFeedback("good");
+              }}
               type="button"
-              variant="ghost"
             >
               <ThumbsUp size={14} />
-            </Button>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs">
             <p>Good response</p>
@@ -98,15 +142,17 @@ function MessageActions({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 size-7"
-              onClick={() => toast.success("Thanks for the feedback!")}
-              size="sm"
+            <button
+              className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 focus-visible:ring-ring inline-flex size-7 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+              onClick={() => {
+                alert("Thumbs down clicked!");
+                console.log("[Feedback] Thumbs down clicked!");
+                handleFeedback("bad");
+              }}
               type="button"
-              variant="ghost"
             >
               <ThumbsDown size={14} />
-            </Button>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs">
             <p>Bad response</p>
@@ -141,9 +187,11 @@ function MessageActions({
 export const PreviewMessage = ({
   message,
   isLoading,
+  chatId,
 }: {
   message: ChatMessage;
   isLoading: boolean;
+  chatId: string;
 }) => {
   const reasoningParts =
     message.parts?.filter((p) => p.type === "reasoning") || [];
@@ -271,7 +319,11 @@ export const PreviewMessage = ({
           )}
 
           {/* Actions */}
-          <MessageActions message={message} isLoading={isLoading} />
+          <MessageActions
+            message={message}
+            isLoading={isLoading}
+            chatId={chatId}
+          />
         </div>
       </div>
     </div>

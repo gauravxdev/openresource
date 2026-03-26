@@ -29,6 +29,7 @@ model User {
   resources     Resource[]
   bookmarks     Bookmark[]
   searchUsage   SearchUsage[]
+  messageFeedback MessageFeedback[]
 
   @@index([email])
   @@map("user")
@@ -215,4 +216,20 @@ model SearchUsage {
   @@index([userId])
   @@index([date])
   @@map("search_usage")
+}
+
+model MessageFeedback {
+  id        String   @id @default(cuid())
+  messageId String
+  chatId    String
+  userId    String
+  type      String   // "good" or "bad"
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@index([chatId])
+  @@index([userId])
+  @@index([type])
+  @@map("message_feedback")
 }
