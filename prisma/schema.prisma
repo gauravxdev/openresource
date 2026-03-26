@@ -28,6 +28,7 @@ model User {
   chats         Chat[]
   resources     Resource[]
   bookmarks     Bookmark[]
+  searchUsage   SearchUsage[]
 
   @@index([email])
   @@map("user")
@@ -201,4 +202,17 @@ model Bookmark {
   @@unique([userId, resourceId])
   @@index([userId])
   @@map("bookmark")
+}
+
+model SearchUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  count     Int      @default(0)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("search_usage")
 }

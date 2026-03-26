@@ -33,12 +33,19 @@ import {
   getResourceDetails,
   getResourcesByCategory,
   getResourcesByTag,
-  getUserBookmarks,
   getGitHubRepoDeepDive,
   compareResources,
   recommendResources,
   getTotalCount,
 } from "@/lib/chat/tools";
+import {
+  createGetUserBookmarksTool,
+  createSearchResourcesTool,
+  createSerperSearchTool,
+  createExaSearchTool,
+  createTavilySearchTool,
+} from "@/lib/chat/tool-factories";
+import type { UserRole } from "@/lib/chat/rate-limit";
 
 export const maxDuration = 60;
 
@@ -98,6 +105,7 @@ export async function POST(request: Request) {
     }
 
     const userId = session.user.id;
+    const userRole = (session.user.role ?? "user") as UserRole;
 
     // Check if this is a new chat or existing
     const existingChat = await getChatById({ id });
@@ -155,6 +163,28 @@ export async function POST(request: Request) {
       }).then(({ text }) => text.trim() || "New Chat");
     }
 
+    // Create tools with user context
+    const tools = {
+      searchResources: createSearchResourcesTool(
+        userId,
+        userRole,
+        searchResources,
+      ),
+      getCategories,
+      getTags,
+      getResourceDetails,
+      getResourcesByCategory,
+      getResourcesByTag,
+      getUserBookmarks: createGetUserBookmarksTool(userId),
+      getGitHubRepoDeepDive,
+      compareResources,
+      recommendResources,
+      exaSearch: createExaSearchTool(userId, userRole, exaSearch),
+      tavilySearch: createTavilySearchTool(userId, userRole, tavilySearch),
+      serperSearch: createSerperSearchTool(userId, userRole, serperSearch),
+      getTotalCount,
+    };
+
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
         const result = streamText({
@@ -162,22 +192,7 @@ export async function POST(request: Request) {
           system: systemPrompt({ selectedChatModel }),
           messages: modelMessages,
           stopWhen: stepCountIs(5),
-          tools: {
-            searchResources,
-            getCategories,
-            getTags,
-            getResourceDetails,
-            getResourcesByCategory,
-            getResourcesByTag,
-            getUserBookmarks,
-            getGitHubRepoDeepDive,
-            compareResources,
-            recommendResources,
-            exaSearch,
-            tavilySearch,
-            serperSearch,
-            getTotalCount,
-          },
+          tools,
         });
 
         dataStream.merge(result.toUIMessageStream({ sendReasoning: true }));
