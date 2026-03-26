@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star, GitFork, Clock, Box } from "lucide-react";
 import Image from "next/image";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { formatCompactNumber } from "@/lib/format";
 
 interface Resource {
   id: number | string;
@@ -31,13 +32,13 @@ export function ResourceCard({ resource }: ResourceCardProps) {
   const stats = [
     {
       label: "Stars",
-      value: resource.stars,
+      value: formatCompactNumber(resource.stars),
       Icon: Star,
       iconClassName: "text-yellow-400",
     },
     {
       label: "Forks",
-      value: resource.forks,
+      value: formatCompactNumber(resource.forks),
       Icon: GitFork,
       iconClassName: "text-neutral-400",
     },

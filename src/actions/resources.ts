@@ -712,3 +712,245 @@ export async function searchResources(
     return { success: false, data: [] };
   }
 }
+
+export async function getSelfHostedResources(
+  page = 1,
+  limit = 9,
+): Promise<{
+  success: boolean;
+  data: ResourceWithCategories[];
+  totalCount: number;
+}> {
+  return getResourcesByTag("self-hosted", page, limit);
+}
+
+export async function getComingSoonResources(
+  page = 1,
+  limit = 20,
+): Promise<{
+  success: boolean;
+  data: ResourceWithCategories[];
+  totalCount: number;
+}> {
+  return getResourcesByTag("coming-soon", page, limit);
+}
+
+export async function getAlternativeResources(
+  page = 1,
+  limit = 9,
+): Promise<{
+  success: boolean;
+  data: ResourceWithCategories[];
+  totalCount: number;
+}> {
+  try {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.ResourceWhereInput = {
+      status: "APPROVED",
+      alternative: { not: null },
+    };
+
+    const [resources, totalCount] = await Promise.all([
+      db.resource.findMany({
+        where,
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          description: true,
+          shortDescription: true,
+          oneLiner: true,
+          websiteUrl: true,
+          repositoryUrl: true,
+          alternative: true,
+          stars: true,
+          forks: true,
+          lastCommit: true,
+          repositoryCreatedAt: true,
+          image: true,
+          logo: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          addedBy: true,
+          license: true,
+          categories: {
+            select: {
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        orderBy: { stars: "desc" },
+        skip,
+        take: limit,
+      }),
+      db.resource.count({ where }),
+    ]);
+
+    return {
+      success: true,
+      data: resources as ResourceWithCategories[],
+      totalCount,
+    };
+  } catch (error) {
+    console.error("[Alternative Resources] Get Error:", error);
+    return { success: false, data: [], totalCount: 0 };
+  }
+}
+
+export async function getResourcesByLicense(
+  license: string,
+  page = 1,
+  limit = 9,
+): Promise<{
+  success: boolean;
+  data: ResourceWithCategories[];
+  totalCount: number;
+}> {
+  try {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.ResourceWhereInput = {
+      status: "APPROVED",
+      license: { equals: license, mode: "insensitive" },
+    };
+
+    const [resources, totalCount] = await Promise.all([
+      db.resource.findMany({
+        where,
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          description: true,
+          shortDescription: true,
+          oneLiner: true,
+          websiteUrl: true,
+          repositoryUrl: true,
+          alternative: true,
+          stars: true,
+          forks: true,
+          lastCommit: true,
+          repositoryCreatedAt: true,
+          image: true,
+          logo: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          addedBy: true,
+          license: true,
+          categories: {
+            select: {
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        orderBy: { stars: "desc" },
+        skip,
+        take: limit,
+      }),
+      db.resource.count({ where }),
+    ]);
+
+    return {
+      success: true,
+      data: resources as ResourceWithCategories[],
+      totalCount,
+    };
+  } catch (error) {
+    console.error("[License Resources] Get Error:", error);
+    return { success: false, data: [], totalCount: 0 };
+  }
+}
+
+export async function getAllLicenses(): Promise<{
+  success: boolean;
+  data: string[];
+}> {
+  try {
+    const licenses = await db.resource.findMany({
+      where: {
+        status: "APPROVED",
+        license: { not: null },
+      },
+      select: {
+        license: true,
+      },
+      distinct: ["license"],
+    });
+
+    const uniqueLicenses = licenses
+      .map((r) => r.license)
+      .filter((l): l is string => l !== null && l !== "");
+
+    uniqueLicenses.sort();
+
+    return { success: true, data: uniqueLicenses };
+  } catch (error) {
+    console.error("[Licenses] Get All Error:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function getMostForkedResources(
+  page = 1,
+  limit = 9,
+): Promise<{
+  success: boolean;
+  data: ResourceWithCategories[];
+  totalCount: number;
+}> {
+  try {
+    const skip = (page - 1) * limit;
+
+    const [resources, totalCount] = await Promise.all([
+      db.resource.findMany({
+        where: { status: "APPROVED" },
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          description: true,
+          shortDescription: true,
+          oneLiner: true,
+          websiteUrl: true,
+          repositoryUrl: true,
+          alternative: true,
+          stars: true,
+          forks: true,
+          lastCommit: true,
+          repositoryCreatedAt: true,
+          image: true,
+          logo: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          addedBy: true,
+          license: true,
+          categories: {
+            select: {
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        orderBy: { forks: "desc" },
+        skip,
+        take: limit,
+      }),
+      db.resource.count({ where: { status: "APPROVED" } }),
+    ]);
+
+    return {
+      success: true,
+      data: resources as ResourceWithCategories[],
+      totalCount,
+    };
+  } catch (error) {
+    console.error("[Most Forked Resources] Get Error:", error);
+    return { success: false, data: [], totalCount: 0 };
+  }
+}

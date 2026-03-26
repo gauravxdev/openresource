@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, GitFork, ExternalLink, Bookmark } from "lucide-react"
 import * as React from "react"
+import { formatCompactNumber } from "@/lib/format"
 
 interface BookmarkItem {
   id: string | number
@@ -118,12 +119,12 @@ export const GitHubRepoCard = React.memo(function GitHubRepoCard({
           <div className="flex items-center gap-3 text-sm text-muted-foreground shrink-0">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 text-yellow-500 dark:text-yellow-400 shrink-0" />
-              <span className="whitespace-nowrap">{stars.toLocaleString()}</span>
+              <span className="whitespace-nowrap">{formatCompactNumber(stars)}</span>
             </div>
 
             <div className="flex items-center gap-1">
               <GitFork className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0" />
-              <span className="whitespace-nowrap">{forks.toLocaleString()}</span>
+              <span className="whitespace-nowrap">{formatCompactNumber(forks)}</span>
             </div>
           </div>
         </div>

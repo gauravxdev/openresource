@@ -4,6 +4,7 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, GitFork, Clock, Calendar, Scale, ExternalLink } from "lucide-react";
+import { formatCompactNumber } from "@/lib/format";
 
 export interface GitHubStats {
     stars: number;
@@ -20,10 +21,10 @@ interface GitHubStatsSidebarProps {
 }
 
 /**
- * Formats a number for display (e.g., 57203 -> "57,203")
+ * Formats a number for display (e.g., 57203 -> "57.2k")
  */
 function formatNumber(num: number): string {
-    return num.toLocaleString();
+    return formatCompactNumber(num);
 }
 
 /**
