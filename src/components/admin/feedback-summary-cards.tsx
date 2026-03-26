@@ -1,7 +1,5 @@
 import {
   MessageSquare,
-  ThumbsUp,
-  ThumbsDown,
   TrendingUp,
   Award,
   AlertTriangle,

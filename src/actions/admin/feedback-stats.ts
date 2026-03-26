@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { db } from "@/server/db";
@@ -81,7 +81,7 @@ export async function getFeedbackByTool(): Promise<FeedbackByTool[]> {
       const toolNames = extractToolNames(message.parts as any[]);
 
       for (const toolName of toolNames) {
-        const current = toolFeedbackMap.get(toolName) || { good: 0, bad: 0 };
+        const current = toolFeedbackMap.get(toolName) ?? { good: 0, bad: 0 };
 
         if (feedback.type === "good") {
           current.good += 1;
@@ -145,7 +145,7 @@ export async function getFeedbackOverTime(): Promise<FeedbackOverTime[]> {
       const dateStr = entry.createdAt.toISOString().split("T")[0];
       if (!dateStr) continue;
 
-      const current = dateMap.get(dateStr) || { good: 0, bad: 0 };
+      const current = dateMap.get(dateStr) ?? { good: 0, bad: 0 };
 
       if (entry.type === "good") {
         current.good += 1;
@@ -204,7 +204,7 @@ export async function getRecentFeedback(): Promise<RecentFeedback[]> {
       });
 
       const toolNames = message ? extractToolNames(message.parts as any[]) : [];
-      const toolName = toolNames[0] || "unknown";
+      const toolName = toolNames[0] ?? "unknown";
       const messagePreview = message
         ? formatMessagePreview(message.parts as any[])
         : "Message not found";

@@ -10,7 +10,7 @@ export default function FeedbackLoading() {
 
       {/* Summary Cards Skeleton */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
+        {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="bg-card rounded-lg border p-6">
             <Skeleton className="h-4 w-32" />
             <Skeleton className="mt-2 h-8 w-20" />
@@ -20,7 +20,7 @@ export default function FeedbackLoading() {
 
       {/* Charts Skeleton */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {[...Array(2)].map((_, i) => (
+        {Array.from({ length: 2 }).map((_, i) => (
           <div key={i} className="bg-card rounded-lg border p-6">
             <Skeleton className="h-4 w-40" />
             <Skeleton className="mt-4 h-64 w-full" />

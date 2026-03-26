@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
 
@@ -33,7 +32,7 @@ export async function GET() {
         messageId: f.messageId,
         chatId: f.chatId,
         createdAt: f.createdAt,
-        user: f.user.name || f.user.email,
+        user: f.user.name ?? f.user.email,
       })),
     });
   } catch (error) {

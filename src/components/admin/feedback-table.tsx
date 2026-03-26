@@ -82,7 +82,7 @@ export function RecentFeedbackTable({ data }: RecentFeedbackTableProps) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-muted-foreground text-sm">
-                    {feedback.userName || "Anonymous"}
+                    {feedback.userName ?? "Anonymous"}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">

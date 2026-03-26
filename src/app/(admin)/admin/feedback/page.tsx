@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export const dynamic = "force-dynamic";
-import { MessageSquare } from "lucide-react";
+
 import {
   getFeedbackByTool,
   getFeedbackOverTime,

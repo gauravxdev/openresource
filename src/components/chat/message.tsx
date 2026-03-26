@@ -90,7 +90,7 @@ function MessageActions({
         const errorData = await response.json().catch(() => ({}));
         console.error("[Feedback] Error response:", errorData);
         toast.error(
-          `Failed to save feedback: ${errorData.error || response.statusText}`,
+          `Failed to save feedback: ${errorData.error ?? response.statusText}`,
         );
       }
     } catch (error) {
@@ -128,7 +128,7 @@ function MessageActions({
               onClick={() => {
                 alert("Thumbs up clicked!");
                 console.log("[Feedback] Thumbs up clicked!");
-                handleFeedback("good");
+                void handleFeedback("good");
               }}
               type="button"
             >
@@ -147,7 +147,7 @@ function MessageActions({
               onClick={() => {
                 alert("Thumbs down clicked!");
                 console.log("[Feedback] Thumbs down clicked!");
-                handleFeedback("bad");
+                void handleFeedback("bad");
               }}
               type="button"
             >

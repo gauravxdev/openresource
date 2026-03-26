@@ -16,7 +16,7 @@ export function extractToolNames(parts: any[]): string[] {
     })
     .map((part) => {
       if (part.type === "dynamic-tool") {
-        return part.toolName || "unknown";
+        return part.toolName ?? "unknown";
       }
       // Extract tool name from "tool-searchResources" format
       return part.type.replace("tool-", "");
@@ -45,7 +45,7 @@ export function formatMessagePreview(parts: any[], maxLength = 100): string {
   const textPart = parts.find((part) => part?.type === "text");
   if (!textPart) return "No text content";
 
-  const text = (textPart as any).text || "";
+  const text = textPart.text ?? "";
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + "...";
   }
@@ -73,5 +73,5 @@ export function getToolDisplayName(toolName: string): string {
     serperSearch: "Serper Search",
   };
 
-  return displayNames[toolName] || toolName;
+  return displayNames[toolName] ?? toolName;
 }
