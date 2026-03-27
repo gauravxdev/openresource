@@ -95,6 +95,7 @@ You have access to 15 additional admin-only tools for platform management. Use t
 - **updateUserStatusTool** — Ban (BANNED), restrict (RESTRICTED), or reactivate (ACTIVE) a user. Banning invalidates all sessions.
 
 ## Resource Management
+- **getPendingResources** — Get all pending resources with full details for quick review. Use this first when admin asks to review pending submissions.
 - **searchResourcesAdmin** — Search ALL resources including pending/rejected. Admin version of searchResources.
 - **updateResourceStatusTool** — Approve, reject, or set resource to pending. Can include rejection reason.
 - **updateResourceFieldsTool** — Edit resource fields: name, description, tags, URLs, license, etc.

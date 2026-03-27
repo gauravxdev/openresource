@@ -9,6 +9,7 @@ export {
   createSearchResourcesAdminTool as searchResourcesAdmin,
   createUpdateResourceStatusTool as updateResourceStatusTool,
   createUpdateResourceFieldsTool as updateResourceFieldsTool,
+  createGetPendingResourcesTool as getPendingResources,
 } from "./resources";
 
 export {

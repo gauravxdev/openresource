@@ -48,6 +48,7 @@ import {
   searchResourcesAdmin,
   updateResourceStatusTool,
   updateResourceFieldsTool,
+  getPendingResources,
   getDashboardStats,
   getUsageStats,
   getFeedbackStats,
@@ -222,6 +223,7 @@ export async function POST(request: Request) {
         userId,
         userRole,
       );
+      tools.getPendingResources = getPendingResources(userId, userRole);
       tools.getDashboardStats = getDashboardStats(userId, userRole);
       tools.getUsageStats = getUsageStats(userId, userRole);
       tools.getFeedbackStats = getFeedbackStats(userId, userRole);

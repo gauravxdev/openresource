@@ -69,7 +69,7 @@ export function createSearchResourcesAdminTool(
             skip,
             take: cappedLimit,
             include: {
-              user: { select: { name: true, email: true } },
+              user: { select: { name: true, email: true, id: true } },
               categories: { select: { name: true, slug: true } },
               _count: { select: { bookmarks: true } },
             },
@@ -86,8 +86,9 @@ export function createSearchResourcesAdminTool(
             name: r.name,
             slug: r.slug,
             status: r.status,
-            description:
-              r.shortDescription ?? r.oneLiner ?? r.description.slice(0, 120),
+            description: r.description,
+            shortDescription: r.shortDescription,
+            oneLiner: r.oneLiner,
             websiteUrl: r.websiteUrl,
             repositoryUrl: r.repositoryUrl,
             stars: r.stars,
@@ -96,6 +97,7 @@ export function createSearchResourcesAdminTool(
             tags: r.tags,
             categories: r.categories.map((c) => c.name),
             addedBy: r.user?.name ?? r.user?.email ?? "Unknown",
+            addedByUserId: r.user?.id ?? null,
             bookmarks: r._count.bookmarks,
             rejectionReason: r.rejectionReason,
             createdAt: r.createdAt,
@@ -263,6 +265,86 @@ export function createUpdateResourceFieldsTool(
       } catch (error) {
         console.error("[Admin Tool] updateResourceFields error:", error);
         return { error: "Failed to update resource fields" };
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// getPendingResources
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function createGetPendingResourcesTool(
+  adminUserId: string,
+  userRole: string,
+) {
+  return tool({
+    description:
+      "Get all pending resources with full details for review. Use this when admin asks to see pending submissions, review queue, or wants to approve/reject resources. Returns full description, URLs, who submitted it, and submission date.",
+    parameters: z.object({
+      limit: z
+        .number()
+        .default(10)
+        .describe("Number of pending resources to return (max 50)"),
+    }),
+    execute: async (
+      args: z.infer<z.ZodObject<{ limit: z.ZodDefault<z.ZodNumber> }>>,
+    ) => {
+      const { limit } = args;
+      requireAdmin(userRole);
+      await logAdminToolAudit("ADMIN_SEARCH_RESOURCES", adminUserId, {
+        status: "PENDING",
+        source: "getPendingResources",
+      });
+
+      try {
+        const cappedLimit = Math.min(limit, 50);
+        const total = await db.resource.count({ where: { status: "PENDING" } });
+
+        if (total === 0) {
+          return {
+            total: 0,
+            message: "No pending resources. The review queue is empty!",
+            resources: [],
+          };
+        }
+
+        const resources = await db.resource.findMany({
+          where: { status: "PENDING" },
+          orderBy: { createdAt: "asc" },
+          take: cappedLimit,
+          include: {
+            user: { select: { name: true, email: true, id: true } },
+            categories: { select: { name: true, slug: true } },
+          },
+        });
+
+        return {
+          total,
+          showing: resources.length,
+          message: `Found ${total} pending resource(s). Showing ${resources.length}.`,
+          resources: resources.map((r) => ({
+            id: r.id,
+            name: r.name,
+            slug: r.slug,
+            fullDescription: r.description,
+            shortDescription: r.shortDescription,
+            oneLiner: r.oneLiner,
+            websiteUrl: r.websiteUrl,
+            repositoryUrl: r.repositoryUrl,
+            tags: r.tags,
+            categories: r.categories.map((c) => c.name),
+            license: r.license,
+            submittedBy: r.user?.name ?? r.user?.email ?? "Unknown",
+            submittedByUserId: r.user?.id ?? null,
+            submittedAt: r.createdAt,
+            waitingFor: `${Math.floor((Date.now() - r.createdAt.getTime()) / (1000 * 60 * 60 * 24))} days`,
+          })),
+        };
+      } catch (error) {
+        console.error("[Admin Tool] getPendingResources error:", error);
+        return { error: "Failed to get pending resources" };
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

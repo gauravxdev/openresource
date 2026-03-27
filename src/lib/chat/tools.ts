@@ -224,6 +224,7 @@ export {
   searchResourcesAdmin,
   updateResourceStatusTool,
   updateResourceFieldsTool,
+  getPendingResources,
   getDashboardStats,
   getUsageStats,
   getFeedbackStats,
