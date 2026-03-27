@@ -14,6 +14,7 @@ type MessagesProps = {
   messages: ChatMessage[];
   _setMessages: UseChatHelpers<ChatMessage>["setMessages"];
   _isReadonly: boolean;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 function PureMessages({
@@ -22,6 +23,7 @@ function PureMessages({
   messages,
   _setMessages: _setMessages,
   _isReadonly: _isReadonly,
+  sendMessage,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -50,6 +52,9 @@ function PureMessages({
               key={message.id}
               message={message}
               chatId={_chatId}
+              messages={messages}
+              setMessages={_setMessages}
+              sendMessage={sendMessage}
             />
           ))}
 

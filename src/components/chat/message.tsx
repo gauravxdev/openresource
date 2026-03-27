@@ -37,10 +37,16 @@ function MessageActions({
   message,
   isLoading,
   chatId,
+  messages,
+  setMessages,
+  sendMessage,
 }: {
   message: ChatMessage;
   isLoading: boolean;
   chatId: string;
+  messages: ChatMessage[];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 }) {
   if (isLoading) return null;
 
@@ -96,6 +102,48 @@ function MessageActions({
     } catch (error) {
       console.error("[Feedback] Error sending feedback:", error);
       toast.error("Failed to save feedback");
+    }
+  };
+
+  const handleRegenerate = async () => {
+    // Find the last user message before this assistant message
+    const messageIndex = messages.findIndex((m) => m.id === message.id);
+    if (messageIndex <= 0) {
+      toast.error("No user message found to regenerate from");
+      return;
+    }
+
+    const lastUserMessage = messages[messageIndex - 1];
+    if (!lastUserMessage || lastUserMessage.role !== "user") {
+      toast.error("No user message found to regenerate from");
+      return;
+    }
+
+    try {
+      // Delete the assistant message and any trailing messages from DB
+      await fetch(`/api/chat/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatId,
+          messageId: message.id,
+        }),
+      });
+
+      // Remove messages from UI - keep everything before the user message
+      const userMessageIndex = messages.findIndex(
+        (m) => m.id === lastUserMessage.id,
+      );
+      setMessages(messages.slice(0, userMessageIndex + 1));
+
+      // Re-send the last user message to get a new response
+      sendMessage({
+        role: "user",
+        parts: lastUserMessage.parts,
+      });
+    } catch (error) {
+      console.error("Regenerate error:", error);
+      toast.error("Failed to regenerate response");
     }
   };
 
@@ -163,7 +211,7 @@ function MessageActions({
           <TooltipTrigger asChild>
             <Button
               className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 size-7"
-              onClick={() => toast.info("Regenerate coming soon")}
+              onClick={() => void handleRegenerate()}
               size="sm"
               type="button"
               variant="ghost"
@@ -188,10 +236,16 @@ export const PreviewMessage = ({
   message,
   isLoading,
   chatId,
+  messages,
+  setMessages,
+  sendMessage,
 }: {
   message: ChatMessage;
   isLoading: boolean;
   chatId: string;
+  messages: ChatMessage[];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 }) => {
   const reasoningParts =
     message.parts?.filter((p) => p.type === "reasoning") || [];
@@ -323,6 +377,9 @@ export const PreviewMessage = ({
             message={message}
             isLoading={isLoading}
             chatId={chatId}
+            messages={messages}
+            setMessages={setMessages}
+            sendMessage={sendMessage}
           />
         </div>
       </div>
