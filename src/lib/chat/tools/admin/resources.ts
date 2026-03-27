@@ -288,17 +288,15 @@ export function createGetPendingResourcesTool(
         .default(10)
         .describe("Number of pending resources to return (max 50)"),
     }),
-    execute: async (
-      args: z.infer<z.ZodObject<{ limit: z.ZodDefault<z.ZodNumber> }>>,
-    ) => {
-      const { limit } = args;
-      requireAdmin(userRole);
-      await logAdminToolAudit("ADMIN_SEARCH_RESOURCES", adminUserId, {
-        status: "PENDING",
-        source: "getPendingResources",
-      });
-
+    execute: async (args: { limit?: number }) => {
       try {
+        const limit = args.limit ?? 10;
+        requireAdmin(userRole);
+        await logAdminToolAudit("ADMIN_SEARCH_RESOURCES", adminUserId, {
+          status: "PENDING",
+          source: "getPendingResources",
+        });
+
         const cappedLimit = Math.min(limit, 50);
         const total = await db.resource.count({ where: { status: "PENDING" } });
 
@@ -344,7 +342,10 @@ export function createGetPendingResourcesTool(
         };
       } catch (error) {
         console.error("[Admin Tool] getPendingResources error:", error);
-        return { error: "Failed to get pending resources" };
+        return {
+          error: "Failed to get pending resources",
+          details: error instanceof Error ? error.message : String(error),
+        };
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
