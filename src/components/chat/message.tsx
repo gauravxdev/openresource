@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
@@ -114,7 +114,7 @@ function MessageActions({
     }
 
     const lastUserMessage = messages[messageIndex - 1];
-    if (!lastUserMessage || lastUserMessage.role !== "user") {
+    if (lastUserMessage?.role !== "user") {
       toast.error("No user message found to regenerate from");
       return;
     }
@@ -137,7 +137,7 @@ function MessageActions({
       setMessages(messages.slice(0, userMessageIndex + 1));
 
       // Re-send the last user message to get a new response
-      sendMessage({
+      void sendMessage({
         role: "user",
         parts: lastUserMessage.parts,
       });

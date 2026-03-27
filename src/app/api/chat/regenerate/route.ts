@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   let body: z.infer<typeof regenerateSchema>;
 
   try {
-    const json = await request.json();
+    const json = (await request.json()) as unknown;
     body = regenerateSchema.parse(json);
   } catch {
     return new ChatError("bad_request:api").toResponse();

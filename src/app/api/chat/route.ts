@@ -8,7 +8,11 @@ import {
   streamText,
 } from "ai";
 import { z } from "zod";
-import { getLanguageModel, getTitleModel } from "@/lib/chat/providers";
+import {
+  getLanguageModel,
+  getTitleModel,
+  getAdminModel,
+} from "@/lib/chat/providers";
 import { systemPrompt, titlePrompt } from "@/lib/chat/prompts";
 import { generateUUID } from "@/lib/chat/utils";
 import { ChatError } from "@/lib/chat/errors";
@@ -37,6 +41,21 @@ import {
   compareResources,
   recommendResources,
   getTotalCount,
+  searchUsers,
+  getUserDetails,
+  updateUserRoleTool,
+  updateUserStatusTool,
+  searchResourcesAdmin,
+  updateResourceStatusTool,
+  updateResourceFieldsTool,
+  getDashboardStats,
+  getUsageStats,
+  getFeedbackStats,
+  searchAuditLogs,
+  getRecentActivity,
+  searchChatsAdmin,
+  deleteChatAdmin,
+  getSystemHealth,
 } from "@/lib/chat/tools";
 import {
   createGetUserBookmarksTool,
@@ -165,7 +184,9 @@ export async function POST(request: Request) {
     }
 
     // Create tools with user context
-    const tools = {
+    const isAdmin = userRole === "admin";
+
+    const tools: Record<string, any> = {
       searchResources: createSearchResourcesTool(
         userId,
         userRole,
@@ -186,14 +207,48 @@ export async function POST(request: Request) {
       getTotalCount,
     };
 
+    // Add admin tools if user is admin
+    if (isAdmin) {
+      tools.searchUsers = searchUsers(userId, userRole);
+      tools.getUserDetails = getUserDetails(userId, userRole);
+      tools.updateUserRoleTool = updateUserRoleTool(userId, userRole);
+      tools.updateUserStatusTool = updateUserStatusTool(userId, userRole);
+      tools.searchResourcesAdmin = searchResourcesAdmin(userId, userRole);
+      tools.updateResourceStatusTool = updateResourceStatusTool(
+        userId,
+        userRole,
+      );
+      tools.updateResourceFieldsTool = updateResourceFieldsTool(
+        userId,
+        userRole,
+      );
+      tools.getDashboardStats = getDashboardStats(userId, userRole);
+      tools.getUsageStats = getUsageStats(userId, userRole);
+      tools.getFeedbackStats = getFeedbackStats(userId, userRole);
+      tools.searchAuditLogs = searchAuditLogs(userId, userRole);
+      tools.getRecentActivity = getRecentActivity(userId, userRole);
+      tools.searchChatsAdmin = searchChatsAdmin(userId, userRole);
+      tools.deleteChatAdmin = deleteChatAdmin(userId, userRole);
+      tools.getSystemHealth = getSystemHealth(userId, userRole);
+    }
+
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
         // Fetch tool performance context for AI
         const toolPerformanceContext = await getToolPerformanceContext();
 
+        // Use admin model for admin users, otherwise use selected model
+        const model = isAdmin
+          ? getAdminModel()
+          : getLanguageModel(selectedChatModel);
+
         const result = streamText({
-          model: getLanguageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, toolPerformanceContext }),
+          model,
+          system: systemPrompt({
+            selectedChatModel,
+            toolPerformanceContext,
+            isAdmin,
+          }),
           messages: modelMessages,
           stopWhen: stepCountIs(5),
           tools,

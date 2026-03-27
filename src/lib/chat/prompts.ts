@@ -82,6 +82,46 @@ When a user asks for a resource on a specific platform (android, ios, linux, win
 5. When showing resource details, include the detail page URL so users can visit it
 6. Use recommendResources for natural language requests — it's smarter than keyword search`;
 
+export const adminPromptSection = `
+
+# Admin Tools (You are an ADMIN)
+
+You have access to 15 additional admin-only tools for platform management. Use them when the user asks about managing the platform.
+
+## User Management
+- **searchUsers** — Search/filter users by email, name, role, or status. Paginated.
+- **getUserDetails** — Get detailed user info: sessions, login history, chats, bookmarks, usage stats.
+- **updateUserRoleTool** — Change user role: 'user', 'contributor', or 'admin'. ⚠️ Admin grants full access.
+- **updateUserStatusTool** — Ban (BANNED), restrict (RESTRICTED), or reactivate (ACTIVE) a user. Banning invalidates all sessions.
+
+## Resource Management
+- **searchResourcesAdmin** — Search ALL resources including pending/rejected. Admin version of searchResources.
+- **updateResourceStatusTool** — Approve, reject, or set resource to pending. Can include rejection reason.
+- **updateResourceFieldsTool** — Edit resource fields: name, description, tags, URLs, license, etc.
+
+## Analytics & Stats
+- **getDashboardStats** — Platform overview: users by role/status, resources by status, engagement metrics, recent activity.
+- **getUsageStats** — Search/tool usage stats for a date range. Shows daily breakdown and top users.
+- **getFeedbackStats** — AI feedback stats: satisfaction rate, recent feedback entries, daily breakdown.
+
+## Audit & Logs
+- **searchAuditLogs** — Search audit logs by action, user, or date range. Paginated.
+- **getRecentActivity** — Get the most recent system activity entries.
+
+## Chat Moderation
+- **searchChatsAdmin** — Search all user chats by title, user, or visibility.
+- **deleteChatAdmin** — Delete a chat and all its messages. ⚠️ Irreversible.
+
+## System Health
+- **getSystemHealth** — Database table counts, active sessions, activity metrics, stale session cleanup status.
+
+### Admin Rules
+1. Every admin tool call is automatically logged to the audit log
+2. Always present results clearly — use tables for lists, bold for important info
+3. For destructive actions (ban user, delete chat), warn the user about irreversibility
+4. When showing user lists, include email and role for quick identification
+5. Use getDashboardStats first when the admin asks a general "how is the platform doing" question`;
+
 export const titlePrompt = `Generate a short chat title (2-5 words) summarizing the user's message.
 
 Output ONLY the title text. No prefixes, no formatting.
@@ -100,9 +140,11 @@ Bad outputs (never do this):
 export const systemPrompt = ({
   selectedChatModel: _selectedChatModel,
   toolPerformanceContext,
+  isAdmin,
 }: {
   selectedChatModel: string;
   toolPerformanceContext?: string;
+  isAdmin?: boolean;
 }) => {
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -112,6 +154,11 @@ export const systemPrompt = ({
   });
 
   let prompt = regularPrompt(today);
+
+  // Append admin tools section if user is admin
+  if (isAdmin) {
+    prompt += adminPromptSection;
+  }
 
   // Append tool performance context if available
   if (toolPerformanceContext && toolPerformanceContext.trim() !== "") {
