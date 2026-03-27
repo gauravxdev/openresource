@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,6 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {!isAdmin && <Navbar />}
       {children}
+      {!isAdmin && <Footer />}
     </>
   );
 }

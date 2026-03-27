@@ -1,5 +1,5 @@
 import NotificationButton from "./NotificationButton";
-import NewsletterSubscribe from "./NewsletterSubscribe";
+// import NewsletterSubscribe from "./NewsletterSubscribe";
 import { getDailyResourceCount } from "@/actions/resources";
 
 const HeroSection = async () => {
@@ -8,7 +8,7 @@ const HeroSection = async () => {
   return (
     <section className="pt-12 md:pt-16 flex flex-col items-center px-4 text-center">
       <NotificationButton count={count} />
-      <div className="max-w-4xl space-y-4">
+      <div className="max-w-4xl space-y-4 mb-8">
         <h1
           className="font-lexend text-balance text-3xl font-extrabold leading-tight sm:text-5xl md:text-6xl"
           style={{ fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif" }}
@@ -22,7 +22,7 @@ const HeroSection = async () => {
           Discover and explore open-source apps and resources tailored for your needs.
         </p>
       </div>
-      <NewsletterSubscribe />
+      {/* <NewsletterSubscribe /> */}
     </section>
   )
 }
