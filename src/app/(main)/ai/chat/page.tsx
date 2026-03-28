@@ -10,15 +10,21 @@ export const metadata = {
   description: "Chat with OpenResource AI assistant",
 };
 
-export default function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ prompt?: string }>;
+}) {
+  const { prompt } = await searchParams;
+
   return (
     <Suspense fallback={<ChatSkeleton />}>
-      <NewChatPage />
+      <NewChatPage initialPrompt={prompt} />
     </Suspense>
   );
 }
 
-async function NewChatPage() {
+async function NewChatPage({ initialPrompt }: { initialPrompt?: string }) {
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get("chat-model");
   const id = generateUUID();
@@ -27,6 +33,7 @@ async function NewChatPage() {
     <Chat
       id={id}
       initialChatModel={modelIdFromCookie?.value ?? DEFAULT_CHAT_MODEL}
+      initialPrompt={initialPrompt}
       key={id}
     />
   );

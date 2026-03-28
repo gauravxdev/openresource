@@ -1,6 +1,6 @@
 # Openresource - Open Source Resources Hub
 
-🚀 **Open-source apps & resources at your fingertips**
+🚀 **Find tools you didn’t know you needed**
 
 OpenResource is a modern, open-source web platform designed to help developers and users discover, explore, and share free open-source alternatives for web applications, tools, and resources.
 

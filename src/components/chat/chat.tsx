@@ -22,10 +22,12 @@ export function Chat({
   id,
   initialMessages,
   initialChatModel,
+  initialPrompt,
 }: {
   id: string;
   initialMessages?: UIMessage[];
   initialChatModel: string;
+  initialPrompt?: string;
 }) {
   const [input, setInput] = useState<string>("");
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
@@ -88,6 +90,23 @@ export function Chat({
       setMessages(initialMessages as ChatMessage[]);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-send initial prompt from URL (e.g., hero search → AI chat)
+  const hasSentInitialPrompt = useRef(false);
+  useEffect(() => {
+    if (
+      initialPrompt?.trim() &&
+      !hasSentInitialPrompt.current &&
+      messages.length === 0
+    ) {
+      hasSentInitialPrompt.current = true;
+      window.history.pushState({}, "", `/ai/chat/${id}`);
+      void sendMessage({
+        role: "user",
+        parts: [{ type: "text", text: initialPrompt.trim() }],
+      });
+    }
+  }, [initialPrompt, id, sendMessage, messages.length]);
 
   return (
     <div className="bg-background flex h-full min-w-0 flex-col">

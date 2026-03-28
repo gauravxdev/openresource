@@ -1,30 +1,34 @@
 import NotificationButton from "./NotificationButton";
-// import NewsletterSubscribe from "./NewsletterSubscribe";
+import { HeroSearchInput } from "./HeroSearchInput";
 import { getDailyResourceCount } from "@/actions/resources";
 
 const HeroSection = async () => {
   const { count } = await getDailyResourceCount();
 
   return (
-    <section className="pt-12 md:pt-16 flex flex-col items-center px-4 text-center">
+    <section className="flex flex-col items-center px-4 pt-12 text-center md:pt-16">
       <NotificationButton count={count} />
-      <div className="max-w-4xl space-y-4 mb-8">
+      <div className="mb-8 max-w-4xl space-y-4">
         <h1
-          className="font-lexend text-balance text-3xl font-extrabold leading-tight sm:text-5xl md:text-6xl"
-          style={{ fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif" }}
+          className="font-lexend text-3xl leading-tight font-extrabold text-balance sm:text-5xl md:text-6xl"
+          style={{
+            fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif",
+          }}
         >
-          Open-source apps & resources at your fingertips
+          Find tools you didn't know you needed
         </h1>
         <p
-          className="font-lexend text-balance text-base leading-relaxed text-muted-foreground sm:text-xl"
-          style={{ fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif" }}
+          className="font-lexend text-muted-foreground text-base leading-relaxed text-balance sm:text-xl"
+          style={{
+            fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif",
+          }}
         >
-          Discover and explore open-source apps and resources tailored for your needs.
+          The internet's better tools, in one place
         </p>
       </div>
-      {/* <NewsletterSubscribe /> */}
+      <HeroSearchInput />
     </section>
-  )
-}
+  );
+};
 
 export default HeroSection;

@@ -4,10 +4,15 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-righteous: var(--font-righteous), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-lexend: var(--font-lexend), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-righteous:
+    var(--font-righteous), var(--font-geist-sans), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-lexend:
+    var(--font-lexend), var(--font-geist-sans), ui-sans-serif, system-ui,
+    sans-serif;
 }
 
 /* Performance: Fonts are already loaded via next/font in layout.tsx. 
@@ -138,7 +143,9 @@
   }
 
   .font-mono {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    font-family:
+      ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono",
+      Menlo, monospace;
   }
 }
 
@@ -146,4 +153,51 @@
   100% {
     transform: translateX(100%);
   }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px oklch(0.6 0.15 250 / 0.4),
+      0 0 20px oklch(0.6 0.15 250 / 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 16px oklch(0.6 0.15 250 / 0.6),
+      0 0 40px oklch(0.6 0.15 250 / 0.25);
+  }
+}
+
+.dark .glow-generate {
+  animation: glow-pulse-dark 2.5s ease-in-out infinite;
+}
+
+@keyframes glow-pulse-dark {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px oklch(0.75 0.18 250 / 0.4),
+      0 0 20px oklch(0.75 0.18 250 / 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 16px oklch(0.75 0.18 250 / 0.6),
+      0 0 40px oklch(0.75 0.18 250 / 0.25);
+  }
+}
+
+@keyframes text-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-text-fade-in {
+  animation: text-fade-in 0.4s ease-out forwards;
 }
