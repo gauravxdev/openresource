@@ -15,7 +15,7 @@ const HeroSection = async () => {
             fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif",
           }}
         >
-          Find tools you didn't know you needed
+          Find tools you didn&apos;t know you needed
         </h1>
         <p
           className="font-lexend text-muted-foreground text-base leading-relaxed text-balance sm:text-xl"
@@ -23,7 +23,7 @@ const HeroSection = async () => {
             fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif",
           }}
         >
-          The internet's better tools, in one place
+          The internet&apos;s better tools, in one place
         </p>
       </div>
       <HeroSearchInput />

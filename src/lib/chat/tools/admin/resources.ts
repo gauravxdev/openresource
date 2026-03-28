@@ -109,7 +109,6 @@ export function createSearchResourcesAdminTool(
         return { error: "Failed to search resources" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }
 
@@ -183,7 +182,6 @@ export function createUpdateResourceStatusTool(
         return { error: "Failed to update resource status" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }
 
@@ -267,7 +265,6 @@ export function createUpdateResourceFieldsTool(
         return { error: "Failed to update resource fields" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }
 
@@ -348,6 +345,5 @@ export function createGetPendingResourcesTool(
         };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }

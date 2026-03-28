@@ -107,7 +107,6 @@ export function createSearchUsersTool(adminUserId: string, userRole: string) {
         return { error: "Failed to search users" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }
 
@@ -261,7 +260,6 @@ export function createGetUserDetailsTool(
         return { error: "Failed to get user details" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }
 
@@ -323,7 +321,6 @@ export function createUpdateUserRoleTool(
         return { error: "Failed to update user role" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }
 
@@ -389,6 +386,5 @@ export function createUpdateUserStatusTool(
         return { error: "Failed to update user status" };
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 }

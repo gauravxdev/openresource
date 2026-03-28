@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-floating-promises, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-floating-promises, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import type { UseChatHelpers } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
 import type { UIMessage } from "ai";
@@ -81,7 +82,7 @@ export function Chat({
       // Refresh sidebar history after message completes
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
-  } as any) as any;
+  } as any) as unknown as UseChatHelpers<ChatMessage>;
 
   // Force-set initial messages from server on mount
   // The useChat hook's internal store may ignore initialMessages if it has stale state
