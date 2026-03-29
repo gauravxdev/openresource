@@ -246,9 +246,6 @@ export function GitHubRepoDetailView({
                     <h1 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
                       {repo.name}
                     </h1>
-                    <Badge variant="secondary" className="shrink-0">
-                      {repo.language}
-                    </Badge>
                   </div>
                   {repo.oneLiner && (
                     <p className="text-muted-foreground mt-2 text-base">
@@ -406,7 +403,7 @@ export function GitHubRepoDetailView({
           {/* Sidebar */}
           <aside className="sticky top-24 h-fit space-y-6">
             <Card className="border-neutral-200 bg-white/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-200">
                   Repository Stats
                 </CardTitle>

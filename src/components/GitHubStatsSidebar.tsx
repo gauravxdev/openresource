@@ -125,7 +125,7 @@ export function GitHubStatsSidebar({
     <Card
       className={`border-neutral-200 bg-white/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80 ${className ?? ""}`}
     >
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-2">
         <CardTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-200">
           Repository Stats
         </CardTitle>

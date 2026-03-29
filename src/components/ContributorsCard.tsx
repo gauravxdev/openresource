@@ -28,14 +28,14 @@ export function ContributorsCard({
 
   return (
     <Card className="border-neutral-200 bg-white/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-0">
         <CardTitle className="flex items-center gap-2 text-base font-semibold text-neutral-900 dark:text-neutral-200">
           <Users className="h-4 w-4 text-blue-400" />
           Contributors
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-1">
-        {contributors.map((contributor) => (
+      <CardContent className="space-y-1 pt-1">
+        {contributors.slice(0, 5).map((contributor) => (
           <a
             key={contributor.login}
             href={contributor.html_url}
@@ -66,7 +66,7 @@ export function ContributorsCard({
             href={contributorsPageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-black p-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-black p-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             View all contributors

@@ -421,7 +421,7 @@ export function AppDetailView({ app, contributors = [] }: AppDetailViewProps) {
           {/* Sidebar */}
           <aside className="sticky top-24 h-fit space-y-6">
             <Card className="border-neutral-200 bg-white/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-200">
                   Repository Stats
                 </CardTitle>

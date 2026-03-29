@@ -35,7 +35,7 @@ export default async function AndroidAppDetailPage({ params }: PageProps) {
 
   const parsed = parseGitHubUrl(resource.repositoryUrl);
   const contributors = parsed
-    ? await getContributors(parsed.owner, parsed.repo, 8)
+    ? await getContributors(parsed.owner, parsed.repo, 5)
     : [];
 
   const app: AppDetailData = {
