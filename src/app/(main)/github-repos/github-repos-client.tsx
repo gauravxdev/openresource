@@ -32,6 +32,7 @@ export interface GitHubRepo {
   stars: number;
   forks: number;
   url: string;
+  slug: string;
 }
 
 interface GitHubReposClientProps {
@@ -185,6 +186,7 @@ export default function GitHubReposClient({
                 stars={repo.stars}
                 forks={repo.forks}
                 url={repo.url}
+                slug={repo.slug}
               />
             ))}
           </div>

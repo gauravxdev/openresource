@@ -1,21 +1,23 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Star, GitFork, ExternalLink, Bookmark } from "lucide-react"
-import * as React from "react"
-import { formatCompactNumber } from "@/lib/format"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Star, GitFork, ExternalLink, Bookmark } from "lucide-react";
+import * as React from "react";
+import Link from "next/link";
+import { formatCompactNumber } from "@/lib/format";
 
 interface BookmarkItem {
-  id: string | number
+  id: string | number;
 }
 
 interface GitHubRepoCardProps {
-  name: string
-  description: string
-  language: string
-  stars: number
-  forks: number
-  url: string
+  name: string;
+  description: string;
+  language: string;
+  stars: number;
+  forks: number;
+  url: string;
+  slug: string;
 }
 
 export const GitHubRepoCard = React.memo(function GitHubRepoCard({
@@ -24,29 +26,36 @@ export const GitHubRepoCard = React.memo(function GitHubRepoCard({
   language,
   stars,
   forks,
-  url
+  url,
+  slug,
 }: GitHubRepoCardProps) {
-  const [isBookmarked, setIsBookmarked] = React.useState(false)
+  const [isBookmarked, setIsBookmarked] = React.useState(false);
 
-  // Check if repo is already bookmarked on component mount
   React.useEffect(() => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
-    setIsBookmarked(bookmarks.some((item) => item.id === name))
-  }, [name])
+    const bookmarks = JSON.parse(
+      localStorage.getItem("openstore-bookmarks") ?? "[]",
+    ) as BookmarkItem[];
+    setIsBookmarked(bookmarks.some((item) => item.id === name));
+  }, [name]);
 
   const handleBookmarkClick = () => {
-    const bookmarks = JSON.parse(localStorage.getItem('openstore-bookmarks') ?? '[]') as BookmarkItem[]
+    const bookmarks = JSON.parse(
+      localStorage.getItem("openstore-bookmarks") ?? "[]",
+    ) as BookmarkItem[];
 
     if (isBookmarked) {
-      // Remove bookmark
-      const updatedBookmarks = bookmarks.filter((item) => item.id !== name)
-      localStorage.setItem('openstore-bookmarks', JSON.stringify(updatedBookmarks))
-      setIsBookmarked(false)
+      const updatedBookmarks = bookmarks.filter((item) => item.id !== name);
+      localStorage.setItem(
+        "openstore-bookmarks",
+        JSON.stringify(updatedBookmarks),
+      );
+      setIsBookmarked(false);
     } else {
-      // Add bookmark (check limit first)
       if (bookmarks.length >= 10) {
-        alert('You can only bookmark up to 10 items. Please remove some bookmarks before adding more.')
-        return
+        alert(
+          "You can only bookmark up to 10 items. Please remove some bookmarks before adding more.",
+        );
+        return;
       }
 
       const bookmarkData = {
@@ -56,48 +65,56 @@ export const GitHubRepoCard = React.memo(function GitHubRepoCard({
         category: language,
         stars: stars.toString(),
         forks: forks.toString(),
-        lastCommit: 'N/A',
+        lastCommit: "N/A",
         bookmarkedAt: new Date().toISOString(),
-        type: 'github-repo',
-        url: url
-      }
+        type: "github-repo",
+        url: url,
+      };
 
-      bookmarks.push(bookmarkData)
-      localStorage.setItem('openstore-bookmarks', JSON.stringify(bookmarks))
-      setIsBookmarked(true)
+      bookmarks.push(bookmarkData);
+      localStorage.setItem("openstore-bookmarks", JSON.stringify(bookmarks));
+      setIsBookmarked(true);
     }
-  }
+  };
+
   return (
-    <Card className="w-full hover:shadow-lg transition-shadow duration-200 bg-background border-border">
+    <Card className="bg-background border-border w-full transition-shadow duration-200 hover:shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors mb-2 break-words">
-              {name}
-            </CardTitle>
-            <div className="text-sm text-muted-foreground line-clamp-3">
-              <p>
-                {description || "A comprehensive open source project with modern development practices and community contributions."}
-              </p>
+          <div className="min-w-0 flex-1">
+            <Link href={`/github-repos/${slug}`}>
+              <CardTitle className="mb-2 cursor-pointer text-lg font-semibold break-words text-blue-600 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                {name}
+              </CardTitle>
+            </Link>
+            <div className="text-muted-foreground line-clamp-3 text-sm">
+              <Link href={`/github-repos/${slug}`}>
+                <p className="hover:text-foreground transition-colors">
+                  {description ||
+                    "A comprehensive open source project with modern development practices and community contributions."}
+                </p>
+              </Link>
             </div>
           </div>
-          <div className="flex gap-2 shrink-0">
+          <div className="flex shrink-0 gap-2">
             <Button
               variant="outline"
               size="sm"
-              className={`shrink-0 border-border hover:bg-accent mt-1 ${isBookmarked ? 'bg-yellow-500 text-white hover:bg-yellow-600 border-yellow-500' : ''}`}
+              className={`border-border hover:bg-accent mt-1 shrink-0 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
               onClick={(e) => {
-                e.preventDefault()
-                handleBookmarkClick()
+                e.preventDefault();
+                handleBookmarkClick();
               }}
-              title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+              title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
             >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+              <Bookmark
+                className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+              />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="shrink-0 border-border hover:bg-accent mt-1"
+              className="border-border hover:bg-accent mt-1 shrink-0"
               asChild
             >
               <a href={url} target="_blank" rel="noopener noreferrer">
@@ -109,26 +126,35 @@ export const GitHubRepoCard = React.memo(function GitHubRepoCard({
       </CardHeader>
 
       <CardContent className="pt-0">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <Badge variant="secondary" className="text-xs bg-secondary/50 shrink-0">
-              {language}
-            </Badge>
-          </div>
-
-          <div className="flex items-center gap-3 text-sm text-muted-foreground shrink-0">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-yellow-500 dark:text-yellow-400 shrink-0" />
-              <span className="whitespace-nowrap">{formatCompactNumber(stars)}</span>
+        <Link href={`/github-repos/${slug}`}>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <Badge
+                variant="secondary"
+                className="bg-secondary/50 shrink-0 text-xs"
+              >
+                {language}
+              </Badge>
             </div>
 
-            <div className="flex items-center gap-1">
-              <GitFork className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0" />
-              <span className="whitespace-nowrap">{formatCompactNumber(forks)}</span>
+            <div className="text-muted-foreground flex shrink-0 items-center gap-3 text-sm">
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 shrink-0 text-yellow-500 dark:text-yellow-400" />
+                <span className="whitespace-nowrap">
+                  {formatCompactNumber(stars)}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <GitFork className="h-4 w-4 shrink-0 text-blue-500 dark:text-blue-400" />
+                <span className="whitespace-nowrap">
+                  {formatCompactNumber(forks)}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
       </CardContent>
     </Card>
-  )
-})
+  );
+});
