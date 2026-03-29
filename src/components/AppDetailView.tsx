@@ -17,12 +17,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ShareSection } from "@/components/ShareSection";
 import {
+  ContributorsCard,
+  type ContributorData,
+} from "@/components/ContributorsCard";
+import { TechStack, type TechItem } from "@/components/TechStack";
+import {
   ArrowLeft,
   Star,
   Download,
   Clock,
   Scale,
-  User,
   Bookmark,
   Github,
   ExternalLink,
@@ -44,12 +48,14 @@ export interface AppDetailData {
   logo: string | null;
   image: string | null;
   stars: number;
-  rating: string;
-  downloads: string;
-  lastUpdated: string;
+  forks: number;
+  lastCommit: Date | null;
+  repositoryCreatedAt: Date | null;
   license: string | null;
   repositoryUrl: string;
   tags: string[];
+  categories: { id: string; name: string; slug: string }[];
+  builtWith: { name: string; slug: string }[] | null;
   platform: "android" | "windows";
   user: {
     name: string | null;
@@ -60,9 +66,43 @@ export interface AppDetailData {
 
 interface AppDetailViewProps {
   app: AppDetailData;
+  contributors?: ContributorData[];
 }
 
-export function AppDetailView({ app }: AppDetailViewProps) {
+function formatLastCommit(lastCommit: Date | null): string {
+  if (!lastCommit) return "Unknown";
+  const commitDate = new Date(lastCommit);
+  const now = new Date();
+  const diffMs = now.getTime() - commitDate.getTime();
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMinutes < 1) return "just now";
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 30) return `${diffDays}d ago`;
+  const months = Math.floor(diffDays / 30);
+  return `${months}mo ago`;
+}
+
+function calculateRepoAge(createdAt: Date | null): string {
+  if (!createdAt) return "Unknown";
+  const created = new Date(createdAt);
+  const now = new Date();
+  const diffMs = now.getTime() - created.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? "s" : ""}`;
+  if (diffDays < 365) {
+    const months = Math.floor(diffDays / 30);
+    return `${months} month${months !== 1 ? "s" : ""}`;
+  }
+  const years = Math.floor(diffDays / 365);
+  return `${years} year${years !== 1 ? "s" : ""}`;
+}
+
+export function AppDetailView({ app, contributors = [] }: AppDetailViewProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false);
 
   React.useEffect(() => {
@@ -93,11 +133,10 @@ export function AppDetailView({ app }: AppDetailViewProps) {
           app.oneLiner ?? app.shortDescription ?? app.description.slice(0, 100),
         category: app.category,
         stars: app.stars.toString(),
-        forks: app.downloads,
-        lastCommit: app.lastUpdated,
+        forks: app.forks.toString(),
+        lastCommit: formatLastCommit(app.lastCommit),
         bookmarkedAt: new Date().toISOString(),
         type: `${app.platform}-app`,
-        rating: app.rating,
       } as unknown as BookmarkItem;
       bookmarks.push(bookmarkData);
       localStorage.setItem("openstore-bookmarks", JSON.stringify(bookmarks));
@@ -117,40 +156,34 @@ export function AppDetailView({ app }: AppDetailViewProps) {
 
   const statItems = [
     {
-      label: "Rating",
-      value: app.rating,
-      Icon: Star,
-      iconClass: "text-amber-400",
-    },
-    {
-      label: "Downloads",
-      value: app.downloads,
-      Icon: Download,
-      iconClass: "text-green-400",
-    },
-    {
       label: "Stars",
       value: formatCompactNumber(app.stars),
       Icon: Star,
       iconClass: "text-amber-400",
     },
     {
-      label: "Last Updated",
-      value: app.lastUpdated,
+      label: "Forks",
+      value: formatCompactNumber(app.forks),
+      Icon: Download,
+      iconClass: "text-green-400",
+    },
+    {
+      label: "Last commit",
+      value: formatLastCommit(app.lastCommit),
       Icon: Clock,
-      iconClass: "text-blue-400",
+      iconClass: "text-green-400",
+    },
+    {
+      label: "Age",
+      value: calculateRepoAge(app.repositoryCreatedAt),
+      Icon: Clock,
+      iconClass: "text-purple-400",
     },
     {
       label: "License",
       value: app.license ?? "Not specified",
       Icon: Scale,
       iconClass: "text-orange-400",
-    },
-    {
-      label: "Developer",
-      value: app.user?.name ?? app.user?.username ?? "Unknown",
-      Icon: User,
-      iconClass: "text-purple-400",
     },
   ];
 
@@ -276,25 +309,59 @@ export function AppDetailView({ app }: AppDetailViewProps) {
               />
             </div>
 
-            {/* Tags */}
-            {app.tags.length > 0 && (
-              <div className="space-y-3 border-t border-neutral-200 pt-8 dark:border-neutral-800">
-                <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
-                  Tags
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {app.tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="secondary"
-                      className="bg-neutral-100 px-3 py-1 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
+            {/* Categories, Tags & Built With */}
+            <div className="space-y-8 border-t border-neutral-200 pt-8 dark:border-neutral-800">
+              {/* Categories */}
+              {app.categories.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                    Categories
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {app.categories.map((cat) => (
+                      <Link key={cat.id} href={`/category/${cat.slug}`}>
+                        <Badge
+                          variant="secondary"
+                          className="bg-neutral-100 px-3 py-1 text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                        >
+                          {cat.name}
+                        </Badge>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {/* Tags */}
+              {app.tags.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                    Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-x-3 gap-y-2">
+                    {app.tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/tags?filter=${encodeURIComponent(tag)}`}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Built with */}
+              {app.builtWith && app.builtWith.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                    Built with
+                  </h3>
+                  <TechStack items={app.builtWith as TechItem[]} />
+                </div>
+              )}
+            </div>
 
             {/* Share */}
             <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
@@ -352,11 +419,11 @@ export function AppDetailView({ app }: AppDetailViewProps) {
           </div>
 
           {/* Sidebar */}
-          <aside className="sticky top-24 h-fit">
+          <aside className="sticky top-24 h-fit space-y-6">
             <Card className="border-neutral-200 bg-white/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
               <CardHeader className="pb-4">
                 <CardTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-200">
-                  App Details
+                  Repository Stats
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -377,9 +444,8 @@ export function AppDetailView({ app }: AppDetailViewProps) {
 
                 {app.repositoryUrl && (
                   <Button
-                    variant="outline"
                     size="sm"
-                    className="mt-4 w-full gap-2 border-neutral-200 bg-transparent hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                    className="mt-4 w-full gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100"
                     asChild
                   >
                     <a
@@ -394,6 +460,12 @@ export function AppDetailView({ app }: AppDetailViewProps) {
                 )}
               </CardContent>
             </Card>
+
+            {/* Contributors */}
+            <ContributorsCard
+              contributors={contributors}
+              repositoryUrl={app.repositoryUrl}
+            />
           </aside>
         </div>
       </div>

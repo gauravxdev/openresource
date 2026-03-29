@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/server/db";
 import { GitHubRepoDetailView } from "@/components/GitHubRepoDetailView";
+import { getContributors, parseGitHubUrl } from "@/lib/github";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -32,6 +33,11 @@ export default async function GitHubRepoDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const parsed = parseGitHubUrl(resource.repositoryUrl);
+  const contributors = parsed
+    ? await getContributors(parsed.owner, parsed.repo, 8)
+    : [];
+
   const repo = {
     id: resource.id,
     slug: resource.slug,
@@ -48,8 +54,15 @@ export default async function GitHubRepoDetailPage({ params }: PageProps) {
     repositoryUrl: resource.repositoryUrl,
     logo: resource.logo,
     tags: resource.tags ?? [],
+    categories: resource.categories.map((c) => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+    })),
+    builtWith:
+      (resource.builtWith as { name: string; slug: string }[] | null) ?? null,
     user: resource.user,
   };
 
-  return <GitHubRepoDetailView repo={repo} />;
+  return <GitHubRepoDetailView repo={repo} contributors={contributors} />;
 }

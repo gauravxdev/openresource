@@ -17,6 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ShareSection } from "@/components/ShareSection";
 import {
+  ContributorsCard,
+  type ContributorData,
+} from "@/components/ContributorsCard";
+import { TechStack, type TechItem } from "@/components/TechStack";
+import {
   ArrowLeft,
   ExternalLink,
   Star,
@@ -49,12 +54,15 @@ interface GitHubRepoDetailViewProps {
     repositoryUrl: string;
     logo: string | null;
     tags: string[];
+    categories: { id: string; name: string; slug: string }[];
+    builtWith: { name: string; slug: string }[] | null;
     user: {
       name: string | null;
       username: string | null;
       image: string | null;
     } | null;
   };
+  contributors?: ContributorData[];
 }
 
 function formatLastCommit(lastCommit: Date | null): string {
@@ -90,7 +98,10 @@ function calculateRepoAge(createdAt: Date | null): string {
   return `${years} year${years !== 1 ? "s" : ""}`;
 }
 
-export function GitHubRepoDetailView({ repo }: GitHubRepoDetailViewProps) {
+export function GitHubRepoDetailView({
+  repo,
+  contributors = [],
+}: GitHubRepoDetailViewProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false);
 
   React.useEffect(() => {
@@ -283,25 +294,59 @@ export function GitHubRepoDetailView({ repo }: GitHubRepoDetailViewProps) {
               />
             </div>
 
-            {/* Tags */}
-            {repo.tags.length > 0 && (
-              <div className="space-y-3 border-t border-neutral-200 pt-8 dark:border-neutral-800">
-                <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
-                  Tags
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {repo.tags.map((tag) => (
-                    <Link
-                      key={tag}
-                      href={`/tags?filter=${encodeURIComponent(tag)}`}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      #{tag}
-                    </Link>
-                  ))}
+            {/* Categories, Tags & Built With */}
+            <div className="space-y-8 border-t border-neutral-200 pt-8 dark:border-neutral-800">
+              {/* Categories */}
+              {repo.categories.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                    Categories
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {repo.categories.map((cat) => (
+                      <Link key={cat.id} href={`/category/${cat.slug}`}>
+                        <Badge
+                          variant="secondary"
+                          className="bg-neutral-100 px-3 py-1 text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                        >
+                          {cat.name}
+                        </Badge>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {/* Tags */}
+              {repo.tags.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                    Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-x-3 gap-y-2">
+                    {repo.tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/tags?filter=${encodeURIComponent(tag)}`}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Built with */}
+              {repo.builtWith && repo.builtWith.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                    Built with
+                  </h3>
+                  <TechStack items={repo.builtWith as TechItem[]} />
+                </div>
+              )}
+            </div>
 
             {/* Share */}
             <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
@@ -359,7 +404,7 @@ export function GitHubRepoDetailView({ repo }: GitHubRepoDetailViewProps) {
           </div>
 
           {/* Sidebar */}
-          <aside className="sticky top-24 h-fit">
+          <aside className="sticky top-24 h-fit space-y-6">
             <Card className="border-neutral-200 bg-white/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
               <CardHeader className="pb-4">
                 <CardTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-200">
@@ -383,9 +428,8 @@ export function GitHubRepoDetailView({ repo }: GitHubRepoDetailViewProps) {
                 ))}
 
                 <Button
-                  variant="outline"
                   size="sm"
-                  className="mt-4 w-full gap-2 border-neutral-200 bg-transparent hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="mt-4 w-full gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100"
                   asChild
                 >
                   <a
@@ -399,6 +443,12 @@ export function GitHubRepoDetailView({ repo }: GitHubRepoDetailViewProps) {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Contributors */}
+            <ContributorsCard
+              contributors={contributors}
+              repositoryUrl={repo.repositoryUrl}
+            />
           </aside>
         </div>
       </div>
