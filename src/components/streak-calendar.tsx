@@ -86,12 +86,16 @@ export function StreakCalendar({
     const isToday = dateStr === todayStr;
 
     let bgClass = "bg-muted/30";
-    if (isActive) bgClass = "bg-emerald-500 dark:bg-emerald-500/80";
+    if (isActive) bgClass = "bg-yellow-400 dark:bg-yellow-400/80";
 
     return (
       <div
         key={dateStr}
-        className={`h-3 w-3 shrink-0 rounded-[2px] transition-all duration-300 ${bgClass} ${isToday ? "ring-primary ring-1 ring-offset-1" : ""}`}
+        className={`h-3 w-3 shrink-0 rounded-[2px] transition-all duration-300 ${bgClass} ${
+          isToday
+            ? "animate-pulse ring-2 ring-yellow-400 ring-offset-1 shadow-[0_0_12px_rgba(250,204,21,0.8)] z-10"
+            : ""
+        }`}
         title={`${dateStr}${isActive ? " - Active" : ""}${isToday ? " (Today)" : ""}`}
       />
     );
@@ -138,9 +142,9 @@ export function StreakCalendar({
         <span>Less</span>
         <div className="flex gap-1">
           <div className="h-2 w-2 rounded-[1px] bg-muted/30"></div>
-          <div className="h-2 w-2 rounded-[1px] bg-emerald-500/30"></div>
-          <div className="h-2 w-2 rounded-[1px] bg-emerald-500/60"></div>
-          <div className="h-2 w-2 rounded-[1px] bg-emerald-500"></div>
+          <div className="h-2 w-2 rounded-[1px] bg-yellow-400/30"></div>
+          <div className="h-2 w-2 rounded-[1px] bg-yellow-400/60"></div>
+          <div className="h-2 w-2 rounded-[1px] bg-yellow-400"></div>
         </div>
         <span>More</span>
       </div>

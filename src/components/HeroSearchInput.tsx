@@ -6,10 +6,10 @@ import { Sparkles, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PROMPT_TEXTS = [
-  "Find me a React charting library",
+  "Best GitHub repo for note-taking",
   "What are the best CLI tools for developers?",
   "Suggest open-source alternatives to Notion",
-  "Show me machine learning frameworks in Python",
+  "Suggest open-source video editor",
   "Find self-hosted analytics tools",
 ];
 
@@ -62,10 +62,10 @@ export function HeroSearchInput() {
   };
 
   return (
-    <div className="mb-14 w-full max-w-2xl px-3 sm:mb-16 sm:px-4">
+    <div className="mb-8 w-full max-w-2xl px-3 sm:mb-10 sm:px-4">
       <div
         className={cn(
-          "glow-generate",
+          "glow-generate shadow-2xl shadow-primary/20",
           "border-border bg-background/80 mx-auto flex w-full items-center rounded-full border p-1 backdrop-blur-sm sm:p-1.5",
         )}
       >
@@ -82,16 +82,20 @@ export function HeroSearchInput() {
           type="button"
           onClick={handleGenerate}
           className={cn(
-            "bg-primary text-primary-foreground inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-medium sm:px-4",
+            "bg-primary text-primary-foreground inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-3 text-sm font-medium sm:px-5 sm:py-3.5",
             "transition-all duration-200 hover:opacity-90",
             "focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2",
           )}
           style={{ animation: "glow-pulse 2.5s ease-in-out infinite" }}
         >
           <ArrowUp className="h-4 w-4" />
-          <span className="hidden sm:inline">Generate</span>
+          <span className="hidden sm:inline">Discover</span>
         </button>
       </div>
+      <p className="font-lexend mt-8 flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground/75 sm:text-sm">
+        <Sparkles className="h-3.5 w-3.5 text-primary/45" />
+        Ask anything &mdash; tools, libraries or software
+      </p>
     </div>
   );
 }
