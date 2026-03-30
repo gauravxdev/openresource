@@ -34,6 +34,8 @@ import {
   Flame,
   TrendingUp,
   Zap,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import { updateUserImage, updateUserProfile } from "@/actions/user";
@@ -44,6 +46,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UsernameInput } from "@/components/username-input";
 import { updateUsername } from "@/actions/user";
+import { StreakCalendar } from "@/components/streak-calendar";
 
 interface ProfileFormProps {
   user: {
@@ -65,6 +68,7 @@ interface ProfileFormProps {
     currentStreak: number;
     longestStreak: number;
     lastActiveDate: string | null;
+    activeDates: string[];
   };
 }
 
@@ -81,6 +85,7 @@ export function ProfileForm({
   const [isUsernameValid, setIsUsernameValid] = React.useState(
     user.username ? true : false,
   );
+  const [isFullYear, setIsFullYear] = React.useState(false);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -255,31 +260,33 @@ export function ProfileForm({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+      <div className="flex flex-col items-stretch gap-6 lg:flex-row">
         {/* Left Side: Profile & Streak (Takes 60%) */}
-        <div className="flex flex-col gap-6 w-full lg:w-3/5 shrink-0">
+        <div className="flex w-full shrink-0 flex-col gap-6 lg:w-3/5">
           {/* Main Profile Card */}
           <Card className="border-border/50 bg-card/50 w-full overflow-hidden backdrop-blur">
             <CardContent className="p-0">
               <div className="relative w-full">
                 {/* Background Pattern */}
-                <div className="absolute inset-x-0 top-0 h-48 sm:h-56 bg-gradient-to-b from-primary/30 via-primary/5 to-transparent pointer-events-none rounded-t-xl" />
-                <div className="absolute inset-x-0 top-0 h-48 sm:h-56 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.3),transparent_70%)] pointer-events-none rounded-t-xl" />
+                <div className="from-primary/30 via-primary/5 pointer-events-none absolute inset-x-0 top-0 h-48 rounded-t-xl bg-gradient-to-b to-transparent sm:h-56" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-48 rounded-t-xl bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.3),transparent_70%)] sm:h-56" />
 
                 <div className="relative px-6 pt-8 pb-6">
-                  <div className="flex flex-col items-center text-center gap-6 sm:flex-row sm:text-left sm:items-center md:flex-col md:text-center md:items-center xl:flex-row xl:text-left xl:items-center">
+                  <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:text-left md:flex-col md:items-center md:text-center xl:flex-row xl:items-center xl:text-left">
                     {/* Profile Image */}
                     <div
                       className="group relative shrink-0 cursor-pointer"
-                      onClick={() => !isUpdating && fileInputRef.current?.click()}
+                      onClick={() =>
+                        !isUpdating && fileInputRef.current?.click()
+                      }
                     >
-                      <Avatar className="border-background ring-primary/20 group-hover:ring-primary/40 h-24 w-24 sm:h-28 sm:w-28 border-4 shadow-xl ring-2 transition-all duration-300 group-hover:scale-[1.05]">
+                      <Avatar className="border-background ring-primary/20 group-hover:ring-primary/40 h-24 w-24 border-4 shadow-xl ring-2 transition-all duration-300 group-hover:scale-[1.05] sm:h-28 sm:w-28">
                         <AvatarImage
                           src={imageUrl ?? undefined}
                           alt={name ?? "User"}
                           className="object-cover"
                         />
-                        <AvatarFallback className="bg-primary/10 text-primary text-xl sm:text-2xl font-bold">
+                        <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold sm:text-2xl">
                           {getInitials(name, user.email)}
                         </AvatarFallback>
                       </Avatar>
@@ -287,7 +294,9 @@ export function ProfileForm({
                       {/* Hover Overlay */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center rounded-full bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <Camera className="mb-1 h-7 w-7 text-white" />
-                        <span className="text-xs font-medium text-white">Change</span>
+                        <span className="text-xs font-medium text-white">
+                          Change
+                        </span>
                       </div>
 
                       {/* Loading State */}
@@ -311,13 +320,13 @@ export function ProfileForm({
                     />
 
                     {/* Name and Email */}
-                    <div className="min-w-0 flex-1 space-y-3 w-full flex flex-col items-center sm:items-start md:items-center xl:items-start text-center sm:text-left md:text-center xl:text-left">
-                      <div className="space-y-1.5 flex flex-col items-center sm:items-start md:items-center xl:items-start w-full">
+                    <div className="flex w-full min-w-0 flex-1 flex-col items-center space-y-3 text-center sm:items-start sm:text-left md:items-center md:text-center xl:items-start xl:text-left">
+                      <div className="flex w-full flex-col items-center space-y-1.5 sm:items-start md:items-center xl:items-start">
                         {isEditing ? (
                           <Input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="bg-background/50 h-10 text-2xl font-bold max-w-sm"
+                            className="bg-background/50 h-10 max-w-sm text-2xl font-bold"
                             placeholder="Enter your name"
                           />
                         ) : (
@@ -325,7 +334,7 @@ export function ProfileForm({
                             {name || "Anonymous User"}
                           </h1>
                         )}
-                        <div className="text-muted-foreground flex flex-wrap items-center justify-center sm:justify-start md:justify-center xl:justify-start gap-2">
+                        <div className="text-muted-foreground flex flex-wrap items-center justify-center gap-2 sm:justify-start md:justify-center xl:justify-start">
                           <Mail className="h-4 w-4 shrink-0" />
                           <span className="truncate text-sm">{user.email}</span>
                           {user.emailVerified && (
@@ -341,7 +350,7 @@ export function ProfileForm({
                       </div>
 
                       {/* Quick Stats Row */}
-                      <div className="flex flex-wrap items-center justify-center sm:justify-start md:justify-center xl:justify-start gap-3 pt-2">
+                      <div className="flex flex-wrap items-center justify-center gap-3 pt-2 sm:justify-start md:justify-center xl:justify-start">
                         <div className="text-muted-foreground bg-muted/50 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs">
                           <Calendar className="h-3.5 w-3.5" />
                           <span>Joined {formatDate(user.createdAt)}</span>
@@ -361,9 +370,11 @@ export function ProfileForm({
                 <div className="from-background to-muted/30 border-border/50 relative overflow-hidden rounded-2xl border bg-gradient-to-r p-5">
                   <div className="from-primary/5 absolute top-0 right-0 h-32 w-32 rounded-bl-full bg-gradient-to-bl to-transparent" />
 
-                  <div className="relative flex flex-col sm:flex-row items-center sm:justify-between gap-6 sm:gap-4">
-                    <div className="flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left md:flex-col md:text-center xl:flex-row xl:text-left w-full sm:w-auto justify-center sm:justify-start">
-                      <div className={`relative rounded-2xl bg-gradient-to-br p-3 sm:p-3 ${getStreakColor(streakData.currentStreak)} shadow-lg shrink-0`}>
+                  <div className="relative flex flex-col items-center gap-6 sm:flex-row sm:justify-between sm:gap-4">
+                    <div className="flex w-full flex-col items-center justify-center gap-4 text-center sm:w-auto sm:flex-row sm:justify-start sm:text-left md:flex-col md:text-center xl:flex-row xl:text-left">
+                      <div
+                        className={`relative rounded-2xl bg-gradient-to-br p-3 sm:p-3 ${getStreakColor(streakData.currentStreak)} shrink-0 shadow-lg`}
+                      >
                         <Flame className="h-8 w-8 text-white" />
                         {streakData.currentStreak >= 7 && (
                           <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400">
@@ -372,13 +383,17 @@ export function ProfileForm({
                         )}
                       </div>
 
-                      <div className="flex flex-col items-center sm:items-start md:items-center xl:items-start text-center sm:text-left md:text-center xl:text-left">
-                        <div className="flex items-baseline justify-center sm:justify-start md:justify-center xl:justify-start gap-2">
+                      <div className="flex flex-col items-center text-center sm:items-start sm:text-left md:items-center md:text-center xl:items-start xl:text-left">
+                        <div className="flex items-baseline justify-center gap-2 sm:justify-start md:justify-center xl:justify-start">
                           <span className="text-4xl font-bold tracking-tight">
                             {streakData.currentStreak}
                           </span>
-                          <span className="text-muted-foreground text-lg font-medium">day streak</span>
-                          <span className="text-xl">{getStreakEmoji(streakData.currentStreak)}</span>
+                          <span className="text-muted-foreground text-lg font-medium">
+                            day streak
+                          </span>
+                          <span className="text-xl">
+                            {getStreakEmoji(streakData.currentStreak)}
+                          </span>
                         </div>
                         <p className="text-muted-foreground mt-0.5 text-sm">
                           {streakData.currentStreak === 0
@@ -392,9 +407,13 @@ export function ProfileForm({
                     <div className="bg-muted/50 border-border/30 hidden flex-col items-center gap-1 rounded-xl border px-4 py-2 sm:flex">
                       <div className="flex items-center gap-1.5">
                         <TrendingUp className="text-primary h-4 w-4" />
-                        <span className="text-foreground text-2xl font-bold">{streakData.longestStreak}</span>
+                        <span className="text-foreground text-2xl font-bold">
+                          {streakData.longestStreak}
+                        </span>
                       </div>
-                      <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">Best Streak</span>
+                      <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
+                        Best Streak
+                      </span>
                     </div>
                   </div>
 
@@ -407,7 +426,9 @@ export function ProfileForm({
                     <div className="bg-muted/50 h-2 overflow-hidden rounded-full">
                       <div
                         className={`h-full bg-gradient-to-r ${getStreakColor(streakData.currentStreak)} rounded-full transition-all duration-500`}
-                        style={{ width: `${Math.min((streakData.currentStreak / 30) * 100, 100)}%` }}
+                        style={{
+                          width: `${Math.min((streakData.currentStreak / 30) * 100, 100)}%`,
+                        }}
                       />
                     </div>
                   </div>
@@ -418,27 +439,49 @@ export function ProfileForm({
         </div>
 
         {/* Right Side: Profile Details (Takes remaining 40%) */}
-        <div className="flex flex-col gap-6 flex-1 min-w-0">
-          <Card className="border-border/50 bg-card/50 backdrop-blur h-full">
-            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
+          <Card className="border-border/50 bg-card/50 h-full backdrop-blur">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <div>
-                <CardTitle className="text-lg font-semibold">Profile Details</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  Profile Details
+                </CardTitle>
                 <CardDescription>Account information</CardDescription>
               </div>
 
               {/* Edit Button Actions */}
               {!isEditing ? (
-                <Button variant="outline" size="sm" onClick={toggleEdit} className="shrink-0 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleEdit}
+                  className="shrink-0 gap-2"
+                >
                   <Pencil className="h-4 w-4" />
                   <span className="hidden sm:inline">Edit Profile</span>
                 </Button>
               ) : (
                 <div className="flex shrink-0 gap-2">
-                  <Button variant="ghost" size="sm" onClick={toggleEdit} disabled={isUpdating}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleEdit}
+                    disabled={isUpdating}
+                  >
                     <X className="h-4 w-4" />
                   </Button>
-                  <Button variant="default" size="sm" onClick={handleSaveChanges} disabled={isUpdating} className="gap-2">
-                    {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleSaveChanges}
+                    disabled={isUpdating}
+                    className="gap-2"
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
                     Save
                   </Button>
                 </div>
@@ -451,11 +494,21 @@ export function ProfileForm({
                   <AtSign className="text-primary h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Username</p>
+                  <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                    Username
+                  </p>
                   {isEditing ? (
-                    <UsernameInput value={username} onChange={setUsername} onValidityChange={setIsUsernameValid} initialUsername={user.username} className="mt-1" />
+                    <UsernameInput
+                      value={username}
+                      onChange={setUsername}
+                      onValidityChange={setIsUsernameValid}
+                      initialUsername={user.username}
+                      className="mt-1"
+                    />
                   ) : (
-                    <p className="text-foreground truncate font-semibold">{username ? `@${username}` : "Not set"}</p>
+                    <p className="text-foreground truncate font-semibold">
+                      {username ? `@${username}` : "Not set"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -466,8 +519,12 @@ export function ProfileForm({
                   <Mail className="text-primary h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Email</p>
-                  <p className="text-foreground truncate font-semibold">{user.email}</p>
+                  <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                    Email
+                  </p>
+                  <p className="text-foreground truncate font-semibold">
+                    {user.email}
+                  </p>
                 </div>
               </div>
 
@@ -477,8 +534,12 @@ export function ProfileForm({
                   <Calendar className="text-primary h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Member Since</p>
-                  <p className="text-foreground font-semibold">{formatDate(user.createdAt)}</p>
+                  <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                    Member Since
+                  </p>
+                  <p className="text-foreground font-semibold">
+                    {formatDate(user.createdAt)}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -486,61 +547,133 @@ export function ProfileForm({
         </div>
       </div>
 
-      {/* Contributor Dashboard Section */}
-      {(user.role === "contributor" || user.role === "admin") && resourceStats && (
+      {/* Bottom Row: Contributor Dashboard + Activity Calendar */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Contributor Dashboard */}
+        {(user.role === "contributor" || user.role === "admin") &&
+          resourceStats && (
+            <Card className="border-border/50 bg-card/50 backdrop-blur">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary/10 rounded-lg p-2">
+                      <LayoutDashboard className="text-primary h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold">
+                        Contributor Dashboard
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Manage your resources
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs capitalize">
+                    {user.role}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Resource Stats */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-500/10 p-3 text-center transition-all hover:bg-blue-500/10">
+                    <p className="text-xl font-bold md:text-2xl">
+                      {resourceStats.total}
+                    </p>
+                    <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
+                      Total
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-500/10 p-3 text-center transition-all hover:bg-green-500/10">
+                    <p className="text-xl font-bold text-green-400 md:text-2xl">
+                      {resourceStats.approved}
+                    </p>
+                    <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
+                      Approved
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10 p-3 text-center transition-all hover:bg-amber-500/10">
+                    <p className="text-xl font-bold text-amber-400 md:text-2xl">
+                      {resourceStats.pending}
+                    </p>
+                    <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
+                      Pending
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Link
+                    href="/dashboard"
+                    className="bg-primary/5 border-primary/20 hover:bg-primary/10 flex items-center justify-between rounded-xl border p-3 transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                      <LayoutDashboard className="text-primary h-4 w-4" />
+                      <p className="text-xs font-medium">Open Dashboard</p>
+                    </div>
+                    <ArrowRight className="text-primary h-3 w-3" />
+                  </Link>
+
+                  <Link
+                    href="/submit"
+                    className="bg-muted/20 border-border/40 hover:bg-muted/40 flex items-center justify-between rounded-xl border p-3 transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Plus className="text-muted-foreground h-4 w-4" />
+                      <p className="text-xs font-medium">Submit Resource</p>
+                    </div>
+                    <ArrowRight className="text-muted-foreground h-3 w-3" />
+                  </Link>
+                </div>
+
+                <Link
+                  href="/ai/chat"
+                  className="bg-purple-500/5 border-purple-500/20 hover:bg-purple-500/10 flex items-center justify-between rounded-xl border p-3 transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <Zap className="text-purple-500 h-4 w-4" />
+                    <p className="text-xs font-medium">Open AI Chat</p>
+                  </div>
+                  <ArrowRight className="text-purple-500 h-3 w-3" />
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+        {/* Activity Calendar */}
         <Card className="border-border/50 bg-card/50 backdrop-blur">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-lg p-2">
-                  <LayoutDashboard className="text-primary h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg font-semibold">Contributor Dashboard</CardTitle>
-                  <CardDescription className="text-xs">Manage your resources</CardDescription>
-                </div>
-              </div>
-              <Badge variant="outline" className="text-xs capitalize">{user.role}</Badge>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <div>
+              <CardTitle className="text-lg font-semibold">
+                Activity Calendar
+              </CardTitle>
+              <CardDescription>
+                Your daily activity over the last {isFullYear ? "12" : "6"} months
+              </CardDescription>
             </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setIsFullYear(!isFullYear)}
+              className="h-8 w-8 shrink-0"
+              title={isFullYear ? "Show 6 months" : "Show 12 months"}
+            >
+              {isFullYear ? (
+                <ChevronLeft className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Resource Stats */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-500/10 p-4 text-center">
-                <p className="text-2xl font-bold">{resourceStats.total}</p>
-                <p className="text-muted-foreground text-[10px] font-semibold uppercase">Total</p>
-              </div>
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-500/10 p-4 text-center">
-                <p className="text-2xl font-bold text-green-400">{resourceStats.approved}</p>
-                <p className="text-muted-foreground text-[10px] font-semibold uppercase">Approved</p>
-              </div>
-              <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10 p-4 text-center">
-                <p className="text-2xl font-bold text-amber-400">{resourceStats.pending}</p>
-                <p className="text-muted-foreground text-[10px] font-semibold uppercase">Pending</p>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Link href="/dashboard" className="bg-primary/5 border-primary/20 hover:bg-primary/10 flex items-center justify-between rounded-xl border p-4 transition-all">
-                <div className="flex items-center gap-3">
-                  <LayoutDashboard className="text-primary h-5 w-5" />
-                  <p className="text-sm font-medium">Open Dashboard</p>
-                </div>
-                <ArrowRight className="text-primary h-4 w-4" />
-              </Link>
-
-              <Link href="/submit" className="bg-muted/20 border-border/40 hover:bg-muted/40 flex items-center justify-between rounded-xl border p-4 transition-all">
-                <div className="flex items-center gap-3">
-                  <Plus className="text-muted-foreground h-5 w-5" />
-                  <p className="text-sm font-medium">Submit Resource</p>
-                </div>
-                <ArrowRight className="text-muted-foreground h-4 w-4" />
-              </Link>
-            </div>
+          <CardContent>
+            <StreakCalendar
+              activeDates={streakData.activeDates}
+              isFullYear={isFullYear}
+            />
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }

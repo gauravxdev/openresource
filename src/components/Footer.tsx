@@ -40,9 +40,9 @@ export function Footer() {
   return (
     <footer className="border-foreground/10 mt-auto border-t pt-12">
       <div className="mx-auto max-w-[1152px] px-5 md:px-6">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
           {/* Column 1: Branding and Social Links */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div className="col-span-2 flex flex-col items-center text-center lg:col-span-1 lg:items-start lg:text-left">
             <Link
               href="/"
               className="group/logo inline-flex items-center gap-2"
@@ -58,7 +58,7 @@ export function Footer() {
             </p>
 
             {/* Social Links */}
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-4 flex items-center justify-center gap-3 lg:justify-start">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
@@ -75,8 +75,8 @@ export function Footer() {
           </div>
 
           {/* Column 2: Browse Links */}
-          <div>
-            <h3 className="mb-3 text-sm font-bold text-white">Browse:</h3>
+          <div className="col-span-1 flex flex-col items-center text-center lg:items-start lg:text-left">
+            <h3 className="mb-3 text-sm font-bold text-foreground">Browse:</h3>
             <ul className="space-y-2">
               {browseLinks.map((link) => (
                 <li key={link.href}>
@@ -92,8 +92,8 @@ export function Footer() {
           </div>
 
           {/* Column 3: Quick Links */}
-          <div>
-            <h3 className="mb-3 text-sm font-bold text-white">Quick Links:</h3>
+          <div className="col-span-1 flex flex-col items-center text-center lg:items-start lg:text-left">
+            <h3 className="mb-3 text-sm font-bold text-foreground">Quick Links:</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
@@ -109,8 +109,8 @@ export function Footer() {
           </div>
 
           {/* Column 4: Other Products */}
-          <div>
-            <h3 className="mb-3 text-sm font-bold text-white">
+          <div className="col-span-2 flex flex-col items-center text-center lg:col-span-1 lg:items-start lg:text-left">
+            <h3 className="mb-3 text-sm font-bold text-foreground">
               Other Products:
             </h3>
             <p className="text-muted-foreground text-sm">Coming soon</p>
@@ -118,7 +118,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-foreground/10 mt-12 flex flex-row flex-wrap items-end justify-between border-t py-6">
+        <div className="border-foreground/10 mt-12 flex flex-col items-center gap-4 border-t py-6 text-center md:flex-row md:justify-between md:text-left">
           <p className="text-muted-foreground text-xs">
             © {new Date().getFullYear()} OpenResource. All rights reserved.
           </p>

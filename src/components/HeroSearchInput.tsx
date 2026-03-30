@@ -73,9 +73,9 @@ export function HeroSearchInput() {
           <Sparkles className="text-primary h-4 w-4 sm:h-4.5 sm:w-4.5" />
         </div>
         <div className="min-w-0 flex-1 overflow-hidden px-2 py-2 sm:px-3 sm:py-2.5">
-          <span className="text-muted-foreground/60 block truncate text-sm select-none sm:text-base">
+          <span className="text-foreground block truncate text-sm select-none sm:text-base">
             {displayedText}
-            <span className="bg-primary/50 ml-0.5 inline-block h-4 w-0.5 animate-pulse rounded-full align-text-bottom sm:h-5" />
+            <span className="bg-primary/80 ml-0.5 inline-block h-4 w-0.5 animate-pulse rounded-full align-text-bottom sm:h-5" />
           </span>
         </div>
         <button

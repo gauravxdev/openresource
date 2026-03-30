@@ -17,11 +17,12 @@ async function calculateStreak(userId: string) {
       currentStreak: 0,
       longestStreak: 0,
       lastActiveDate: null,
+      activeDates: [],
     };
   }
 
   // Get unique dates (ignoring time) - using UTC dates
-  const uniqueDates = [
+  const uniqueDateTimestamps = [
     ...new Set(
       loginHistory.map((entry) => {
         const date = new Date(entry.createdAt);
@@ -32,7 +33,18 @@ async function calculateStreak(userId: string) {
         ).getTime();
       }),
     ),
-  ].sort((a, b) => b - a); // Sort descending
+  ];
+  const uniqueDates = [...uniqueDateTimestamps].sort((a, b) => b - a); // Sort descending
+
+  // Build YYYY-MM-DD strings for active dates
+  const activeDates = loginHistory.map((entry) => {
+    const d = new Date(entry.createdAt);
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  });
+  const uniqueActiveDates = [...new Set(activeDates)];
 
   const today = new Date();
   const todayUTC = new Date(
@@ -93,6 +105,7 @@ async function calculateStreak(userId: string) {
     currentStreak,
     longestStreak,
     lastActiveDate,
+    activeDates: uniqueActiveDates,
   };
 }
 

@@ -13,7 +13,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {!isAdmin && <Navbar />}
       {children}
-      {!isAdmin && !isAiChat && <Footer />}
+      {!isAdmin && !isAiChat && pathname !== "/profile" && <Footer />}
     </>
   );
 }

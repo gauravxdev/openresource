@@ -20,6 +20,7 @@ import {
   Layers,
   Scale,
   Monitor,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -153,6 +154,14 @@ export default function Navbar() {
 
           {/* Right side: Search, Theme, Submit, Auth */}
           <div className="flex items-center space-x-1">
+            {/* AI Chat Button */}
+            <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
+              <Link href="/ai/chat">
+                <Bot className="h-4 w-4" />
+                <span className="sr-only">AI Chat</span>
+              </Link>
+            </Button>
+
             {/* Search Button - Lazy loaded */}
             <NavbarSearchDialog />
 
@@ -240,7 +249,16 @@ export default function Navbar() {
 
               <div className="border-border/40 my-2 border-t" />
 
-              {/* Submit */}
+              {/* AI Chat & Submit */}
+              <Link
+                href="/ai/chat"
+                className="text-primary hover:text-primary/80 flex items-center gap-2 px-2 py-2 text-sm font-medium transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Bot className="h-4 w-4" />
+                AI Chat
+              </Link>
+
               <Link
                 href="/submit"
                 className="text-primary hover:text-primary/80 flex items-center gap-2 px-2 py-2 text-sm font-medium transition-colors"

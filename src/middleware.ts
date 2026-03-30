@@ -99,7 +99,29 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin/submit", request.url));
     }
 
-    return NextResponse.next();
+    // Daily activity tracking for streaks
+    const todayUTC = new Date().toISOString().slice(0, 10);
+    const lastActivityDate = request.cookies.get("last-activity-date")?.value;
+    const nextResponse = NextResponse.next();
+
+    if (lastActivityDate !== todayUTC) {
+      // Fire-and-forget: record daily activity without blocking the response
+      fetch(`${request.nextUrl.origin}/api/activity/track`, {
+        method: "POST",
+        headers: { cookie: cookies },
+      }).catch(() => {
+        /* intentionally ignored */
+      });
+
+      nextResponse.cookies.set("last-activity-date", todayUTC, {
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24, // 24 hours
+        path: "/",
+      });
+    }
+
+    return nextResponse;
   } catch (error) {
     console.error("[Middleware] Auth check failed:", error);
     const signInUrl = new URL("/sign-in", request.url);
