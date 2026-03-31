@@ -58,7 +58,7 @@ export default function GitHubReposClient({
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("trending");
-  const itemsPerPage = 12;
+  const itemsPerPage = 9;
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 

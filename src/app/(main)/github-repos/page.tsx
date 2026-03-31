@@ -23,7 +23,7 @@ export default async function GitHubRepos({
 }) {
   const { page: pageStr } = await searchParams;
   const currentPage = Number(pageStr) || 1;
-  const { data: resources, totalCount } = await getGitHubRepos(currentPage, 12);
+  const { data: resources, totalCount } = await getGitHubRepos(currentPage, 9);
 
   const repos: GitHubRepo[] = resources.map((resource) => ({
     name: resource.name,

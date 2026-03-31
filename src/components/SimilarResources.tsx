@@ -24,7 +24,7 @@ export async function SimilarResources({
   }
 
   return (
-    <section className="border-t border-neutral-200 pt-12 dark:border-neutral-800">
+    <section className="mt-12 border-t border-neutral-200 pt-12 dark:border-neutral-800">
       <div className="mb-8">
         <h2 className="text-foreground text-xl font-semibold">
           Similar Resources
