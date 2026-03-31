@@ -232,10 +232,27 @@ export function ViewResourceDialog({
                     {resource.categories?.map((cat: any) => (
                       <Badge
                         key={cat.slug}
-                        variant="secondary"
-                        className="bg-secondary/60 hover:bg-secondary font-medium"
+                        variant={
+                          cat.status === "APPROVED" || !cat.status
+                            ? "secondary"
+                            : cat.status === "PENDING"
+                              ? "outline"
+                              : "destructive"
+                        }
+                        className={`font-medium ${
+                          cat.status === "APPROVED" || !cat.status
+                            ? "bg-secondary/60 hover:bg-secondary"
+                            : cat.status === "PENDING"
+                              ? "border-yellow-500/50 text-yellow-600"
+                              : ""
+                        }`}
                       >
                         {cat.name}
+                        {cat.status && cat.status !== "APPROVED" && (
+                          <span className="ml-1 text-xs opacity-70">
+                            ({cat.status})
+                          </span>
+                        )}
                       </Badge>
                     ))}
                   </div>

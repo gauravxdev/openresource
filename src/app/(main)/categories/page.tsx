@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { ChevronRight } from "lucide-react"
-import { db } from "@/server/db"
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { db } from "@/server/db";
 
 import {
   Breadcrumb,
@@ -9,28 +9,29 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from "@/components/ui/breadcrumb";
 
-export const revalidate = 60
+export const revalidate = 60;
 
 export default async function CategoriesPage() {
   const categories = await db.category.findMany({
+    where: { status: "APPROVED" },
     select: {
       id: true,
       name: true,
       slug: true,
       _count: {
-        select: { resources: true }
-      }
+        select: { resources: true },
+      },
     },
     orderBy: {
-      name: "asc"
-    }
+      name: "asc",
+    },
   });
 
   return (
-    <div className="w-full bg-background min-h-screen">
-      <div className="mx-auto max-w-6xl px-5 pb-20 pt-12 md:px-6">
+    <div className="bg-background min-h-screen w-full">
+      <div className="mx-auto max-w-6xl px-5 pt-12 pb-20 md:px-6">
         <div className="mb-6">
           <Breadcrumb>
             <BreadcrumbList>
@@ -46,12 +47,13 @@ export default async function CategoriesPage() {
         </div>
 
         <div className="mb-12">
-          <div className="text-sm text-muted-foreground">Categories</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+          <div className="text-muted-foreground text-sm">Categories</div>
+          <h1 className="text-foreground mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
             Open Source Resource Categories
           </h1>
-          <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">
-            Browse top categories to find your best Open Source resource options.
+          <p className="text-muted-foreground mt-3 max-w-2xl text-base md:text-lg">
+            Browse top categories to find your best Open Source resource
+            options.
           </p>
         </div>
 
@@ -63,27 +65,26 @@ export default async function CategoriesPage() {
                 href={`/category/${category.slug}`}
                 className="group block"
               >
-
-                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:bg-accent/50 transition-all duration-200">
+                <div className="border-border bg-card hover:bg-accent/50 flex items-center justify-between rounded-xl border p-4 transition-all duration-200">
                   <div className="flex flex-col gap-1">
-                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    <span className="text-foreground group-hover:text-primary font-medium transition-colors">
                       {category.name}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       {category._count.resources} resources
                     </span>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <ChevronRight className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-colors" />
                 </div>
               </Link>
             ))
           ) : (
-            <div className="col-span-full text-center py-10 text-muted-foreground">
+            <div className="text-muted-foreground col-span-full py-10 text-center">
               No categories found.
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

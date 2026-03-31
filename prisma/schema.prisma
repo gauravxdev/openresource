@@ -30,6 +30,7 @@ model User {
   bookmarks     Bookmark[]
   searchUsage   SearchUsage[]
   messageFeedback MessageFeedback[]
+  categories    Category[]
 
   @@index([email])
   @@map("user")
@@ -130,12 +131,17 @@ model Resource {
 }
 
 model Category {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  slug      String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  resources Resource[] @relation("CategoryToResource")
+  id              String     @id @default(cuid())
+  name            String     @unique
+  slug            String     @unique
+  status          String     @default("PENDING")
+  rejectionReason String?
+  addedBy         String?
+  userId          String?
+  user            User?      @relation(fields: [userId], references: [id])
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  resources       Resource[] @relation("CategoryToResource")
 
   @@map("category")
 }

@@ -94,7 +94,7 @@ export function SubmitForm({
   const { theme } = useTheme();
   const [isPending, startTransition] = useTransition();
   const [categories, setCategories] = React.useState<
-    { id: string; name: string }[]
+    { id: string; name: string; status: string }[]
   >([]);
   const [newCategoryName, setNewCategoryName] = React.useState("");
   const [isManagingCategories, setIsManagingCategories] = React.useState(false);
@@ -131,11 +131,11 @@ export function SubmitForm({
   });
 
   const fetchCategories = React.useCallback(async () => {
-    const result = await getCategories();
+    const result = await getCategories(mode === "admin");
     if (result.success && result.data) {
       setCategories(result.data);
     }
-  }, []);
+  }, [mode]);
 
   React.useEffect(() => {
     void fetchCategories();
@@ -144,7 +144,8 @@ export function SubmitForm({
   const handleAddCategory = async (name?: string) => {
     const catName = name ?? newCategoryName;
     if (!catName.trim()) return;
-    const result = await addCategory(catName);
+    const addedBy = mode === "admin" ? "ADMIN" : "USER";
+    const result = await addCategory(catName, addedBy);
     if (result.success) {
       toast.success(result.message);
       if (!name) setNewCategoryName("");
@@ -362,29 +363,138 @@ export function SubmitForm({
                       )}
                     />
                   </div>
-                  {mode === "admin" && (
-                    <Dialog
-                      open={isManagingCategories}
-                      onOpenChange={setIsManagingCategories}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="h-10 shrink-0 gap-2 px-3"
-                        >
-                          <Settings2 className="h-4 w-4" />
-                          Manage
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>Manage Categories</DialogTitle>
-                          <DialogDescription>
-                            Add or remove resource categories.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
+                  <Dialog
+                    open={isManagingCategories}
+                    onOpenChange={setIsManagingCategories}
+                  >
+                    <DialogTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-10 shrink-0 gap-2 px-3"
+                      >
+                        <Settings2 className="h-4 w-4" />
+                        {mode === "admin" ? "Manage" : "Add Category"}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {mode === "admin"
+                            ? "Manage Categories"
+                            : "Categories"}
+                        </DialogTitle>
+                        <DialogDescription>
+                          {mode === "admin"
+                            ? "Add or remove resource categories."
+                            : "Select existing categories or suggest a new one."}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        {/* Existing categories list - shown for all users */}
+                        <div className="max-h-[250px] space-y-2 overflow-auto pr-1">
+                          {categories.length === 0 ? (
+                            <p className="text-muted-foreground py-4 text-center text-sm">
+                              No categories found.
+                            </p>
+                          ) : (
+                            categories.map((cat) => {
+                              const currentSelected = watch("categories");
+                              const isSelected = currentSelected.includes(
+                                cat.name,
+                              );
+                              return (
+                                <div
+                                  key={cat.id}
+                                  className={`flex items-center justify-between rounded-md p-2 ${
+                                    isSelected
+                                      ? "bg-primary/10 border-primary/30 border"
+                                      : "bg-muted/50"
+                                  } ${mode === "admin" ? "" : "hover:bg-muted cursor-pointer"}`}
+                                  onClick={() => {
+                                    if (mode !== "admin") {
+                                      if (isSelected) {
+                                        setValue(
+                                          "categories",
+                                          currentSelected.filter(
+                                            (c) => c !== cat.name,
+                                          ),
+                                        );
+                                      } else if (currentSelected.length < 5) {
+                                        setValue("categories", [
+                                          ...currentSelected,
+                                          cat.name,
+                                        ]);
+                                      }
+                                    }
+                                  }}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium">
+                                      {cat.name}
+                                    </span>
+                                    {cat.status !== "APPROVED" && (
+                                      <Badge
+                                        variant={
+                                          cat.status === "PENDING"
+                                            ? "secondary"
+                                            : "destructive"
+                                        }
+                                        className="text-xs"
+                                      >
+                                        {cat.status}
+                                      </Badge>
+                                    )}
+                                    {mode !== "admin" && isSelected && (
+                                      <span className="text-primary text-xs font-medium">
+                                        Selected
+                                      </span>
+                                    )}
+                                  </div>
+                                  {mode === "admin" ? (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        void handleDeleteCategory(cat.id);
+                                      }}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  ) : (
+                                    !isSelected &&
+                                    currentSelected.length < 5 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setValue("categories", [
+                                            ...currentSelected,
+                                            cat.name,
+                                          ]);
+                                        }}
+                                      >
+                                        <Plus className="h-4 w-4" />
+                                      </Button>
+                                    )
+                                  )}
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+
+                        {/* Create new category input */}
+                        <div className="border-t pt-4">
+                          <p className="text-muted-foreground mb-2 text-xs font-medium">
+                            {mode === "admin"
+                              ? "Add new category:"
+                              : "Suggest a new category:"}
+                          </p>
                           <div className="flex items-center gap-2">
                             <Input
                               placeholder="New category name..."
@@ -404,41 +514,13 @@ export function SubmitForm({
                               size="sm"
                             >
                               <Plus className="mr-1 h-4 w-4" />
-                              Add
+                              {mode === "admin" ? "Add" : "Submit"}
                             </Button>
                           </div>
-                          <div className="max-h-[300px] space-y-2 overflow-auto pr-1">
-                            {categories.length === 0 ? (
-                              <p className="text-muted-foreground py-4 text-center text-sm">
-                                No categories found.
-                              </p>
-                            ) : (
-                              categories.map((cat) => (
-                                <div
-                                  key={cat.id}
-                                  className="bg-muted/50 flex items-center justify-between rounded-md p-2"
-                                >
-                                  <span className="text-sm font-medium">
-                                    {cat.name}
-                                  </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8"
-                                    onClick={() =>
-                                      void handleDeleteCategory(cat.id)
-                                    }
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ))
-                            )}
-                          </div>
                         </div>
-                      </DialogContent>
-                    </Dialog>
-                  )}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 {/* Suggested Categories */}

@@ -26,7 +26,7 @@ export interface Resource {
   name: string;
   description: string;
   shortDescription?: string | null;
-  categories: { id: string; name: string; slug: string }[];
+  categories: { id: string; name: string; slug: string; status?: string }[];
   websiteUrl: string | null;
   repositoryUrl: string;
   alternative?: string | null;
@@ -222,14 +222,35 @@ export function ResourceDetailView({
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {resource.categories.map((cat) => (
-                    <Link key={cat.id} href={`/category/${cat.slug}`}>
-                      <Badge
-                        variant="secondary"
-                        className="bg-neutral-100 px-3 py-1 text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-                      >
-                        {cat.name}
-                      </Badge>
-                    </Link>
+                    <div key={cat.id} className="flex items-center gap-1">
+                      {cat.status === "APPROVED" || !cat.status ? (
+                        <Link href={`/category/${cat.slug}`}>
+                          <Badge
+                            variant="secondary"
+                            className="bg-neutral-100 px-3 py-1 text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                          >
+                            {cat.name}
+                          </Badge>
+                        </Link>
+                      ) : (
+                        <Badge
+                          variant={
+                            cat.status === "PENDING" ? "outline" : "destructive"
+                          }
+                          className="px-3 py-1"
+                          title={
+                            cat.status === "PENDING"
+                              ? "This category is pending admin approval"
+                              : "This category was rejected"
+                          }
+                        >
+                          {cat.name}
+                          <span className="ml-1.5 text-xs opacity-70">
+                            ({cat.status})
+                          </span>
+                        </Badge>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>

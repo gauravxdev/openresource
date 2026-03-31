@@ -8,12 +8,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
   const isAiChat = pathname.startsWith("/ai/chat");
+  const isDashboard = pathname.startsWith("/dashboard");
 
   return (
     <>
       {!isAdmin && <Navbar />}
       {children}
-      {!isAdmin && !isAiChat && pathname !== "/profile" && <Footer />}
+      {!isAdmin && !isAiChat && !isDashboard && pathname !== "/profile" && (
+        <Footer />
+      )}
     </>
   );
 }

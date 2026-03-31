@@ -49,6 +49,7 @@ import {
   UserPlus,
   LogOut,
   MessageSquare,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDashboardStore } from "@/store/dashboard-store";
@@ -63,6 +64,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { title: "Dashboard", icon: BarChart3, href: "/admin" },
   { title: "Resources", icon: Folder, href: "/admin/resources" },
+  { title: "Categories", icon: Tag, href: "/admin/categories" },
   { title: "Users & Logins", icon: Users, href: "/admin/users" },
   { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
   { title: "Feedback Analytics", icon: MessageSquare, href: "/admin/feedback" },

@@ -210,7 +210,7 @@ export async function getResourcesByCategory(
 
   try {
     const category = await db.category.findUnique({
-      where: { slug },
+      where: { slug, status: "APPROVED" },
     });
 
     if (!category) {

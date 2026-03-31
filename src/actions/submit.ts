@@ -274,6 +274,9 @@ export async function submitResource(
               create: {
                 name: cat,
                 slug: slugify(cat),
+                status: rawData.mode === "admin" ? "APPROVED" : "PENDING",
+                addedBy: rawData.mode === "admin" ? "ADMIN" : "USER",
+                userId: rawData.userId ?? null,
               },
             })),
           },
@@ -314,6 +317,9 @@ export async function submitResource(
               create: {
                 name: cat,
                 slug: slugify(cat),
+                status: rawData.mode === "admin" ? "APPROVED" : "PENDING",
+                addedBy: rawData.mode === "admin" ? "ADMIN" : "USER",
+                userId: rawData.userId ?? null,
               },
             })),
           },
