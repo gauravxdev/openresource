@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/server/db";
 import { AppDetailView, type AppDetailData } from "@/components/AppDetailView";
 import { getContributors, parseGitHubUrl } from "@/lib/github";
+import { SimilarResources } from "@/components/SimilarResources";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -66,5 +67,9 @@ export default async function WindowsAppDetailPage({ params }: PageProps) {
     user: resource.user,
   };
 
-  return <AppDetailView app={app} contributors={contributors} />;
+  return (
+    <AppDetailView app={app} contributors={contributors}>
+      <SimilarResources currentSlug={slug} currentName={resource.name} />
+    </AppDetailView>
+  );
 }

@@ -67,6 +67,7 @@ export interface AppDetailData {
 interface AppDetailViewProps {
   app: AppDetailData;
   contributors?: ContributorData[];
+  children?: React.ReactNode;
 }
 
 function formatLastCommit(lastCommit: Date | null): string {
@@ -102,7 +103,11 @@ function calculateRepoAge(createdAt: Date | null): string {
   return `${years} year${years !== 1 ? "s" : ""}`;
 }
 
-export function AppDetailView({ app, contributors = [] }: AppDetailViewProps) {
+export function AppDetailView({
+  app,
+  contributors = [],
+  children,
+}: AppDetailViewProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false);
 
   React.useEffect(() => {
@@ -468,6 +473,8 @@ export function AppDetailView({ app, contributors = [] }: AppDetailViewProps) {
             />
           </aside>
         </div>
+
+        {children}
       </div>
     </div>
   );

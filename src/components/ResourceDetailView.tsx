@@ -53,9 +53,13 @@ import { ShareSection } from "@/components/ShareSection";
 
 interface ResourceDetailViewProps {
   resource: Resource;
+  children?: React.ReactNode;
 }
 
-export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
+export function ResourceDetailView({
+  resource,
+  children,
+}: ResourceDetailViewProps) {
   const githubStats: GitHubStats = {
     stars: resource.stars,
     forks: resource.forks,
@@ -82,9 +86,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
               {primaryCategory && (
                 <>
                   <BreadcrumbItem>
-                    <BreadcrumbLink
-                      href={`/category/${primaryCategory.slug}`}
-                    >
+                    <BreadcrumbLink href={`/category/${primaryCategory.slug}`}>
                       {primaryCategory.name}
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -214,7 +216,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
             <div className="space-y-8 border-t border-neutral-200 pt-8 dark:border-neutral-800">
               {/* Categories */}
               <div className="space-y-3">
-                <h3 className="text-foreground text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">
+                <h3 className="text-foreground text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
                   Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -234,7 +236,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
               {/* Tags */}
               {resource.tags && resource.tags.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="text-foreground text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  <h3 className="text-foreground text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
                     Tags
                   </h3>
                   <div className="flex flex-wrap gap-x-3 gap-y-2">
@@ -242,7 +244,7 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
                       <Link
                         key={tag}
                         href={`/tags?filter=${encodeURIComponent(tag)}`}
-                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                       >
                         #{tag}
                       </Link>
@@ -252,14 +254,15 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
               )}
 
               {/* Built with */}
-              {resource.builtWith && (resource.builtWith as TechItem[]).length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-foreground text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">
-                    Built with
-                  </h3>
-                  <TechStack items={resource.builtWith as TechItem[]} />
-                </div>
-              )}
+              {resource.builtWith &&
+                (resource.builtWith as TechItem[]).length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-foreground text-muted-foreground/70 text-sm font-semibold tracking-wider uppercase">
+                      Built with
+                    </h3>
+                    <TechStack items={resource.builtWith as TechItem[]} />
+                  </div>
+                )}
 
               {/* Share Section */}
               <div className="pt-2">
@@ -326,6 +329,8 @@ export function ResourceDetailView({ resource }: ResourceDetailViewProps) {
             <GitHubStatsSidebar stats={githubStats} />
           </aside>
         </div>
+
+        {children}
       </div>
     </div>
   );

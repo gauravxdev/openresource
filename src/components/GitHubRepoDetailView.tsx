@@ -63,6 +63,7 @@ interface GitHubRepoDetailViewProps {
     } | null;
   };
   contributors?: ContributorData[];
+  children?: React.ReactNode;
 }
 
 function formatLastCommit(lastCommit: Date | null): string {
@@ -101,6 +102,7 @@ function calculateRepoAge(createdAt: Date | null): string {
 export function GitHubRepoDetailView({
   repo,
   contributors = [],
+  children,
 }: GitHubRepoDetailViewProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false);
 
@@ -448,6 +450,8 @@ export function GitHubRepoDetailView({
             />
           </aside>
         </div>
+
+        {children}
       </div>
     </div>
   );

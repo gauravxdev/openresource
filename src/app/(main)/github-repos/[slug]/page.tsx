@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/server/db";
 import { GitHubRepoDetailView } from "@/components/GitHubRepoDetailView";
 import { getContributors, parseGitHubUrl } from "@/lib/github";
+import { SimilarResources } from "@/components/SimilarResources";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -64,5 +65,9 @@ export default async function GitHubRepoDetailPage({ params }: PageProps) {
     user: resource.user,
   };
 
-  return <GitHubRepoDetailView repo={repo} contributors={contributors} />;
+  return (
+    <GitHubRepoDetailView repo={repo} contributors={contributors}>
+      <SimilarResources currentSlug={slug} currentName={resource.name} />
+    </GitHubRepoDetailView>
+  );
 }
