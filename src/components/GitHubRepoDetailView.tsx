@@ -346,11 +346,11 @@ export function GitHubRepoDetailView({
                   <TechStack items={repo.builtWith as TechItem[]} />
                 </div>
               )}
-            </div>
 
-            {/* Share */}
-            <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
-              <ShareSection url={shareUrl} title={repo.name} />
+              {/* Share */}
+              <div className="pt-2">
+                <ShareSection url={shareUrl} title={repo.name} />
+              </div>
             </div>
 
             {/* Contributed by */}

@@ -367,11 +367,11 @@ export function AppDetailView({
                   <TechStack items={app.builtWith as TechItem[]} />
                 </div>
               )}
-            </div>
 
-            {/* Share */}
-            <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
-              <ShareSection url={shareUrl} title={app.name} />
+              {/* Share */}
+              <div className="pt-2">
+                <ShareSection url={shareUrl} title={app.name} />
+              </div>
             </div>
 
             {/* Contributed by */}
