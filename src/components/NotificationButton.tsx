@@ -6,7 +6,7 @@ interface NotificationButtonProps {
   count?: number;
 }
 
-const NotificationButton = ({ count = 0 }: NotificationButtonProps) => {
+const NotificationButton = ({ count: _count = 0 }: NotificationButtonProps) => {
   return (
     <div className="mb-8 flex justify-center animate-in fade-in slide-in-from-bottom-3 duration-700">
       <Link

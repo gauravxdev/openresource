@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
 "use client";
 
 import { useState } from "react";
+import type { Category } from "@/types/category";
 import {
   Table,
   TableBody,
@@ -35,10 +35,12 @@ import { formatDistanceToNow } from "date-fns";
 import { deleteCategory, updateCategoryStatus } from "@/actions/categories";
 import { toast } from "sonner";
 
-export function CategoriesTable({ categories }: { categories: any[] }) {
+
+
+export function CategoriesTable({ categories }: { categories: Category[] }) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
-  const [rejectingCategory, setRejectingCategory] = useState<any | null>(null);
+  const [rejectingCategory, setRejectingCategory] = useState<Category | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
 
   const handleDelete = async (id: string) => {

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface StreakCalendarProps {
   activeDates: string[]; // YYYY-MM-DD format
