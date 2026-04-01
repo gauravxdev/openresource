@@ -19,11 +19,16 @@ export const revalidate = 60;
 export default async function GitHubRepos({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; sort?: string }>;
 }) {
-  const { page: pageStr } = await searchParams;
+  const { page: pageStr, sort: sortParam } = await searchParams;
   const currentPage = Number(pageStr) || 1;
-  const { data: resources, totalCount } = await getGitHubRepos(currentPage, 9);
+  const currentSort = sortParam || "latest";
+  const { data: resources, totalCount } = await getGitHubRepos(
+    currentPage,
+    9,
+    currentSort,
+  );
 
   const repos: GitHubRepo[] = resources.map((resource) => ({
     name: resource.name,
@@ -41,6 +46,7 @@ export default async function GitHubRepos({
       initialRepos={repos}
       totalCount={totalCount || 0}
       currentPage={currentPage}
+      currentSort={currentSort}
     />
   );
 }

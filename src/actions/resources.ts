@@ -426,6 +426,7 @@ export async function getWindowsApps(
 export async function getGitHubRepos(
   page = 1,
   limit = 12,
+  sortBy = "latest",
 ): Promise<{
   success: boolean;
   data: ResourceWithCategories[];
@@ -433,6 +434,22 @@ export async function getGitHubRepos(
 }> {
   try {
     const skip = (page - 1) * limit;
+
+    const orderBy = (() => {
+      switch (sortBy) {
+        case "stars":
+          return { stars: "desc" as const };
+        case "forks":
+          return { forks: "desc" as const };
+        case "atoz":
+          return { name: "asc" as const };
+        case "ztoa":
+          return { name: "desc" as const };
+        case "latest":
+        default:
+          return { createdAt: "desc" as const };
+      }
+    })();
 
     const [resources, totalCount] = await Promise.all([
       db.resource.findMany({
@@ -474,9 +491,7 @@ export async function getGitHubRepos(
             },
           },
         },
-        orderBy: {
-          stars: "desc",
-        },
+        orderBy,
         skip,
         take: limit,
       }),

@@ -39,25 +39,20 @@ interface GitHubReposClientProps {
   initialRepos: GitHubRepo[];
   totalCount: number;
   currentPage: number;
+  currentSort: string;
 }
 
-type SortOption =
-  | "trending"
-  | "newest"
-  | "oldest"
-  | "atoz"
-  | "ztoa"
-  | "stars"
-  | "forks";
+type SortOption = "latest" | "atoz" | "ztoa" | "stars" | "forks";
 
 export default function GitHubReposClient({
   initialRepos,
   totalCount,
   currentPage,
+  currentSort,
 }: GitHubReposClientProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("trending");
+  const sortBy = currentSort as SortOption;
   const itemsPerPage = 9;
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -65,6 +60,15 @@ export default function GitHubReposClient({
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(window.location.search);
     params.set("page", page.toString());
+    router.push(`${window.location.pathname}?${params.toString()}`, {
+      scroll: false,
+    });
+  };
+
+  const handleSortChange = (value: SortOption) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("sort", value);
+    params.set("page", "1");
     router.push(`${window.location.pathname}?${params.toString()}`, {
       scroll: false,
     });
@@ -125,13 +129,13 @@ export default function GitHubReposClient({
             <Filter className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
             <Select
               value={sortBy}
-              onValueChange={(value: SortOption) => setSortBy(value)}
+              onValueChange={(value: SortOption) => handleSortChange(value)}
             >
               <SelectTrigger className="w-[180px] pl-10">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="trending">Trending</SelectItem>
+                <SelectItem value="latest">Latest</SelectItem>
                 <SelectItem value="atoz">A to Z</SelectItem>
                 <SelectItem value="ztoa">Z to A</SelectItem>
                 <SelectItem value="stars">Most Stars</SelectItem>
@@ -147,7 +151,7 @@ export default function GitHubReposClient({
             Showing {filteredRepos.length} of {totalCount} repositories
           </p>
           <div className="flex gap-2">
-            {sortBy !== "trending" && (
+            {sortBy !== "latest" && (
               <Badge
                 variant="secondary"
                 className="border-gray-700/50 bg-gray-800/80 text-gray-300"
@@ -155,12 +159,12 @@ export default function GitHubReposClient({
                 {sortBy}
               </Badge>
             )}
-            {sortBy === "trending" && (
+            {sortBy === "latest" && (
               <Badge
                 variant="secondary"
                 className="border-gray-700/50 bg-gray-800/80 text-gray-300"
               >
-                Trending
+                Latest
               </Badge>
             )}
             {searchTerm && (
