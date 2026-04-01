@@ -112,7 +112,7 @@ export function Chat({
   }, [initialPrompt, id, sendMessage, messages.length]);
 
   return (
-    <div className="bg-background flex h-full min-w-0 flex-col">
+    <div className="bg-background flex h-[calc(100dvh-3.5rem)] min-w-0 flex-col overflow-hidden">
       <ChatHeader chatId={id} />
 
       <Messages
