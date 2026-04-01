@@ -121,25 +121,34 @@ export function ResourceDetailView({
           <div className="space-y-8">
             {/* Header */}
             <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                {/* Logo/Icon */}
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 text-2xl font-bold text-neutral-900 uppercase shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:text-white">
-                  {resource.logo ? (
-                    <Image
-                      src={resource.logo}
-                      alt={`${resource.name} logo`}
-                      width={64}
-                      height={64}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 bg-clip-text text-transparent">
-                      {resource.name.slice(0, 1)}
-                    </span>
-                  )}
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
+                <div className="flex items-center gap-3 md:block">
+                  {/* Logo/Icon */}
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 text-xl font-bold text-neutral-900 uppercase shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:text-white md:h-16 md:w-16 md:text-2xl">
+                    {resource.logo ? (
+                      <Image
+                        src={resource.logo}
+                        alt={`${resource.name} logo`}
+                        width={64}
+                        height={64}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 bg-clip-text text-transparent">
+                        {resource.name.slice(0, 1)}
+                      </span>
+                    )}
+                  </div>
+                  {/* Title (Mobile Only) */}
+                  <div className="min-w-0 flex-1 md:hidden">
+                    <h1 className="text-foreground text-3xl font-bold tracking-tight">
+                      {resource.name}
+                    </h1>
+                  </div>
                 </div>
+
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-3">
+                  <div className="hidden items-center gap-3 md:flex">
                     <h1 className="text-foreground text-3xl font-bold tracking-tight md:text-4xl">
                       {resource.name}
                     </h1>
@@ -153,12 +162,23 @@ export function ResourceDetailView({
                     )}
                   </div>
                   {resource.shortDescription && (
-                    <p className="text-muted-foreground mt-2 text-lg">
+                    <p className="text-muted-foreground mt-0 text-lg md:mt-2">
                       {resource.shortDescription}
                     </p>
                   )}
+                  {resource.alternative && (
+                    <div className="mt-2 md:hidden">
+                      <Badge
+                        variant="outline"
+                        className="h-6 border-neutral-200 text-neutral-500 dark:border-neutral-700 dark:text-neutral-400"
+                      >
+                        Alt to {resource.alternative}
+                      </Badge>
+                    </div>
+                  )}
                 </div>
               </div>
+
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4">

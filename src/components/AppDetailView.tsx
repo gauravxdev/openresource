@@ -235,35 +235,51 @@ export function AppDetailView({
           <div className="space-y-8">
             {/* Header */}
             <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                {app.logo ? (
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                    <Image
-                      src={app.logo}
-                      alt={app.name}
-                      width={64}
-                      height={64}
-                      className="h-full w-full object-cover"
-                    />
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
+                <div className="flex items-center gap-3 md:block">
+                  {/* Logo/Icon */}
+                  {app.logo ? (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900 md:h-16 md:w-16">
+                      <Image
+                        src={app.logo}
+                        alt={app.name}
+                        width={64}
+                        height={64}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradientClass} text-xl font-bold text-[#032119] uppercase shadow-sm md:h-16 md:w-16 md:text-2xl`}
+                    >
+                      {app.name.slice(0, 1)}
+                    </div>
+                  )}
+                  {/* Title (Mobile Only) */}
+                  <div className="min-w-0 flex-1 md:hidden">
+                    <h1 className="text-foreground text-2xl font-bold tracking-tight">
+                      {app.name}
+                    </h1>
                   </div>
-                ) : (
-                  <div
-                    className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${gradientClass} text-2xl font-bold text-[#032119] uppercase shadow-sm`}
-                  >
-                    {app.name.slice(0, 1)}
-                  </div>
-                )}
+                </div>
+
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-3">
+                  <div className="hidden items-center gap-3 md:flex">
                     <h1 className="text-foreground text-3xl font-bold tracking-tight md:text-4xl">
                       {app.name}
                     </h1>
                   </div>
-                  <p className="text-muted-foreground mt-2 text-sm font-medium tracking-widest uppercase">
+                  {(app.oneLiner || app.shortDescription) && (
+                    <p className="text-muted-foreground mt-0 text-base md:mt-2">
+                      {app.oneLiner || app.shortDescription}
+                    </p>
+                  )}
+                  <p className={`text-muted-foreground ${app.oneLiner || app.shortDescription ? "mt-1" : "mt-0"} text-xs font-medium tracking-widest uppercase md:mt-2 md:text-sm`}>
                     {app.category}
                   </p>
                 </div>
               </div>
+
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4">

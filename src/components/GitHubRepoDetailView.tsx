@@ -228,35 +228,46 @@ export function GitHubRepoDetailView({
           <div className="space-y-8">
             {/* Header */}
             <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                {repo.logo ? (
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
-                    <Image
-                      src={repo.logo}
-                      alt={repo.name}
-                      width={56}
-                      height={56}
-                      className="h-full w-full object-cover"
-                    />
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
+                <div className="flex items-center gap-3 md:block">
+                  {/* Logo/Icon */}
+                  {repo.logo ? (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 md:h-14 md:w-14">
+                      <Image
+                        src={repo.logo}
+                        alt={repo.name}
+                        width={56}
+                        height={56}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-xl font-bold text-white uppercase md:h-14 md:w-14">
+                      {repo.name.slice(0, 1)}
+                    </div>
+                  )}
+                  {/* Title (Mobile Only) */}
+                  <div className="min-w-0 flex-1 md:hidden">
+                    <h1 className="text-foreground text-2xl font-bold tracking-tight">
+                      {repo.name}
+                    </h1>
                   </div>
-                ) : (
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-xl font-bold text-white uppercase">
-                    {repo.name.slice(0, 1)}
-                  </div>
-                )}
+                </div>
+
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="hidden items-center gap-3 md:flex">
                     <h1 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
                       {repo.name}
                     </h1>
                   </div>
                   {repo.oneLiner && (
-                    <p className="text-muted-foreground mt-2 text-base">
+                    <p className="text-muted-foreground mt-0 text-base md:mt-2">
                       {repo.oneLiner}
                     </p>
                   )}
                 </div>
               </div>
+
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-2">
