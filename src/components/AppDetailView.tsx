@@ -269,12 +269,12 @@ export function AppDetailView({
                       {app.name}
                     </h1>
                   </div>
-                  {(app.oneLiner || app.shortDescription) && (
+                  {(app.oneLiner ?? app.shortDescription) && (
                     <p className="text-muted-foreground mt-0 text-base md:mt-2">
-                      {app.oneLiner || app.shortDescription}
+                      {app.oneLiner ?? app.shortDescription}
                     </p>
                   )}
-                  <p className={`text-muted-foreground ${app.oneLiner || app.shortDescription ? "mt-1" : "mt-0"} text-xs font-medium tracking-widest uppercase md:mt-2 md:text-sm`}>
+                  <p className={`text-muted-foreground ${app.oneLiner ?? app.shortDescription ? "mt-1" : "mt-0"} text-xs font-medium tracking-widest uppercase md:mt-2 md:text-sm`}>
                     {app.category}
                   </p>
                 </div>
