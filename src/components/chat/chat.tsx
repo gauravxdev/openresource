@@ -24,11 +24,13 @@ export function Chat({
   initialMessages,
   initialChatModel,
   initialPrompt,
+  isAdmin,
 }: {
   id: string;
   initialMessages?: UIMessage[];
   initialChatModel: string;
   initialPrompt?: string;
+  isAdmin?: boolean;
 }) {
   const [input, setInput] = useState<string>("");
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
@@ -136,6 +138,7 @@ export function Chat({
           stop={stop}
           allowSearch={allowSearch}
           setAllowSearch={setAllowSearch}
+          isAdmin={isAdmin}
         />
       </div>
     </div>

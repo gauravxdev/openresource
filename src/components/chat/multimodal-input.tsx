@@ -66,6 +66,7 @@ function PureMultimodalInput({
   onModelChange,
   allowSearch,
   setAllowSearch,
+  isAdmin,
 }: {
   chatId: string;
   input: string;
@@ -80,6 +81,7 @@ function PureMultimodalInput({
   onModelChange?: (modelId: string) => void;
   allowSearch: boolean;
   setAllowSearch: (value: boolean) => void;
+  isAdmin?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -201,10 +203,12 @@ function PureMultimodalInput({
               </Tooltip>
             </TooltipProvider>
 
-            <ModelSelectorCompact
-              onModelChange={onModelChange}
-              selectedModelId={selectedModelId}
-            />
+            {isAdmin && (
+              <ModelSelectorCompact
+                onModelChange={onModelChange}
+                selectedModelId={selectedModelId}
+              />
+            )}
           </PromptInputTools>
 
           {status === "submitted" ? (
@@ -238,6 +242,9 @@ export const MultimodalInput = memo(
       return false;
     }
     if (prevProps.allowSearch !== nextProps.allowSearch) {
+      return false;
+    }
+    if (prevProps.isAdmin !== nextProps.isAdmin) {
       return false;
     }
     if (!equal(prevProps.messages, nextProps.messages)) {

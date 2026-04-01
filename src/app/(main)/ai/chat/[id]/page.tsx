@@ -75,6 +75,7 @@ export default async function Page({
             id={id}
             initialMessages={initialMessages}
             initialChatModel={modelIdFromCookie?.value ?? DEFAULT_CHAT_MODEL}
+            isAdmin={session?.user?.role === "admin"}
             key={id}
         />
     );

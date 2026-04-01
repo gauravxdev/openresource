@@ -1,9 +1,10 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Suspense } from "react";
 import { Chat } from "@/components/chat/chat";
 import { ChatSkeleton } from "@/components/skeletons";
 import { DEFAULT_CHAT_MODEL } from "@/lib/chat/models";
 import { generateUUID } from "@/lib/chat/utils";
+import { auth } from "@/lib/auth";
 
 export const metadata = {
   title: "AI Chat | OpenResource",
@@ -25,6 +26,11 @@ export default async function Page({
 }
 
 async function NewChatPage({ initialPrompt }: { initialPrompt?: string }) {
+  const headersList = await headers();
+  const session = await auth.api.getSession({
+    headers: headersList,
+  });
+
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get("chat-model");
   const id = generateUUID();
@@ -34,6 +40,7 @@ async function NewChatPage({ initialPrompt }: { initialPrompt?: string }) {
       id={id}
       initialChatModel={modelIdFromCookie?.value ?? DEFAULT_CHAT_MODEL}
       initialPrompt={initialPrompt}
+      isAdmin={session?.user?.role === "admin"}
       key={id}
     />
   );
