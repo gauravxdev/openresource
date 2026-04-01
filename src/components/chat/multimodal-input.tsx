@@ -29,7 +29,6 @@ import {
   PromptInputTools,
 } from "./prompt-input";
 import { ArrowUpIcon, StopIcon } from "./icons";
-import { SuggestedActions } from "./suggested-actions";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -146,9 +145,7 @@ function PureMultimodalInput({
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
-      {messages.length === 0 && (
-        <SuggestedActions chatId={chatId} sendMessage={sendMessage} />
-      )}
+
 
       <PromptInput
         className="border-border bg-background focus-within:border-border hover:border-muted-foreground/50 rounded-xl border p-3 shadow-xs transition-all duration-200"

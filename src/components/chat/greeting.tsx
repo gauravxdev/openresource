@@ -5,10 +5,10 @@ import { Search, Code, FileText, Lightbulb } from "lucide-react";
 
 export const Greeting = () => {
   const capabilities = [
-    { icon: Search, label: "Search the web" },
-    { icon: Code, label: "Write code" },
-    { icon: FileText, label: "Analyze content" },
-    { icon: Lightbulb, label: "Answer questions" },
+    { icon: Search, label: "Web Search" },
+    { icon: Lightbulb, label: "Discover Resources" },
+    { icon: Code, label: "Analyze Repositories" },
+    { icon: FileText, label: "Compare Tools" },
   ];
 
   return (

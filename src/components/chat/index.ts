@@ -4,5 +4,4 @@ export { Messages } from "./messages";
 export { PreviewMessage, ThinkingMessage } from "./message";
 export { MultimodalInput } from "./multimodal-input";
 export { Greeting } from "./greeting";
-export { SuggestedActions } from "./suggested-actions";
 export { Markdown } from "./markdown";
