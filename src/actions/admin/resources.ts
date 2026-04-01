@@ -5,6 +5,7 @@ import { db } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+
 const resourceSchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required"),
@@ -177,6 +178,8 @@ export async function updateAdminResourceStatus(
       where: { id },
       data: updateData,
     });
+
+
 
     revalidatePath("/admin/resources");
     revalidatePath("/home");
