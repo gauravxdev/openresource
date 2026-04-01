@@ -124,7 +124,7 @@ export function Chat({
         sendMessage={sendMessage}
       />
 
-      <div className="bg-background sticky bottom-0 z-10 mx-auto flex w-full max-w-4xl gap-2 border-t-0 px-2 pb-3 md:px-4 md:pb-4">
+      <div className="bg-background sticky bottom-0 z-10 mx-auto flex w-full max-w-4xl gap-2 border-t-0 px-2 pb-0 md:px-4 md:pb-4">
         <MultimodalInput
           chatId={id}
           input={input}
