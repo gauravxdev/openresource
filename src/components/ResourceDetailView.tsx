@@ -220,6 +220,7 @@ export function ResourceDetailView({
                 <div className="inline-flex items-center rounded-md border border-neutral-200 shadow-xs md:hidden dark:border-neutral-800">
                   <BookmarkButton
                     className="rounded-r-none border-none"
+                    size="default"
                     resource={{
                       id: resource.id,
                       slug: resource.slug,
@@ -235,7 +236,6 @@ export function ResourceDetailView({
                   />
                   <Button
                     variant="outline"
-                    size="sm"
                     className="-ml-px rounded-l-none border-y-0 border-r-0 border-l"
                     onClick={() => setReportOpen(true)}
                     title="Report Issue"
@@ -248,6 +248,7 @@ export function ResourceDetailView({
                 <div className="hidden items-center gap-3 md:flex">
                   <BookmarkButton
                     showLabel={true}
+                    size="default"
                     resource={{
                       id: resource.id,
                       slug: resource.slug,
@@ -263,7 +264,6 @@ export function ResourceDetailView({
                   />
                   <Button
                     variant="outline"
-                    size="sm"
                     className="gap-2"
                     onClick={() => setReportOpen(true)}
                     title="Report Issue"

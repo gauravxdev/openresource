@@ -344,7 +344,7 @@ export const PreviewMessage = ({
                   return (
                     <Tool
                       key={key}
-                      defaultOpen={toolPart.state !== "output-available"}
+                      defaultOpen={false}
                     >
                       <ToolHeader
                         type={toolPart.type}

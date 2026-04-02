@@ -47,12 +47,14 @@ interface BookmarkButtonProps {
   };
   className?: string;
   showLabel?: boolean;
+  size?: "default" | "sm" | "lg" | "icon";
 }
 
 export function BookmarkButton({ 
   resource, 
   className, 
-  showLabel = false 
+  showLabel = false,
+  size = "sm"
 }: BookmarkButtonProps) {
   const { data: session, isPending: sessionLoading } = useSession();
   const isLoggedIn = !!session?.user;
@@ -151,8 +153,8 @@ export function BookmarkButton({
   return (
     <Button
       variant="outline"
-      size="sm"
-      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""} ${className || ""}`}
+      size={size}
+      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""} ${className || ""}`}
       onClick={handleBookmarkClick}
       disabled={loading}
       title={isBookmarked ? "Remove bookmark" : "Add bookmark"}

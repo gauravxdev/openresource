@@ -100,6 +100,35 @@ export default function WindowsAppDetailLoading() {
             </div>
           </aside>
         </div>
+
+        {/* Similar Resources Skeleton */}
+        <section className="mt-12 border-t border-neutral-200 pt-12 dark:border-neutral-800">
+          <div className="mb-8">
+            <Skeleton className="h-7 w-48" />
+            <Skeleton className="mt-2 h-5 w-64" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
+              >
+                <div className="flex items-start gap-3">
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-lg" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -141,7 +141,7 @@ export const WindowsAppCard = ({ app }: WindowsAppCardProps) => {
             <Button
               variant="outline"
               size="sm"
-              className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+              className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""}`}
               onClick={(e) => {
                 e.preventDefault();
                 handleBookmarkClick();

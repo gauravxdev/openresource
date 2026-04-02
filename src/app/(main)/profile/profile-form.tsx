@@ -547,99 +547,161 @@ export function ProfileForm({
         </div>
       </div>
 
-      {/* Bottom Row: Contributor Dashboard + Activity Calendar */}
+      {/* Bottom Row: Dashboard/Panel + Activity Calendar */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Contributor Dashboard */}
-        {(user.role === "contributor" || user.role === "admin") &&
-          resourceStats && (
-            <Card className="border-border/50 bg-card/50 backdrop-blur">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 rounded-lg p-2">
-                      <LayoutDashboard className="text-primary h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold">
-                        Contributor Dashboard
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        Manage your resources
-                      </CardDescription>
-                    </div>
+        {user.role === "contributor" && resourceStats && (
+          <Card className="border-border/50 bg-card/50 backdrop-blur">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 rounded-lg p-2">
+                    <LayoutDashboard className="text-primary h-5 w-5" />
                   </div>
-                  <Badge variant="outline" className="text-xs capitalize">
-                    {user.role}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Resource Stats */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-500/10 p-3 text-center transition-all hover:bg-blue-500/10">
-                    <p className="text-xl font-bold md:text-2xl">
-                      {resourceStats.total}
-                    </p>
-                    <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
-                      Total
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-500/10 p-3 text-center transition-all hover:bg-green-500/10">
-                    <p className="text-xl font-bold text-green-400 md:text-2xl">
-                      {resourceStats.approved}
-                    </p>
-                    <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
-                      Approved
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10 p-3 text-center transition-all hover:bg-amber-500/10">
-                    <p className="text-xl font-bold text-amber-400 md:text-2xl">
-                      {resourceStats.pending}
-                    </p>
-                    <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
-                      Pending
-                    </p>
+                  <div>
+                    <CardTitle className="text-lg font-semibold">
+                      Contributor Dashboard
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Manage your resources
+                    </CardDescription>
                   </div>
                 </div>
-
-                {/* Quick Actions */}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Link
-                    href="/dashboard"
-                    className="bg-primary/5 border-primary/20 hover:bg-primary/10 flex items-center justify-between rounded-xl border p-3 transition-all"
-                  >
-                    <div className="flex items-center gap-2">
-                      <LayoutDashboard className="text-primary h-4 w-4" />
-                      <p className="text-xs font-medium">Open Dashboard</p>
-                    </div>
-                    <ArrowRight className="text-primary h-3 w-3" />
-                  </Link>
-
-                  <Link
-                    href="/submit"
-                    className="bg-muted/20 border-border/40 hover:bg-muted/40 flex items-center justify-between rounded-xl border p-3 transition-all"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Plus className="text-muted-foreground h-4 w-4" />
-                      <p className="text-xs font-medium">Submit Resource</p>
-                    </div>
-                    <ArrowRight className="text-muted-foreground h-3 w-3" />
-                  </Link>
+                <Badge variant="outline" className="text-xs capitalize">
+                  {user.role}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Resource Stats */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-500/10 p-3 text-center transition-all hover:bg-blue-500/10">
+                  <p className="text-xl font-bold md:text-2xl">
+                    {resourceStats.total}
+                  </p>
+                  <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
+                    Total
+                  </p>
                 </div>
+                <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-500/10 p-3 text-center transition-all hover:bg-green-500/10">
+                  <p className="text-xl font-bold text-green-400 md:text-2xl">
+                    {resourceStats.approved}
+                  </p>
+                  <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
+                    Approved
+                  </p>
+                </div>
+                <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10 p-3 text-center transition-all hover:bg-amber-500/10">
+                  <p className="text-xl font-bold text-amber-400 md:text-2xl">
+                    {resourceStats.pending}
+                  </p>
+                  <p className="text-muted-foreground text-[9px] font-semibold tracking-wide uppercase">
+                    Pending
+                  </p>
+                </div>
+              </div>
 
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Link
-                  href="/ai/chat"
-                  className="bg-purple-500/5 border-purple-500/20 hover:bg-purple-500/10 flex items-center justify-between rounded-xl border p-3 transition-all"
+                  href="/dashboard"
+                  className="bg-primary/5 border-primary/20 hover:bg-primary/10 flex items-center justify-between rounded-xl border p-3 transition-all"
                 >
                   <div className="flex items-center gap-2">
-                    <Zap className="text-purple-500 h-4 w-4" />
-                    <p className="text-xs font-medium">Open AI Chat</p>
+                    <LayoutDashboard className="text-primary h-4 w-4" />
+                    <p className="text-xs font-medium">Open Dashboard</p>
                   </div>
-                  <ArrowRight className="text-purple-500 h-3 w-3" />
+                  <ArrowRight className="text-primary h-3 w-3" />
                 </Link>
-              </CardContent>
-            </Card>
-          )}
+
+                <Link
+                  href="/submit"
+                  className="bg-muted/20 border-border/40 hover:bg-muted/40 flex items-center justify-between rounded-xl border p-3 transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <Plus className="text-muted-foreground h-4 w-4" />
+                    <p className="text-xs font-medium">Submit Resource</p>
+                  </div>
+                  <ArrowRight className="text-muted-foreground h-3 w-3" />
+                </Link>
+              </div>
+
+              <Link
+                href="/ai/chat"
+                className="flex items-center justify-between rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 transition-all hover:bg-purple-500/10"
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-purple-500" />
+                  <p className="text-xs font-medium">Open AI Chat</p>
+                </div>
+                <ArrowRight className="h-3 w-3 text-purple-500" />
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Admin Panel */}
+        {user.role === "admin" && (
+          <Card className="border-border/50 bg-card/50 backdrop-blur">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 rounded-lg p-2">
+                    <Shield className="text-primary h-5 w-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold">
+                      Admin Panel
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Manage the platform
+                    </CardDescription>
+                  </div>
+                </div>
+                <Badge variant="outline" className="text-xs capitalize">
+                  {user.role}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Link
+                  href="/admin"
+                  className="bg-primary/5 border-primary/20 hover:bg-primary/10 flex items-center justify-between rounded-xl border p-3 transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <Shield className="text-primary h-4 w-4" />
+                    <p className="text-xs font-medium">Open Admin Panel</p>
+                  </div>
+                  <ArrowRight className="text-primary h-3 w-3" />
+                </Link>
+
+                <Link
+                  href="/submit"
+                  className="bg-muted/20 border-border/40 hover:bg-muted/40 flex items-center justify-between rounded-xl border p-3 transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <Plus className="text-muted-foreground h-4 w-4" />
+                    <p className="text-xs font-medium">Submit Resource</p>
+                  </div>
+                  <ArrowRight className="text-muted-foreground h-3 w-3" />
+                </Link>
+              </div>
+
+              <Link
+                href="/ai/chat"
+                className="flex items-center justify-between rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 transition-all hover:bg-purple-500/10"
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-purple-500" />
+                  <p className="text-xs font-medium">Open AI Chat</p>
+                </div>
+                <ArrowRight className="h-3 w-3 text-purple-500" />
+              </Link>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Activity Calendar */}
         <Card className="border-border/50 bg-card/50 backdrop-blur">
@@ -649,7 +711,8 @@ export function ProfileForm({
                 Activity Calendar
               </CardTitle>
               <CardDescription>
-                Your daily activity over the last {isFullYear ? "12" : "6"} months
+                Your daily activity over the last {isFullYear ? "12" : "6"}{" "}
+                months
               </CardDescription>
             </div>
             <Button

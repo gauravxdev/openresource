@@ -316,8 +316,7 @@ export function AppDetailView({
                 <div className="inline-flex items-center rounded-md border border-neutral-200 shadow-xs md:hidden dark:border-neutral-800">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className={`rounded-r-none border-none ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                    className={`rounded-r-none border-none ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""}`}
                     onClick={handleBookmarkClick}
                     title={isBookmarked ? "Remove bookmark" : "Bookmark"}
                   >
@@ -327,7 +326,6 @@ export function AppDetailView({
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     className="-ml-px rounded-l-none border-y-0 border-r-0 border-l"
                     onClick={() => setReportOpen(true)}
                     title="Report Issue"
@@ -340,8 +338,7 @@ export function AppDetailView({
                 <div className="hidden items-center gap-3 md:flex">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className={`gap-2 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                    className={`gap-2 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""}`}
                     onClick={handleBookmarkClick}
                     title={isBookmarked ? "Remove bookmark" : "Bookmark"}
                   >
@@ -352,7 +349,6 @@ export function AppDetailView({
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     className="gap-2"
                     onClick={() => setReportOpen(true)}
                     title="Report Issue"
