@@ -63,8 +63,8 @@ export const auth = betterAuth({
             await db.loginHistory.create({
               data: {
                 userId,
-                ipAddress: session.ipAddress || null,
-                userAgent: session.userAgent || null,
+                ipAddress: session.ipAddress ?? null,
+                userAgent: session.userAgent ?? null,
               },
             });
 
