@@ -2,7 +2,7 @@
 
 import type { ComponentProps } from "react";
 import { PanelLeftIcon } from "lucide-react";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useSidebar, type SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Tooltip,
   TooltipContent,

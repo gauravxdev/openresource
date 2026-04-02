@@ -26,8 +26,7 @@ export default async function AndroidAppDetailPage({ params }: PageProps) {
   });
 
   if (
-    !resource ||
-    !resource.categories.some(
+    !resource?.categories.some(
       (c) => c.slug === "android-app" || c.slug === "android-apps",
     )
   ) {

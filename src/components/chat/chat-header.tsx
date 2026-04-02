@@ -7,7 +7,7 @@ import { PlusIcon } from "lucide-react";
 import { SparklesIcon } from "./icons";
 import { SidebarToggle } from "./sidebar-toggle";
 
-function PureChatHeader({ chatId }: { chatId: string }) {
+function PureChatHeader({ chatId: _chatId }: { chatId: string }) {
   const router = useRouter();
 
   return (

@@ -48,7 +48,7 @@ export const auth = betterAuth({
         session: {
             create: {
                 after: async (session) => {
-                    if (!session || !session.userId) return;
+                    if (!session?.userId) return;
 
                     try {
                         const userId = session.userId;

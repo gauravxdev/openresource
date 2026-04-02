@@ -26,8 +26,7 @@ export default async function WindowsAppDetailPage({ params }: PageProps) {
   });
 
   if (
-    !resource ||
-    !resource.categories.some(
+    !resource?.categories.some(
       (c) => c.slug === "windows-app" || c.slug === "windows-apps",
     )
   ) {

@@ -160,7 +160,7 @@ export async function updateContributorResource(
       select: { userId: true },
     });
 
-    if (!resource || resource.userId !== user.id) {
+    if (resource?.userId !== user.id) {
       return {
         success: false,
         error: "Resource not found or not owned by you",
@@ -202,7 +202,7 @@ export async function deleteContributorResource(id: string) {
       select: { userId: true },
     });
 
-    if (!resource || resource.userId !== user.id) {
+    if (resource?.userId !== user.id) {
       return {
         success: false,
         error: "Resource not found or not owned by you",
@@ -238,7 +238,7 @@ export async function getContributorResourceById(id: string) {
       },
     });
 
-    if (!resource || resource.userId !== user.id) {
+    if (resource?.userId !== user.id) {
       return {
         success: false,
         error: "Resource not found or not owned by you",

@@ -11,15 +11,14 @@
 const CDN_URL =
   "https://cdn.jsdelivr.net/npm/@mermaid-js/tiny@11/dist/mermaid.tiny.js";
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG: Record<string, unknown> = {
   startOnLoad: false,
   theme: "default" as const,
   securityLevel: "strict" as const,
   fontFamily: "monospace",
   suppressErrorRendering: true,
 };
-
-type MermaidConfig = Record<string, unknown>;
+type MermaidConfig = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 interface MermaidInstance {
   initialize: (config: MermaidConfig) => void;
@@ -85,7 +84,7 @@ function createMermaidPlugin(
 ): DiagramPlugin {
   let initialized = false;
   let mermaidRef: GlobalMermaid | null = null;
-  const config: MermaidConfig = { ...DEFAULT_CONFIG, ...options.config };
+  const config: Record<string, unknown> = { ...DEFAULT_CONFIG, ...options.config }; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 
   const ensureReady = async (): Promise<GlobalMermaid> => {
     mermaidRef ??= await loadMermaidFromCDN();

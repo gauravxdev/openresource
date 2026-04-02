@@ -141,7 +141,7 @@ export function BookmarkButton({
       <Button
         variant="outline"
         size="sm"
-        className={`border-border shrink-0 cursor-wait opacity-50 ${className || ""}`}
+        className={`border-border shrink-0 cursor-wait opacity-50 ${className ?? ""}`}
         disabled
       >
         <Bookmark className="h-4 w-4" />
@@ -154,7 +154,7 @@ export function BookmarkButton({
     <Button
       variant="outline"
       size={size}
-      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""} ${className || ""}`}
+      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""} ${className ?? ""}`}
       onClick={handleBookmarkClick}
       disabled={loading}
       title={isBookmarked ? "Remove bookmark" : "Add bookmark"}

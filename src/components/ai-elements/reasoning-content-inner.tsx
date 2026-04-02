@@ -20,7 +20,7 @@ export const ReasoningContentInner = memo(
       )}
       {...props}
     >
-      <Streamdown plugins={{ cjk, code, math, mermaid }} {...props}>
+      <Streamdown plugins={{ cjk, code, math, mermaid }} {...(props as any)}> {/* eslint-disable-line @typescript-eslint/no-explicit-any */}
         {children}
       </Streamdown>
     </CollapsibleContent>

@@ -26,8 +26,7 @@ export default async function GitHubRepoDetailPage({ params }: PageProps) {
   });
 
   if (
-    !resource ||
-    !resource.categories.some(
+    !resource?.categories.some(
       (c) => c.slug === "github-repo" || c.slug === "github-repos",
     )
   ) {

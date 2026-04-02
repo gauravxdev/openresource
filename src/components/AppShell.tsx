@@ -12,13 +12,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isDashboard = pathname.startsWith("/dashboard");
 
   useEffect(() => {
-    if (isDashboard) {
+    if (isDashboard || isAiChat) {
       document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = "";
       };
     }
-  }, [isDashboard]);
+  }, [isDashboard, isAiChat]);
 
   return (
     <>

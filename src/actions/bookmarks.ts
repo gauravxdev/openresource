@@ -37,7 +37,7 @@ export async function getUserBookmarks(): Promise<{
     });
 
     const data = bookmarks
-      .filter((b) => b.resource && b.resource.status === "APPROVED")
+      .filter((b) => b.resource?.status === "APPROVED")
       .map((b) => ({
         ...b.resource,
         bookmarkedAt: b.createdAt,

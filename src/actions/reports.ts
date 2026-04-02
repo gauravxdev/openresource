@@ -18,7 +18,7 @@ const reportSchema = z
   })
   .refine(
     (data) => {
-      if (data.type === "OTHER" && (!data.message || !data.message.trim())) {
+      if (data.type === "OTHER" && !data.message?.trim()) {
         return false;
       }
       return true;
@@ -43,7 +43,7 @@ export async function submitReport(data: {
         email: validated.email,
         resourceId: validated.resourceId,
         type: validated.type,
-        message: validated.message?.trim() || null,
+        message: validated.message?.trim() ?? null,
       },
     });
 
@@ -55,7 +55,7 @@ export async function submitReport(data: {
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: error.errors[0]?.message || "Validation failed",
+        error: error.errors[0]?.message ?? "Validation failed",
       };
     }
     console.error("[Report] Submit Error:", error);

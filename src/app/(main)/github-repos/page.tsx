@@ -23,7 +23,7 @@ export default async function GitHubRepos({
 }) {
   const { page: pageStr, sort: sortParam } = await searchParams;
   const currentPage = Number(pageStr) || 1;
-  const currentSort = sortParam || "latest";
+  const currentSort = sortParam ?? "latest";
   const { data: resources, totalCount } = await getGitHubRepos(
     currentPage,
     9,

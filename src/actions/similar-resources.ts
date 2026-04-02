@@ -71,11 +71,7 @@ function scoreResource(
   }
 
   // License match (weight 0.5)
-  if (
-    currentLicense &&
-    candidate.license &&
-    currentLicense.toLowerCase() === candidate.license.toLowerCase()
-  ) {
+  if (currentLicense && currentLicense.toLowerCase() === candidate.license?.toLowerCase()) {
     score += 0.5;
   }
 
