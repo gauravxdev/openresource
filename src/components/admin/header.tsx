@@ -1,5 +1,8 @@
 "use client";
 
+// Force rebuild to fix HMR desync
+
+
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -14,7 +17,6 @@ import {
 import {
   BarChart3,
   Sparkles,
-  Share2,
   Plus,
   FilePlus,
   Github,
@@ -103,48 +105,18 @@ export function DashboardHeader() {
           <div className="bg-border mx-2 h-5 w-px" />
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden h-7 gap-1.5 sm:flex"
-            >
-              <Sparkles className="size-3.5" />
-              <span className="text-sm">Ask AI</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Generate report</DropdownMenuItem>
-            <DropdownMenuItem>Analyze leads</DropdownMenuItem>
-            <DropdownMenuItem>Suggest follow-ups</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden h-7 gap-1.5 sm:flex"
-            >
-              <Share2 className="size-3.5" />
-              <span className="text-sm">Share</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Copy link</DropdownMenuItem>
-            <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Share with team</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button variant="outline" size="sm" asChild className="hidden h-7 gap-1.5 sm:flex">
+          <Link href="/ai/chat">
+            <Sparkles className="size-3.5" />
+            <span className="text-sm">Ask AI</span>
+          </Link>
+        </Button>
 
         <ThemeToggle />
 
         <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
           <Link
-            href="https://github.com/ln-dev7/square-ui/tree/master/templates/dashboard-4"
+            href="https://github.com/gauravxdev/openresource"
             target="_blank"
             rel="noopener noreferrer"
           >

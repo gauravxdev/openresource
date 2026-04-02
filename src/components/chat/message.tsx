@@ -174,8 +174,6 @@ function MessageActions({
             <button
               className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 focus-visible:ring-ring inline-flex size-7 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               onClick={() => {
-                alert("Thumbs up clicked!");
-                console.log("[Feedback] Thumbs up clicked!");
                 void handleFeedback("good");
               }}
               type="button"
@@ -193,8 +191,6 @@ function MessageActions({
             <button
               className="text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 focus-visible:ring-ring inline-flex size-7 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               onClick={() => {
-                alert("Thumbs down clicked!");
-                console.log("[Feedback] Thumbs down clicked!");
                 void handleFeedback("bad");
               }}
               type="button"
@@ -342,10 +338,7 @@ export const PreviewMessage = ({
                 if (isToolPart(part)) {
                   const toolPart = part as any;
                   return (
-                    <Tool
-                      key={key}
-                      defaultOpen={false}
-                    >
+                    <Tool key={key} defaultOpen={false}>
                       <ToolHeader
                         type={toolPart.type}
                         state={toolPart.state}

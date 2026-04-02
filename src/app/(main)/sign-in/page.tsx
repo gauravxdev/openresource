@@ -53,7 +53,7 @@ export default function SignInPage() {
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                         {error && (
                             <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
                                 {error}
