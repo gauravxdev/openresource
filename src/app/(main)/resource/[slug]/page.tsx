@@ -6,6 +6,7 @@ import {
 } from "@/components/ResourceDetailView";
 import { ResourceViewTracker } from "@/components/analytics/ResourceViewTracker";
 import { SimilarResources } from "@/components/SimilarResources";
+import { getContributors, parseGitHubUrl } from "@/lib/github";
 
 interface ResourcePageProps {
   params: Promise<{ slug: string }>;
@@ -48,6 +49,11 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
     tags: rawResource.tags ?? [],
   };
 
+  const parsed = parseGitHubUrl(resourceData.repositoryUrl);
+  const contributors = parsed
+    ? await getContributors(parsed.owner, parsed.repo, 5)
+    : [];
+
   return (
     <>
       <ResourceViewTracker
@@ -55,7 +61,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         resourceName={resourceData.name}
         resourceSlug={resourceData.slug}
       />
-      <ResourceDetailView resource={resourceData}>
+      <ResourceDetailView resource={resourceData} contributors={contributors}>
         <SimilarResources currentSlug={slug} currentName={resourceData.name} />
       </ResourceDetailView>
     </>

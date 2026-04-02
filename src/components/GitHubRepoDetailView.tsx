@@ -31,8 +31,10 @@ import {
   Calendar,
   Scale,
   Bookmark,
+  Flag,
 } from "lucide-react";
 import { formatCompactNumber } from "@/lib/format";
+import { ReportResourceDialog } from "@/components/report-resource-dialog";
 
 interface BookmarkItem {
   id: string | number;
@@ -106,6 +108,7 @@ export function GitHubRepoDetailView({
   children,
 }: GitHubRepoDetailViewProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false);
+  const [reportOpen, setReportOpen] = React.useState(false);
 
   React.useEffect(() => {
     const bookmarks = JSON.parse(
@@ -232,7 +235,7 @@ export function GitHubRepoDetailView({
                 <div className="flex items-center gap-3 md:block">
                   {/* Logo/Icon */}
                   {repo.logo ? (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 md:h-14 md:w-14">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 md:h-14 md:w-14 dark:border-neutral-800 dark:bg-neutral-900">
                       <Image
                         src={repo.logo}
                         alt={repo.name}
@@ -268,9 +271,8 @@ export function GitHubRepoDetailView({
                 </div>
               </div>
 
-
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Button asChild className="gap-2">
                   <a
                     href={repo.repositoryUrl}
@@ -281,16 +283,56 @@ export function GitHubRepoDetailView({
                     View on GitHub
                   </a>
                 </Button>
-                <Button
-                  variant="outline"
-                  className={`gap-2 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
-                  onClick={handleBookmarkClick}
-                >
-                  <Bookmark
-                    className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
-                  />
-                  {isBookmarked ? "Bookmarked" : "Bookmark"}
-                </Button>
+
+                {/* Mobile: grouped bookmark + report icons */}
+                <div className="inline-flex items-center rounded-md border border-neutral-200 shadow-xs md:hidden dark:border-neutral-800">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`rounded-r-none border-none ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                    onClick={handleBookmarkClick}
+                    title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                  >
+                    <Bookmark
+                      className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+                    />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="-ml-px rounded-l-none border-y-0 border-r-0 border-l"
+                    onClick={() => setReportOpen(true)}
+                    title="Report Issue"
+                  >
+                    <Flag className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Desktop: separate buttons */}
+                <div className="hidden items-center gap-3 md:flex">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`gap-2 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                    onClick={handleBookmarkClick}
+                    title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                  >
+                    <Bookmark
+                      className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+                    />
+                    {isBookmarked ? "Bookmarked" : "Bookmark"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => setReportOpen(true)}
+                    title="Report Issue"
+                  >
+                    <Flag className="h-4 w-4" />
+                    Report
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -419,6 +461,12 @@ export function GitHubRepoDetailView({
 
         {children}
       </div>
+      <ReportResourceDialog
+        resourceId={repo.id}
+        resourceName={repo.name}
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+      />
     </div>
   );
 }

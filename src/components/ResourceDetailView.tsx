@@ -52,14 +52,21 @@ import { TechStack, type TechItem } from "@/components/TechStack";
 import { ShareSection } from "@/components/ShareSection";
 import { ContributedBy } from "@/components/ContributedBy";
 import { ReportResourceDialog } from "@/components/report-resource-dialog";
+import { BookmarkButton } from "@/components/BookmarkButton";
+import {
+  ContributorsCard,
+  type ContributorData,
+} from "@/components/ContributorsCard";
 
 interface ResourceDetailViewProps {
   resource: Resource;
+  contributors?: ContributorData[];
   children?: React.ReactNode;
 }
 
 export function ResourceDetailView({
   resource,
+  contributors = [],
   children,
 }: ResourceDetailViewProps) {
   const [reportOpen, setReportOpen] = React.useState(false);
@@ -182,7 +189,7 @@ export function ResourceDetailView({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex flex-wrap items-center gap-3 pt-4">
                 {resource.websiteUrl && (
                   <Button asChild className="gap-2">
                     <a
@@ -195,7 +202,10 @@ export function ResourceDetailView({
                     </a>
                   </Button>
                 )}
-                <Button variant="outline" asChild className="gap-2">
+                <Button
+                  asChild
+                  className="gap-2 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                >
                   <a
                     href={resource.repositoryUrl}
                     target="_blank"
@@ -205,15 +215,63 @@ export function ResourceDetailView({
                     View Repository
                   </a>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={() => setReportOpen(true)}
-                >
-                  <Flag className="h-4 w-4" />
-                  Report Issue
-                </Button>
+
+                {/* Mobile: grouped bookmark + report icons */}
+                <div className="inline-flex items-center rounded-md border border-neutral-200 shadow-xs md:hidden dark:border-neutral-800">
+                  <BookmarkButton
+                    className="rounded-r-none border-none"
+                    resource={{
+                      id: resource.id,
+                      slug: resource.slug,
+                      title: resource.name,
+                      description:
+                        resource.shortDescription ?? resource.description,
+                      category: resource.categories[0]?.name ?? "",
+                      stars: resource.stars.toString(),
+                      forks: resource.forks.toString(),
+                      lastCommit: resource.lastCommit?.toISOString() ?? "",
+                      logo: resource.logo,
+                    }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="-ml-px rounded-l-none border-y-0 border-r-0 border-l"
+                    onClick={() => setReportOpen(true)}
+                    title="Report Issue"
+                  >
+                    <Flag className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Desktop: separate buttons */}
+                <div className="hidden items-center gap-3 md:flex">
+                  <BookmarkButton
+                    showLabel={true}
+                    resource={{
+                      id: resource.id,
+                      slug: resource.slug,
+                      title: resource.name,
+                      description:
+                        resource.shortDescription ?? resource.description,
+                      category: resource.categories[0]?.name ?? "",
+                      stars: resource.stars.toString(),
+                      forks: resource.forks.toString(),
+                      lastCommit: resource.lastCommit?.toISOString() ?? "",
+                      logo: resource.logo,
+                    }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => setReportOpen(true)}
+                    title="Report Issue"
+                  >
+                    <Flag className="h-4 w-4" />
+                    Report
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -329,6 +387,10 @@ export function ResourceDetailView({
           {/* Sidebar */}
           <aside className="sticky top-24 h-fit space-y-6 self-start">
             <GitHubStatsSidebar stats={githubStats} />
+            <ContributorsCard
+              contributors={contributors}
+              repositoryUrl={resource.repositoryUrl}
+            />
           </aside>
         </div>
 

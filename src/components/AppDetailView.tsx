@@ -31,8 +31,10 @@ import {
   Bookmark,
   Github,
   ExternalLink,
+  Flag,
 } from "lucide-react";
 import { formatCompactNumber } from "@/lib/format";
+import { ReportResourceDialog } from "@/components/report-resource-dialog";
 
 interface BookmarkItem {
   id: string | number;
@@ -110,6 +112,7 @@ export function AppDetailView({
   children,
 }: AppDetailViewProps) {
   const [isBookmarked, setIsBookmarked] = React.useState(false);
+  const [reportOpen, setReportOpen] = React.useState(false);
 
   React.useEffect(() => {
     const bookmarks = JSON.parse(
@@ -239,7 +242,7 @@ export function AppDetailView({
                 <div className="flex items-center gap-3 md:block">
                   {/* Logo/Icon */}
                   {app.logo ? (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900 md:h-16 md:w-16">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm md:h-16 md:w-16 dark:border-neutral-800 dark:bg-neutral-900">
                       <Image
                         src={app.logo}
                         alt={app.name}
@@ -274,15 +277,16 @@ export function AppDetailView({
                       {app.oneLiner ?? app.shortDescription}
                     </p>
                   )}
-                  <p className={`text-muted-foreground ${app.oneLiner ?? app.shortDescription ? "mt-1" : "mt-0"} text-xs font-medium tracking-widest uppercase md:mt-2 md:text-sm`}>
+                  <p
+                    className={`text-muted-foreground ${(app.oneLiner ?? app.shortDescription) ? "mt-1" : "mt-0"} text-xs font-medium tracking-widest uppercase md:mt-2 md:text-sm`}
+                  >
                     {app.category}
                   </p>
                 </div>
               </div>
 
-
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex flex-wrap items-center gap-3 pt-4">
                 {app.repositoryUrl && (
                   <Button className="gap-2" asChild>
                     <a
@@ -307,16 +311,56 @@ export function AppDetailView({
                     </a>
                   </Button>
                 )}
-                <Button
-                  variant="outline"
-                  className={`gap-2 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
-                  onClick={handleBookmarkClick}
-                >
-                  <Bookmark
-                    className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
-                  />
-                  {isBookmarked ? "Bookmarked" : "Bookmark"}
-                </Button>
+
+                {/* Mobile: grouped bookmark + report icons */}
+                <div className="inline-flex items-center rounded-md border border-neutral-200 shadow-xs md:hidden dark:border-neutral-800">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`rounded-r-none border-none ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                    onClick={handleBookmarkClick}
+                    title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                  >
+                    <Bookmark
+                      className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+                    />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="-ml-px rounded-l-none border-y-0 border-r-0 border-l"
+                    onClick={() => setReportOpen(true)}
+                    title="Report Issue"
+                  >
+                    <Flag className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Desktop: separate buttons */}
+                <div className="hidden items-center gap-3 md:flex">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`gap-2 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                    onClick={handleBookmarkClick}
+                    title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                  >
+                    <Bookmark
+                      className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+                    />
+                    {isBookmarked ? "Bookmarked" : "Bookmark"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => setReportOpen(true)}
+                    title="Report Issue"
+                  >
+                    <Flag className="h-4 w-4" />
+                    Report
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -447,6 +491,12 @@ export function AppDetailView({
 
         {children}
       </div>
+      <ReportResourceDialog
+        resourceId={app.id}
+        resourceName={app.name}
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+      />
     </div>
   );
 }

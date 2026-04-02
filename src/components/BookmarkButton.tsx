@@ -45,9 +45,15 @@ interface BookmarkButtonProps {
     image?: string;
     logo?: string | null;
   };
+  className?: string;
+  showLabel?: boolean;
 }
 
-export function BookmarkButton({ resource }: BookmarkButtonProps) {
+export function BookmarkButton({ 
+  resource, 
+  className, 
+  showLabel = false 
+}: BookmarkButtonProps) {
   const { data: session, isPending: sessionLoading } = useSession();
   const isLoggedIn = !!session?.user;
   const resourceId = String(resource.id);
@@ -133,10 +139,11 @@ export function BookmarkButton({ resource }: BookmarkButtonProps) {
       <Button
         variant="outline"
         size="sm"
-        className="border-border shrink-0 cursor-wait opacity-50"
+        className={`border-border shrink-0 cursor-wait opacity-50 ${className || ""}`}
         disabled
       >
         <Bookmark className="h-4 w-4" />
+        {showLabel && <span className="ml-2">Bookmark</span>}
       </Button>
     );
   }
@@ -145,13 +152,18 @@ export function BookmarkButton({ resource }: BookmarkButtonProps) {
     <Button
       variant="outline"
       size="sm"
-      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-600" : ""} ${className || ""}`}
       onClick={handleBookmarkClick}
       disabled={loading}
       title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
       aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
     >
       <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
+      {showLabel && (
+        <span className="ml-2">
+          {isBookmarked ? "Bookmarked" : "Bookmark"}
+        </span>
+      )}
     </Button>
   );
 }
