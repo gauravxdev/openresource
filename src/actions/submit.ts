@@ -335,6 +335,7 @@ export async function submitResource(
 
     const { revalidatePath } = await import("next/cache");
     revalidatePath("/admin/resources");
+    revalidatePath("/admin");
     revalidatePath("/home");
     revalidatePath("/github-repos");
     revalidatePath("/android-apps");

@@ -17,7 +17,7 @@ import {
   type GitHubStats,
 } from "@/components/GitHubStatsSidebar";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
-import { ExternalLink, Globe, ArrowLeft } from "lucide-react";
+import { ExternalLink, Globe, ArrowLeft, Flag } from "lucide-react";
 import Image from "next/image";
 
 export interface Resource {
@@ -51,6 +51,7 @@ export interface Resource {
 import { TechStack, type TechItem } from "@/components/TechStack";
 import { ShareSection } from "@/components/ShareSection";
 import { ContributedBy } from "@/components/ContributedBy";
+import { ReportResourceDialog } from "@/components/report-resource-dialog";
 
 interface ResourceDetailViewProps {
   resource: Resource;
@@ -61,6 +62,7 @@ export function ResourceDetailView({
   resource,
   children,
 }: ResourceDetailViewProps) {
+  const [reportOpen, setReportOpen] = React.useState(false);
   const githubStats: GitHubStats = {
     stars: resource.stars,
     forks: resource.forks,
@@ -124,7 +126,7 @@ export function ResourceDetailView({
               <div className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4">
                 <div className="flex items-center gap-3 md:block">
                   {/* Logo/Icon */}
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 text-xl font-bold text-neutral-900 uppercase shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:text-white md:h-16 md:w-16 md:text-2xl">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 text-xl font-bold text-neutral-900 uppercase shadow-lg md:h-16 md:w-16 md:text-2xl dark:border-neutral-800 dark:bg-neutral-900 dark:text-white">
                     {resource.logo ? (
                       <Image
                         src={resource.logo}
@@ -179,7 +181,6 @@ export function ResourceDetailView({
                 </div>
               </div>
 
-
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4">
                 {resource.websiteUrl && (
@@ -203,6 +204,15 @@ export function ResourceDetailView({
                     <ExternalLink className="h-4 w-4" />
                     View Repository
                   </a>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setReportOpen(true)}
+                >
+                  <Flag className="h-4 w-4" />
+                  Report Issue
                 </Button>
               </div>
             </div>
@@ -324,6 +334,12 @@ export function ResourceDetailView({
 
         {children}
       </div>
+      <ReportResourceDialog
+        resourceId={resource.id}
+        resourceName={resource.name}
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+      />
     </div>
   );
 }

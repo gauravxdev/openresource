@@ -9,7 +9,7 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
     description:
       "Get system health overview: database table counts, active sessions, recent errors in audit logs, rate limit usage, and platform status.",
     parameters: z.object({}),
-        execute: async (_args: any) => {
+    execute: async (_args: any) => {
       requireAdmin(userRole);
       await logAdminToolAudit("ADMIN_VIEW_SYSTEM_HEALTH", adminUserId);
 
@@ -32,7 +32,6 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
           totalSearchUsageToday,
           totalFeedback,
           totalCategories,
-          totalNewsletters,
         ] = await Promise.all([
           db.user.count(),
           db.session.count({
@@ -56,7 +55,6 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
           }),
           db.messageFeedback.count(),
           db.category.count(),
-          db.newsletter.count(),
         ]);
 
         // Get recent admin actions (last 7 days)
@@ -111,7 +109,6 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
             },
             bookmarks: totalBookmarks,
             categories: totalCategories,
-            newsletters: totalNewsletters,
             auditLogs: totalAuditLogs,
             feedbackEntries: totalFeedback,
           },
@@ -132,4 +129,4 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
         return { error: "Failed to get system health" };
       }
     },
-      } as any);
+  } as any);

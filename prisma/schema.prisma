@@ -89,15 +89,6 @@ model Waitlist {
   @@map("waitlist")
 }
 
-model Newsletter {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-
-  @@index([email])
-  @@map("newsletter")
-}
-
 model Resource {
   id                  String     @id @default(cuid())
   name                String
@@ -126,6 +117,7 @@ model Resource {
   tags                String[]   @default([])
   builtWith           Json?
   bookmarks           Bookmark[]
+  reports             Report[]
 
   @@map("resource")
 }
@@ -238,4 +230,20 @@ model MessageFeedback {
   @@index([userId])
   @@index([type])
   @@map("message_feedback")
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  email      String?
+  resourceId String
+  type       String   // "BROKEN_LINK" | "WRONG_CATEGORY" | "WRONG_TAGS" | "OUTDATED" | "OTHER"
+  message    String?
+  status     String   @default("PENDING") // "PENDING" | "RESOLVED" | "DISMISSED"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId])
+  @@index([status])
+  @@map("report")
 }

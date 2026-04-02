@@ -50,6 +50,7 @@ import {
   LogOut,
   MessageSquare,
   Tag,
+  Flag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDashboardStore } from "@/store/dashboard-store";
@@ -68,6 +69,7 @@ const navItems: NavItem[] = [
   { title: "Users & Logins", icon: Users, href: "/admin/users" },
   { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
   { title: "Feedback Analytics", icon: MessageSquare, href: "/admin/feedback" },
+  { title: "Reports", icon: Flag, href: "/admin/reports" },
   { title: "Audit Logs", icon: FileText, href: "/admin/logs" },
   { title: "Submit Resource", icon: Plus, href: "/admin/submit" },
 ];
@@ -172,7 +174,7 @@ export function DashboardSidebar({
           <DropdownMenuTrigger asChild>
             <button className="hover:bg-sidebar-accent -m-1 flex w-full shrink-0 items-center gap-2.5 rounded-md p-1 transition-colors">
               <div className="bg-foreground text-background flex size-7 shrink-0 items-center justify-center rounded-lg">
-                <span className="text-sm font-bold">S</span>
+                <span className="text-sm font-bold">A</span>
               </div>
               <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
                 <span className="text-sm font-medium">Admin Panel</span>

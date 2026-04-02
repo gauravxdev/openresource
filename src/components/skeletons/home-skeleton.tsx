@@ -61,7 +61,7 @@ function HeroSectionSkeleton() {
         <Skeleton className="mx-auto h-5 w-[90%] max-w-lg sm:h-6" />
       </div>
 
-      {/* NewsletterSubscribe skeleton - matches pill with input + button */}
+      {/* Subscribe skeleton - matches pill with input + button */}
       <div className="mt-12 flex w-full max-w-2xl flex-col items-center gap-4">
         <div className="border-input bg-background flex w-full items-center gap-2 rounded-full border px-2 py-1">
           <Skeleton className="h-10 flex-1 rounded-full" />

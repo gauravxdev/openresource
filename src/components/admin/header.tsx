@@ -17,7 +17,6 @@ import {
   Share2,
   Plus,
   FilePlus,
-  UserPlus,
   Github,
   Mail,
   Link2,
@@ -179,10 +178,6 @@ export function WelcomeSection() {
         >
           <FilePlus className="size-4" />
           <span className="hidden sm:inline">Add Resource</span>
-        </Button>
-        <Button className="border-border/50 h-9 gap-1.5 border bg-neutral-800 text-white hover:bg-neutral-700">
-          <UserPlus className="size-4" />
-          <span className="hidden sm:inline">New Client</span>
         </Button>
       </div>
     </div>

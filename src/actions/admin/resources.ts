@@ -5,7 +5,6 @@ import { db } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-
 const resourceSchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required"),
@@ -120,6 +119,7 @@ export async function createAdminResource(
     });
 
     revalidatePath("/admin/resources");
+    revalidatePath("/admin");
     revalidatePath("/home");
     revalidatePath("/github-repos");
     revalidatePath("/android-apps");
@@ -150,6 +150,7 @@ export async function updateAdminResource(
     });
 
     revalidatePath("/admin/resources");
+    revalidatePath("/admin");
     revalidatePath("/home");
     revalidatePath("/github-repos");
     revalidatePath("/android-apps");
@@ -179,9 +180,8 @@ export async function updateAdminResourceStatus(
       data: updateData,
     });
 
-
-
     revalidatePath("/admin/resources");
+    revalidatePath("/admin");
     revalidatePath("/home");
     revalidatePath("/github-repos");
     revalidatePath("/android-apps");
@@ -200,6 +200,7 @@ export async function deleteAdminResource(id: string) {
     });
 
     revalidatePath("/admin/resources");
+    revalidatePath("/admin");
     revalidatePath("/home");
     revalidatePath("/github-repos");
     revalidatePath("/android-apps");
