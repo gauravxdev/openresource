@@ -36,9 +36,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ tracked: false, reason: "already_recorded" });
     }
 
+    // Extract IP address and user agent from request headers
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    const ipAddress =
+      forwardedFor?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      null;
+    const userAgent = request.headers.get("user-agent") ?? null;
+
     // Record today's activity
     await db.loginHistory.create({
-      data: { userId },
+      data: { userId, ipAddress, userAgent },
     });
 
     return NextResponse.json({ tracked: true });
