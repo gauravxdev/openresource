@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +13,7 @@ import { authClient } from "@/lib/auth-client"
 
 export default function SignUpPage() {
     const router = useRouter()
+    const queryClient = useQueryClient()
     const [name, setName] = React.useState("")
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
@@ -46,6 +48,7 @@ export default function SignUpPage() {
             if (result.error) {
                 setError(result.error.message ?? "Failed to create account")
             } else {
+                await queryClient.invalidateQueries({ queryKey: ["session"] })
                 router.push("/")
                 router.refresh()
             }

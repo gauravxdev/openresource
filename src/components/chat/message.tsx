@@ -150,7 +150,7 @@ function MessageActions({
   if (message.role === "user") return null;
 
   return (
-    <div className="mt-1 flex items-center gap-0.5 opacity-0 transition-opacity duration-200 group-hover/message:opacity-100">
+    <div className="mt-1 flex items-center gap-0.5 opacity-0 md:transition-opacity md:duration-200 md:group-hover/message:opacity-100">
       <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger asChild>

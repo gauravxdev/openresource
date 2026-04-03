@@ -71,6 +71,7 @@ export const metadata: Metadata = {
     creator: "@bitsbygaurav",
   },
   icons: [
+    { rel: "icon", url: "/favicon.svg", type: "image/svg+xml" },
     { rel: "icon", url: "/icon.png" },
     { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
   ],

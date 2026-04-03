@@ -15,8 +15,8 @@ export function useSession() {
       return response.json() as Promise<SessionData>;
     },
     staleTime: 5 * 60 * 1000, // 5 Min
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 }

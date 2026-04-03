@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Github, Twitter, Instagram } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const browseLinks = [
   { href: "/browse/alternatives", label: "Alternatives" },
@@ -47,14 +48,15 @@ export function Footer() {
               href="/"
               className="group/logo inline-flex items-center gap-2"
             >
+              <BrandLogo className="text-primary h-6 w-6" />
               <span className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text font-[family-name:var(--font-righteous)] text-lg font-bold text-transparent">
                 OpenResource
               </span>
             </Link>
 
             <p className="text-muted-foreground mt-3 text-sm">
-              Discover and explore open source alternatives to popular software.
-              Find free and self-hosted solutions for your needs.
+              A curated directory of open-source projects, tools, and
+              applications for developers.
             </p>
 
             {/* Social Links */}
@@ -76,7 +78,7 @@ export function Footer() {
 
           {/* Column 2: Browse Links */}
           <div className="col-span-1 flex flex-col items-center text-center lg:items-start lg:text-left">
-            <h3 className="mb-3 text-sm font-bold text-foreground">Browse:</h3>
+            <h3 className="text-foreground mb-3 text-sm font-bold">Browse:</h3>
             <ul className="space-y-2">
               {browseLinks.map((link) => (
                 <li key={link.href}>
@@ -93,7 +95,9 @@ export function Footer() {
 
           {/* Column 3: Quick Links */}
           <div className="col-span-1 flex flex-col items-center text-center lg:items-start lg:text-left">
-            <h3 className="mb-3 text-sm font-bold text-foreground">Quick Links:</h3>
+            <h3 className="text-foreground mb-3 text-sm font-bold">
+              Quick Links:
+            </h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
@@ -110,7 +114,7 @@ export function Footer() {
 
           {/* Column 4: Other Products */}
           <div className="col-span-2 flex flex-col items-center text-center lg:col-span-1 lg:items-start lg:text-left">
-            <h3 className="mb-3 text-sm font-bold text-foreground">
+            <h3 className="text-foreground mb-3 text-sm font-bold">
               Other Products:
             </h3>
             <p className="text-muted-foreground text-sm">Coming soon</p>

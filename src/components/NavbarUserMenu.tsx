@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut, User, Shield, LayoutDashboard } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +18,7 @@ import { useSession } from "@/hooks/use-session";
 
 export function NavbarUserMenu() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: session, isPending, refetch: refetchSession } = useSession();
   const [isMounted, setIsMounted] = React.useState(false);
 
@@ -52,6 +54,8 @@ export function NavbarUserMenu() {
 
   const handleSignOut = async () => {
     await authClient.signOut();
+    await queryClient.invalidateQueries({ queryKey: ["session"] });
+    await refetchSession();
     router.refresh();
     router.push("/");
   };
