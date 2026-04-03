@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Globe, Zap, ArrowRightLeft } from "lucide-react";
+import { Globe, Zap, FileText, ShieldCheck } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -103,14 +103,14 @@ export default function SubmitPage() {
 
                 <div className="flex gap-3">
                   <div className="mt-1">
-                    <Globe className="h-5 w-5 text-blue-500" />
+                    <FileText className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
                     <p className="text-foreground font-semibold">
-                      Custom Domain
+                      Quality Documentation
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      No temporary subdomains (vercel.app, netlify.app, etc.).
+                      Must include a clear README and setup instructions.
                     </p>
                   </div>
                 </div>
@@ -131,14 +131,14 @@ export default function SubmitPage() {
 
                 <div className="flex gap-3">
                   <div className="mt-1">
-                    <ArrowRightLeft className="h-5 w-5 text-red-500" />
+                    <ShieldCheck className="h-5 w-5 text-red-500" />
                   </div>
                   <div>
                     <p className="text-foreground font-semibold">
-                      Clear Alternative
+                      Must be Open Source
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      Must be an alternative to proprietary software.
+                      Must be licensed under a recognized open-source license.
                     </p>
                   </div>
                 </div>
