@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/icon.png" alt="OpenResource Logo" width="200"/>
+  <img src="public/icon.png" alt="OpenResource Logo" width="120"/>
 </p>
 
 <h1 align="center">OpenResource</h1>
