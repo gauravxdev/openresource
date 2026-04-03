@@ -1,11 +1,34 @@
 import React from "react";
 import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 import { getAndroidApps } from "@/actions/resources";
 import { type AndroidApp } from "@/lib/android-apps-data";
 
 const AndroidAppsClient = dynamic(() => import("./android-apps-client"));
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Android Apps - OpenResource",
+  description:
+    "Discover open-source Android applications and software. Browse a curated collection of Android apps, developer tools, and self-hosted solutions.",
+  alternates: {
+    canonical: "https://openresource.site/android-apps",
+  },
+  openGraph: {
+    title: "Android Apps - OpenResource",
+    description:
+      "Discover open-source Android applications and software. Browse a curated collection of Android apps, developer tools, and self-hosted solutions.",
+    url: "https://openresource.site/android-apps",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Android Apps - OpenResource",
+    description:
+      "Discover open-source Android applications and software. Browse a curated collection of Android apps, developer tools, and self-hosted solutions.",
+  },
+};
 
 export default async function AndroidApps({
   searchParams,

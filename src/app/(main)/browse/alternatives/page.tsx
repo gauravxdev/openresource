@@ -7,7 +7,7 @@ import { ArrowLeftRight } from "lucide-react";
 export const metadata = {
   title: "Alternatives - OpenResource",
   description:
-    "Browse open-source alternatives to popular proprietary software.",
+    "Discover open-source alternatives to popular software. Browse curated projects, self-hosted tools, and GitHub repositories.",
 };
 
 interface Props {

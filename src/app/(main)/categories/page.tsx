@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { db } from "@/server/db";
+import type { Metadata } from "next";
 
 import {
   Breadcrumb,
@@ -12,6 +13,28 @@ import {
 } from "@/components/ui/breadcrumb";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Categories - OpenResource",
+  description:
+    "Browse open-source projects by categories. Find GitHub repos, Windows apps, and Android apps organized by type and functionality.",
+  alternates: {
+    canonical: "https://openresource.site/categories",
+  },
+  openGraph: {
+    title: "Categories - OpenResource",
+    description:
+      "Browse open-source projects by categories. Find GitHub repos, Windows apps, and Android apps organized by type and functionality.",
+    url: "https://openresource.site/categories",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Categories - OpenResource",
+    description:
+      "Browse open-source projects by categories. Find GitHub repos, Windows apps, and Android apps organized by type and functionality.",
+  },
+};
 
 export default async function CategoriesPage() {
   const categories = await db.category.findMany({

@@ -7,14 +7,76 @@ import { GeistMono } from "geist/font/mono";
 import type { CSSProperties } from "react";
 import { ClientProviders } from "@/components/ClientProviders";
 import { AppShell } from "@/components/AppShell";
+import { WebsiteJsonLd } from "@/components/StructuredData";
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL ?? "https://openresource.site";
 
 export const metadata: Metadata = {
-  title: "Openresource",
-  description: "By Gaurav Sharma",
-  icons: [
-    { rel: "icon", url: "/favicon.svg", type: "image/svg+xml" },
-    { rel: "icon", url: "/favicon.ico" },
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "OpenResource - Open Source Projects Directory",
+    template: "%s | OpenResource",
+  },
+  description:
+    "Browse a curated collection of open-source projects, self-hosted tools, and applications. Find GitHub repos, Windows apps, Android apps, and developer resources.",
+  keywords: [
+    "open source",
+    "github repositories",
+    "self-hosted",
+    "windows apps",
+    "android apps",
+    "developer tools",
+    "open source projects",
+    "developer resources",
+    "free software",
   ],
+  authors: [{ name: "Gaurav Sharma", url: "https://gauravxdev.site" }],
+  creator: "Gaurav Sharma",
+  publisher: "OpenResource",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: BASE_URL,
+    siteName: "OpenResource",
+    title: "OpenResource - Open Source Projects Directory",
+    description:
+      "Browse a curated collection of open-source projects, self-hosted tools, and applications. Find GitHub repos, Windows apps, Android apps, and developer resources.",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "OpenResource - Open Source Projects Directory",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OpenResource - Open Source Projects Directory",
+    description:
+      "Browse a curated collection of open-source projects, self-hosted tools, and applications. Find GitHub repos, Windows apps, Android apps, and developer resources.",
+    images: ["/og-image.svg"],
+    creator: "@bitsbygaurav",
+  },
+  icons: [
+    { rel: "icon", url: "/icon.png" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+  ],
+  alternates: {
+    canonical: BASE_URL,
+  },
 };
 
 // Geist font configuration
@@ -54,6 +116,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-transparent" suppressHydrationWarning>
+        <WebsiteJsonLd />
         <ClientProviders>
           {/* Dynamic Background */}
           <div className="relative min-h-screen w-full">

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { db } from "@/server/db";
 import { UserResources } from "@/components/UserResources";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +9,54 @@ import { Calendar, Package } from "lucide-react";
 
 interface PublicProfilePageProps {
   params: Promise<{ username: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PublicProfilePageProps): Promise<Metadata> {
+  const { username } = await params;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://openresource.site";
+
+  const user = await db.user.findUnique({
+    where: { username: username.toLowerCase() },
+    select: {
+      name: true,
+      username: true,
+      image: true,
+      _count: {
+        select: { resources: { where: { status: "APPROVED" } } },
+      },
+    },
+  });
+
+  if (!user) {
+    return {
+      title: "User Not Found - OpenResource",
+    };
+  }
+
+  const displayName = user.name || `@${user.username}`;
+  const contributionCount = user._count.resources;
+
+  return {
+    title: `${displayName} - OpenResource`,
+    description: `View ${displayName}'s open-source contributions on OpenResource. ${contributionCount} resources shared.`,
+    alternates: {
+      canonical: `${baseUrl}/u/${username}`,
+    },
+    openGraph: {
+      title: `${displayName} - OpenResource`,
+      description: `View ${displayName}'s open-source contributions on OpenResource. ${contributionCount} resources shared.`,
+      url: `${baseUrl}/u/${username}`,
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${displayName} - OpenResource`,
+      description: `View ${displayName}'s open-source contributions on OpenResource.`,
+    },
+  };
 }
 
 export default async function PublicProfilePage({

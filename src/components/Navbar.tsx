@@ -23,6 +23,7 @@ import {
   Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/BrandLogo";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -110,6 +111,7 @@ export default function Navbar() {
         <div className="flex h-14 items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex shrink-0 items-center space-x-2">
+            <BrandLogo className="text-foreground" />
             <span className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text font-[family-name:var(--font-righteous)] text-lg font-bold text-transparent">
               OpenResource
             </span>

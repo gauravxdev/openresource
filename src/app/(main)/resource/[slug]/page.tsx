@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { db } from "@/server/db";
 import {
   ResourceDetailView,
@@ -10,6 +11,53 @@ import { getContributors, parseGitHubUrl } from "@/lib/github";
 
 interface ResourcePageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ResourcePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://openresource.site";
+
+  const resource = await db.resource.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      description: true,
+      shortDescription: true,
+      oneLiner: true,
+    },
+  });
+
+  if (!resource) {
+    return {
+      title: "Resource Not Found - OpenResource",
+    };
+  }
+
+  const title = resource.name;
+  const description =
+    resource.oneLiner ?? resource.shortDescription ?? resource.description;
+
+  return {
+    title: `${title} - OpenResource`,
+    description: description.slice(0, 160),
+    alternates: {
+      canonical: `${baseUrl}/resource/${slug}`,
+    },
+    openGraph: {
+      title: `${title} - OpenResource`,
+      description: description.slice(0, 160),
+      url: `${baseUrl}/resource/${slug}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} - OpenResource`,
+      description: description.slice(0, 160),
+    },
+  };
 }
 
 export default async function ResourcePage({ params }: ResourcePageProps) {

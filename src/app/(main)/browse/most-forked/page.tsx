@@ -6,7 +6,8 @@ import { GitFork } from "lucide-react";
 
 export const metadata = {
   title: "Most Forked - OpenResource",
-  description: "Browse the most forked open-source resources on OpenResource.",
+  description:
+    "Discover the most popular and widely forked open-source projects. Browse trending GitHub repositories and developer tools.",
 };
 
 interface Props {

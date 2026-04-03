@@ -1,0 +1,54 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Grid pattern -->
+  <g opacity="0.1">
+    <line x1="0" y1="100" x2="1200" y2="100" stroke="white" stroke-width="0.5"/>
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="white" stroke-width="0.5"/>
+    <line x1="0" y1="300" x2="1200" y2="300" stroke="white" stroke-width="0.5"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="white" stroke-width="0.5"/>
+    <line x1="0" y1="500" x2="1200" y2="500" stroke="white" stroke-width="0.5"/>
+    <line x1="200" y1="0" x2="200" y2="630" stroke="white" stroke-width="0.5"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke="white" stroke-width="0.5"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="white" stroke-width="0.5"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke="white" stroke-width="0.5"/>
+    <line x1="1000" y1="0" x2="1000" y2="630" stroke="white" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="150" fill="#8b5cf6" fill-opacity="0.1"/>
+  <circle cx="1100" cy="530" r="200" fill="#a855f7" fill-opacity="0.1"/>
+  <circle cx="900" cy="100" r="80" fill="#8b5cf6" fill-opacity="0.15"/>
+  
+  <!-- Logo/Brand mark (Door Icon) -->
+  <g transform="translate(560, 150)">
+    <!-- Main Frame -->
+    <path d="M0 0 H80 V80 H0 V0 Z M15 15 V75 H65 V15 H15 Z" fill="white"/>
+    <!-- Open Door -->
+    <path d="M22 22 L45 28 V68 L22 75 Z" fill="white"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="320" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white" text-anchor="middle">OpenResource</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="28" fill="#a1a1aa" text-anchor="middle">Your home for everything open-source</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="440" font-family="Arial, sans-serif" font-size="24" fill="#8b5cf6" text-anchor="middle">Free • Self-hosted • Open Source</text>
+  
+  <!-- Bottom text -->
+  <text x="600" y="580" font-family="Arial, sans-serif" font-size="18" fill="#71717a" text-anchor="middle">openresource.site</text>
+</svg>

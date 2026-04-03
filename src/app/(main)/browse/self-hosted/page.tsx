@@ -7,7 +7,7 @@ import { Server } from "lucide-react";
 export const metadata = {
   title: "Self-Hosted Resources - OpenResource",
   description:
-    "Browse self-hosted open-source alternatives that you can run on your own servers.",
+    "Discover self-hosted open-source tools and applications. Browse projects you can run on your own servers for full control and privacy.",
 };
 
 interface Props {

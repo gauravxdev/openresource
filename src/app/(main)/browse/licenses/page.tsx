@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Browse by License - OpenResource",
-  description: "Browse open-source resources by their license type.",
+  description:
+    "Browse open-source projects by license type. Find MIT, Apache, GPL, and other open-source licensed software and developer resources.",
 };
 
 interface Props {

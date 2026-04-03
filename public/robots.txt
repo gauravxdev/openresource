@@ -1,0 +1,23 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin and dashboard routes
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /ai/chat/
+
+# Allow search engines to crawl public pages
+Allow: /resource/
+Allow: /category/
+Allow: /tags/
+Allow: /categories/
+Allow: /browse/
+Allow: /github-repos/
+Allow: /android-apps/
+Allow: /windows-apps/
+Allow: /u/
+
+# Sitemap location
+Sitemap: https://openresource.site/sitemap.xml

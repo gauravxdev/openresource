@@ -1,11 +1,34 @@
 import React from "react";
 import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 import { getWindowsApps } from "@/actions/resources";
 import { type WindowsApp } from "@/lib/windows-apps-data";
 
 const WindowsAppsClient = dynamic(() => import("./windows-apps-client"));
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Windows Apps - OpenResource",
+  description:
+    "Discover open-source Windows applications and software. Browse a curated collection of Windows apps, developer tools, and self-hosted solutions.",
+  alternates: {
+    canonical: "https://openresource.site/windows-apps",
+  },
+  openGraph: {
+    title: "Windows Apps - OpenResource",
+    description:
+      "Discover open-source Windows applications and software. Browse a curated collection of Windows apps, developer tools, and self-hosted solutions.",
+    url: "https://openresource.site/windows-apps",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Windows Apps - OpenResource",
+    description:
+      "Discover open-source Windows applications and software. Browse a curated collection of Windows apps, developer tools, and self-hosted solutions.",
+  },
+};
 
 export default async function WindowsApps({
   searchParams,

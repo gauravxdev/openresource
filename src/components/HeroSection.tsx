@@ -22,7 +22,7 @@ const HeroSection = async () => {
             fontFamily: "Lexend, var(--font-lexend), system-ui, sans-serif",
           }}
         >
-          Ask AI. Discover powerful open-source alternatives in seconds.
+          Ask AI. Discover the best open-source tools, apps and repos — in seconds
         </p>
       </div>
       <HeroSearchInput />
