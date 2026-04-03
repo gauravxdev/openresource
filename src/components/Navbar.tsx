@@ -118,7 +118,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-1">
+          <div className="hidden lg:flex lg:items-center lg:space-x-2">
             {/* Browse Dropdown - Opens on Hover */}
             <div
               onMouseEnter={handleBrowseMouseEnter}
@@ -147,7 +147,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-muted-foreground hover:text-foreground px-3 py-1.5 text-sm font-medium transition-colors"
+                className="text-muted-foreground hover:text-foreground whitespace-nowrap px-3 py-1.5 text-sm font-medium transition-colors"
               >
                 {link.label}
               </Link>
