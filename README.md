@@ -32,17 +32,12 @@ See how OpenResource's AI-powered chat helps you discover the perfect open-sourc
 <!-- Replace YOUR_VIDEO_ID below with your YouTube video ID -->
 <!-- Example: If video URL is https://www.youtube.com/watch?v=abcd123, use abcd123 -->
 
-<iframe 
-  width="100%" 
-  max-width="1200" 
-  height="675" 
-  src="https://www.youtube.com/embed/JtZ0pe8GDXQ?si=pWHpc4iJ_Ikz2PmY" 
-  title="OpenResource AI Features Demo" 
-  frameborder="0" 
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-  allowfullscreen
-  style="border-radius: 12px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);"
-></iframe>
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=JtZ0pe8GDXQ">
+    <img src="https://img.youtube.com/vi/JtZ0pe8GDXQ/maxresdefault.jpg" alt="OpenResource AI Features Demo" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);">
+  </a>
+</div>
+
 
 <p align="center">
   <i>👆 Click play to watch the AI features in action</i>
