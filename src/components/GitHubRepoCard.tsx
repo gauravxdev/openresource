@@ -78,54 +78,56 @@ export const GitHubRepoCard = React.memo(function GitHubRepoCard({
   };
 
   return (
-    <Card className="bg-background border-border w-full transition-shadow duration-200 hover:shadow-lg">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <Link href={`/github-repos/${slug}`}>
-              <CardTitle className="mb-2 cursor-pointer text-lg font-semibold break-words text-blue-600 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                {name}
-              </CardTitle>
-            </Link>
-            <div className="text-muted-foreground line-clamp-3 text-sm">
+    <Card className="bg-background border-border flex h-full w-full flex-col transition-shadow duration-200 hover:shadow-lg">
+      <CardHeader className="pb-3 flex-1">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
               <Link href={`/github-repos/${slug}`}>
-                <p className="hover:text-foreground transition-colors">
-                  {description ||
-                    "A comprehensive open source project with modern development practices and community contributions."}
-                </p>
+                <CardTitle className="cursor-pointer text-lg font-semibold break-words text-blue-600 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                  {name}
+                </CardTitle>
               </Link>
             </div>
+            <div className="flex shrink-0 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleBookmarkClick();
+                }}
+                title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
+              >
+                <Bookmark
+                  className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+                />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-border hover:bg-accent shrink-0"
+                asChild
+              >
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
           </div>
-          <div className="flex shrink-0 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className={`border-border hover:bg-accent mt-1 shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""}`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleBookmarkClick();
-              }}
-              title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            >
-              <Bookmark
-                className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
-              />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-border hover:bg-accent mt-1 shrink-0"
-              asChild
-            >
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </Button>
+          <div className="text-muted-foreground line-clamp-3 text-sm">
+            <Link href={`/github-repos/${slug}`}>
+              <p className="hover:text-foreground transition-colors">
+                {description ||
+                  "A comprehensive open source project with modern development practices and community contributions."}
+              </p>
+            </Link>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
+      <CardContent className="mt-auto pt-0">
         <Link href={`/github-repos/${slug}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
