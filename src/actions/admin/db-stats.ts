@@ -50,7 +50,7 @@ export async function getDashboardStats() {
   }
 }
 
-export async function getAuditLogs(page = 1, limit = 50) {
+export async function getAuditLogs(page = 1, limit = 20) {
   try {
     const skip = (page - 1) * limit;
     const [logs, total] = await Promise.all([
@@ -58,6 +58,15 @@ export async function getAuditLogs(page = 1, limit = 50) {
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
+        },
       }),
       db.auditLog.count(),
     ]);

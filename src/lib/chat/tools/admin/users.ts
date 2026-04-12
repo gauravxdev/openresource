@@ -211,7 +211,7 @@ export function createGetUserDetailsTool(
         const recentUsage = await db.searchUsage.findMany({
           where: { userId, date: { gte: sevenDaysAgo } },
           orderBy: { date: "desc" },
-          select: { date: true, count: true },
+          select: { date: true, searchCount: true, chatCount: true },
         });
 
         return {
@@ -232,6 +232,14 @@ export function createGetUserDetailsTool(
             totalResources: user._count.resources,
             totalSessions: user._count.sessions,
             totalLogins: user._count.loginHistory,
+            recentSearchUsage: recentUsage.reduce(
+              (sum, r) => sum + r.searchCount,
+              0,
+            ),
+            recentChatUsage: recentUsage.reduce(
+              (sum, r) => sum + r.chatCount,
+              0,
+            ),
             totalSearchUsage: user._count.searchUsage,
           },
           recentSessions: user.sessions,
@@ -252,7 +260,8 @@ export function createGetUserDetailsTool(
           })),
           searchUsageLast7Days: recentUsage.map((u) => ({
             date: u.date.toISOString().split("T")[0],
-            count: u.count,
+            searchCount: u.searchCount,
+            chatCount: u.chatCount,
           })),
         };
       } catch (error) {

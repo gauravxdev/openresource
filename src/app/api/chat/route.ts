@@ -67,6 +67,10 @@ import {
 } from "@/lib/chat/tool-factories";
 import type { UserRole } from "@/lib/chat/rate-limit";
 import { getToolPerformanceContext } from "@/actions/admin/feedback-stats";
+import {
+  getClientIp,
+  checkAndIncrementGuestChatUsage,
+} from "@/lib/chat/guest-rate-limit";
 
 export const maxDuration = 60;
 
@@ -111,28 +115,196 @@ export async function POST(request: Request) {
   try {
     const { id, message, selectedChatModel, allowSearch } = requestBody;
 
-    // Auth check
     const headersList = await headers();
     const session = await auth.api.getSession({
       headers: headersList,
     });
 
+    let userId: string;
+    let userRole: UserRole;
+    let isGuest = false;
+    let ipAddress: string | null = null;
+
     if (!session?.user) {
-      return new ChatError("unauthorized:chat").toResponse();
+      ipAddress = await getClientIp(headersList);
+      if (!ipAddress) {
+        return new ChatError("bad_request:api").toResponse();
+      }
+
+      const chatLimitResult = await checkAndIncrementGuestChatUsage(ipAddress);
+      if (!chatLimitResult.allowed) {
+        return new ChatError("guest_limit:chat").toResponse();
+      }
+
+      userId = `guest_${ipAddress}`;
+      userRole = "user";
+      isGuest = true;
+    } else {
+      userId = session.user.id;
+      userRole = (session.user.role ?? "user") as UserRole;
     }
 
     if (!message) {
       return new ChatError("bad_request:api").toResponse();
     }
 
-    const userId = session.user.id;
-    const userRole = (session.user.role ?? "user") as UserRole;
+    const userMessageId = message.id || generateUUID();
 
-    // Check if this is a new chat or existing
+    if (isGuest) {
+      const existingChat = await getChatById({ id });
+      if (!existingChat) {
+        await saveChat({
+          id,
+          userId,
+          title: "New Chat",
+        });
+      }
+
+      const chatAfterSave = await getChatById({ id });
+      if (!chatAfterSave) {
+        return new ChatError("bad_request:api").toResponse();
+      }
+
+      await saveMessages({
+        messages: [
+          {
+            id: userMessageId,
+            chatId: id,
+            role: "user",
+            parts: message.parts as any,
+            createdAt: new Date(),
+          },
+        ],
+      });
+
+      const allDbMessages = await getMessagesByChatId({ id });
+      const uiMessages = [
+        ...allDbMessages.map((msg) => ({
+          id: msg.id,
+          role: msg.role as "user" | "assistant",
+          parts: msg.parts as any,
+        })),
+        {
+          id: userMessageId,
+          role: "user" as const,
+          parts: message.parts as any,
+        },
+      ];
+      const modelMessages = await convertToModelMessages(uiMessages);
+
+      let titlePromise: Promise<string> | null = null;
+      const existingChatAfterSave = await getChatById({ id });
+      if (!existingChatAfterSave) {
+        const userText =
+          message.parts
+            ?.filter((p) => p.type === "text")
+            .map((p) => p.text)
+            .join(" ") || "New Chat";
+        titlePromise = generateText({
+          model: getTitleModel(),
+          system: titlePrompt,
+          prompt: userText,
+        }).then(({ text }) => text.trim() || "New Chat");
+      }
+
+      const tools: Record<string, any> = {
+        searchResources: createSearchResourcesTool(
+          userId,
+          userRole,
+          searchResources,
+        ),
+        getCategories,
+        getTags,
+        getResourceDetails,
+        getResourcesByCategory,
+        getResourcesByTag,
+        getGitHubRepoDeepDive,
+        compareResources,
+        recommendResources,
+        exaSearch: createExaSearchTool(
+          userId,
+          userRole,
+          exaSearch,
+          ipAddress,
+          isGuest,
+        ),
+        tavilySearch: createTavilySearchTool(
+          userId,
+          userRole,
+          tavilySearch,
+          ipAddress,
+          isGuest,
+        ),
+        serperSearch: createSerperSearchTool(
+          userId,
+          userRole,
+          serperSearch,
+          ipAddress,
+          isGuest,
+        ),
+        getTotalCount,
+      };
+
+      const stream = createUIMessageStream({
+        execute: async ({ writer: dataStream }) => {
+          const toolPerformanceContext = await getToolPerformanceContext();
+          const model = getLanguageModel(selectedChatModel);
+
+          const result = streamText({
+            model,
+            system: systemPrompt({
+              selectedChatModel,
+              toolPerformanceContext,
+              isAdmin: false,
+            }),
+            messages: modelMessages,
+            stopWhen: stepCountIs(5),
+            tools,
+          });
+
+          dataStream.merge(result.toUIMessageStream({ sendReasoning: true }));
+
+          if (titlePromise) {
+            try {
+              const title = await titlePromise;
+              await updateChatTitle({ id, title });
+              dataStream.write({
+                type: "data-chat-title",
+                data: title,
+              });
+            } catch (error) {
+              console.error("Failed to generate title:", error);
+            }
+          }
+        },
+        onFinish: async ({ messages: finishedMessages }) => {
+          try {
+            await saveMessages({
+              messages: finishedMessages.map((msg) => ({
+                id: msg.id,
+                chatId: id,
+                role: msg.role,
+                parts: msg.parts as any,
+                createdAt: new Date(),
+              })),
+            });
+          } catch (error) {
+            console.error("Failed to save messages:", error);
+          }
+        },
+        generateId: generateUUID,
+        onError: (error) => {
+          console.error("Chat stream error:", error);
+          return "Oops, an error occurred!";
+        },
+      });
+
+      return createUIMessageStreamResponse({ stream });
+    }
+
     const existingChat = await getChatById({ id });
 
     if (!existingChat) {
-      // Create the chat in DB
       await saveChat({
         id,
         userId,
@@ -140,8 +312,11 @@ export async function POST(request: Request) {
       });
     }
 
-    // Save the user message to DB
-    const userMessageId = message.id || generateUUID();
+    const chatAfterSave = await getChatById({ id });
+    if (!chatAfterSave) {
+      return new ChatError("bad_request:api").toResponse();
+    }
+
     await saveMessages({
       messages: [
         {
@@ -154,7 +329,6 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Load ALL previous messages from DB for full conversation context
     const allDbMessages = await getMessagesByChatId({ id });
     const uiMessages = [
       ...allDbMessages.map((msg) => ({
@@ -184,7 +358,6 @@ export async function POST(request: Request) {
       }).then(({ text }) => text.trim() || "New Chat");
     }
 
-    // Create tools with user context
     const isAdmin = userRole === "admin";
 
     const tools: Record<string, any> = {
@@ -208,7 +381,6 @@ export async function POST(request: Request) {
       getTotalCount,
     };
 
-    // Add admin tools if user is admin
     if (isAdmin) {
       tools.searchUsers = searchUsers(userId, userRole);
       tools.getUserDetails = getUserDetails(userId, userRole);
@@ -236,10 +408,8 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
-        // Fetch tool performance context for AI
         const toolPerformanceContext = await getToolPerformanceContext();
 
-        // Use admin model for admin users, otherwise use selected model
         const model = isAdmin
           ? getAdminModel()
           : getLanguageModel(selectedChatModel);

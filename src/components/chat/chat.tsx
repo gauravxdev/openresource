@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { unstable_serialize } from "swr/infinite";
 import { getChatHistoryPaginationKey } from "./sidebar-history";
+import { usePathname, useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 
 export function Chat({
@@ -25,16 +26,24 @@ export function Chat({
   initialChatModel,
   initialPrompt,
   isAdmin,
+  isGuest,
+  chatLimitInfo,
+  searchLimitInfo,
 }: {
   id: string;
   initialMessages?: UIMessage[];
   initialChatModel: string;
   initialPrompt?: string;
   isAdmin?: boolean;
+  isGuest?: boolean;
+  chatLimitInfo?: { used: number; limit: number } | null;
+  searchLimitInfo?: { used: number; limit: number } | null;
 }) {
   const [input, setInput] = useState<string>("");
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
   const currentModelIdRef = useRef(currentModelId);
+  const [localChatLimitInfo, setLocalChatLimitInfo] = useState(chatLimitInfo);
+  const prevMessagesLengthRef = useRef(initialMessages?.length ?? 0);
 
   // Web Search Toggle State
   const [allowSearch, setAllowSearch] = useLocalStorage("allow-search", false, {
@@ -43,6 +52,7 @@ export function Chat({
   const allowSearchRef = useRef(allowSearch);
 
   const { mutate } = useSWRConfig();
+  const router = useRouter();
 
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
@@ -81,10 +91,22 @@ export function Chat({
       }
     },
     onFinish: () => {
-      // Refresh sidebar history after message completes
       mutate(unstable_serialize(getChatHistoryPaginationKey));
+      router.refresh();
     },
   } as any) as unknown as UseChatHelpers<ChatMessage>;
+
+  // Track message count changes to update chat limit instantly
+  useEffect(() => {
+    if (localChatLimitInfo && messages.length > prevMessagesLengthRef.current) {
+      const newUsed = Math.min(
+        localChatLimitInfo.used + 1,
+        localChatLimitInfo.limit,
+      );
+      setLocalChatLimitInfo({ ...localChatLimitInfo, used: newUsed });
+    }
+    prevMessagesLengthRef.current = messages.length;
+  }, [messages.length, localChatLimitInfo]);
 
   // Force-set initial messages from server on mount
   // The useChat hook's internal store may ignore initialMessages if it has stale state
@@ -113,7 +135,11 @@ export function Chat({
 
   return (
     <div className="bg-background flex h-[calc(100dvh-3.5rem)] min-w-0 flex-col overflow-hidden">
-      <ChatHeader chatId={id} />
+      <ChatHeader
+        chatId={id}
+        isGuest={isGuest}
+        chatLimitInfo={localChatLimitInfo ?? chatLimitInfo}
+      />
 
       <Messages
         _chatId={id}
@@ -139,6 +165,9 @@ export function Chat({
           allowSearch={allowSearch}
           setAllowSearch={setAllowSearch}
           isAdmin={isAdmin}
+          isGuest={isGuest}
+          chatLimitInfo={localChatLimitInfo ?? chatLimitInfo}
+          searchLimitInfo={searchLimitInfo}
         />
       </div>
     </div>

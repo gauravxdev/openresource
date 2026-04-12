@@ -24,6 +24,7 @@ const PUBLIC_ROUTES = [
   "/u",
   "/ingest",
   "/bookmarks",
+  "/ai",
 ];
 
 const roleBasedRoutes: Record<string, string[]> = {

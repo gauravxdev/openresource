@@ -51,7 +51,7 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
           }),
           db.searchUsage.aggregate({
             where: { date: { gte: oneDayAgo } },
-            _sum: { count: true },
+            _sum: { searchCount: true },
           }),
           db.messageFeedback.count(),
           db.category.count(),
@@ -69,8 +69,8 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
         const topSearchUsers = await db.searchUsage.groupBy({
           by: ["userId"],
           where: { date: { gte: sevenDaysAgo } },
-          _sum: { count: true },
-          orderBy: { _sum: { count: "desc" } },
+          _sum: { searchCount: true },
+          orderBy: { _sum: { searchCount: "desc" } },
           take: 5,
         });
 
@@ -84,7 +84,7 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
               name: user?.name ?? "Unknown",
               email: user?.email ?? "Unknown",
               role: user?.role ?? "Unknown",
-              searchCount: u._sum.count ?? 0,
+              searchCount: u._sum.searchCount ?? 0,
             };
           }),
         );
@@ -115,7 +115,7 @@ export const getSystemHealth = (adminUserId: string, userRole: string) =>
           activity: {
             auditLogsLast24h: todayAuditLogs,
             adminActionsLast7d: recentAdminActions,
-            searchesLast24h: totalSearchUsageToday._sum.count ?? 0,
+            searchesLast24h: totalSearchUsageToday._sum.searchCount ?? 0,
           },
           maintenance: {
             staleSessions: staleSessionCount,

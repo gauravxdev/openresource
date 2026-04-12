@@ -36,6 +36,7 @@ import {
   MessageSquare,
   Tag,
   Flag,
+  TrendingUp,
 } from "lucide-react";
 
 type NavItem = {
@@ -50,17 +51,17 @@ const navItems: NavItem[] = [
   { title: "Resources", icon: Folder, href: "/admin/resources" },
   { title: "Categories", icon: Tag, href: "/admin/categories" },
   { title: "Users & Logins", icon: Users, href: "/admin/users" },
-  { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
-  { title: "Feedback Analytics", icon: MessageSquare, href: "/admin/feedback" },
+  { title: "Usage", icon: TrendingUp, href: "/admin/usage" },
   { title: "Reports", icon: Flag, href: "/admin/reports" },
   { title: "Audit Logs", icon: FileText, href: "/admin/logs" },
+  { title: "Behavioral Analytics", icon: Layers, href: "/admin/analytics" },
+  { title: "Feedback Analytics", icon: MessageSquare, href: "/admin/feedback" },
   { title: "Submit Resource", icon: Plus, href: "/admin/submit" },
 ];
 
 export function DashboardSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-
   return (
     <Sidebar className="lg:border-r-0!" collapsible="icon" {...props}>
       <SidebarHeader className="px-4 pt-5 pb-1">
@@ -71,7 +72,9 @@ export function DashboardSidebar({
                 <span className="text-base font-bold">A</span>
               </div>
               <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
-                <span className="text-base font-semibold tracking-tight">Admin Panel</span>
+                <span className="text-base font-semibold tracking-tight">
+                  Admin Panel
+                </span>
                 <ChevronsUpDown className="text-muted-foreground size-4" />
               </div>
             </button>
@@ -107,11 +110,14 @@ export function DashboardSidebar({
                       className={cn(
                         "group/submit h-11 px-4 transition-all duration-200",
                         isSubmit
-                          ? "bg-foreground shadow-lg hover:translate-y-[-1px] hover:bg-foreground/90 hover:shadow-xl active:translate-y-0"
+                          ? "bg-foreground hover:bg-foreground/90 shadow-lg hover:translate-y-[-1px] hover:shadow-xl active:translate-y-0"
                           : "hover:bg-accent hover:text-accent-foreground hover:shadow-sm",
                       )}
                     >
-                      <Link href={item.href} className="flex items-center gap-3.5">
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-3.5"
+                      >
                         <item.icon
                           className={cn(
                             "size-5 transition-colors duration-200",
@@ -153,11 +159,11 @@ export function DashboardSidebar({
       </SidebarContent>
 
       <SidebarFooter className="px-4 pb-3 group-data-[collapsible=icon]:hidden">
-        <div className="bg-muted/30 group/footer flex w-full flex-col gap-1 rounded-xl border p-4 text-sm transition-all hover:bg-muted/50">
-          <div className="text-lg leading-tight font-bold tracking-tight text-balance transition-colors group-hover/footer:text-primary">
+        <div className="bg-muted/30 group/footer hover:bg-muted/50 flex w-full flex-col gap-1 rounded-xl border p-4 text-sm transition-all">
+          <div className="group-hover/footer:text-primary text-lg leading-tight font-bold tracking-tight text-balance transition-colors">
             OpenResource
           </div>
-          <div className="text-muted-foreground/80 text-xs leading-relaxed transition-colors group-hover/footer:text-foreground">
+          <div className="text-muted-foreground/80 group-hover/footer:text-foreground text-xs leading-relaxed transition-colors">
             Manage your open source resources and projects efficiently.
           </div>
         </div>

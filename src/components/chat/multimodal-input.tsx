@@ -66,6 +66,9 @@ function PureMultimodalInput({
   allowSearch,
   setAllowSearch,
   isAdmin,
+  isGuest,
+  chatLimitInfo: _chatLimitInfo,
+  searchLimitInfo,
 }: {
   chatId: string;
   input: string;
@@ -81,6 +84,9 @@ function PureMultimodalInput({
   allowSearch: boolean;
   setAllowSearch: (value: boolean) => void;
   isAdmin?: boolean;
+  isGuest?: boolean;
+  chatLimitInfo?: { used: number; limit: number } | null;
+  searchLimitInfo?: { used: number; limit: number } | null;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -145,8 +151,6 @@ function PureMultimodalInput({
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
-
-
       <PromptInput
         className="border-border bg-background focus-within:border-border hover:border-muted-foreground/50 rounded-xl border p-3 shadow-xs transition-all duration-200"
         onSubmit={(event) => {
@@ -195,7 +199,11 @@ function PureMultimodalInput({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Web Search {allowSearch ? "Enabled" : "Disabled"}</p>
+                  <p>
+                    {isGuest && searchLimitInfo
+                      ? `Web Search (${searchLimitInfo.limit - searchLimitInfo.used}/${searchLimitInfo.limit} left, sign in for unlimited)`
+                      : `Web Search ${allowSearch ? "Enabled" : "Disabled"}`}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -242,6 +250,15 @@ export const MultimodalInput = memo(
       return false;
     }
     if (prevProps.isAdmin !== nextProps.isAdmin) {
+      return false;
+    }
+    if (prevProps.isGuest !== nextProps.isGuest) {
+      return false;
+    }
+    if (prevProps.chatLimitInfo?.used !== nextProps.chatLimitInfo?.used) {
+      return false;
+    }
+    if (prevProps.searchLimitInfo?.used !== nextProps.searchLimitInfo?.used) {
       return false;
     }
     if (!equal(prevProps.messages, nextProps.messages)) {

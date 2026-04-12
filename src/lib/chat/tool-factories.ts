@@ -6,6 +6,7 @@ import {
   checkAndIncrementSearchUsage,
   type UserRole,
 } from "@/lib/chat/rate-limit";
+import { checkAndIncrementGuestSearchUsage } from "@/lib/chat/guest-rate-limit";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tool Factory: getUserBookmarks (with user context)
@@ -76,7 +77,7 @@ export function createGetUserBookmarksTool(userId: string) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tool Factory: searchResources (with rate limiting)
+// Tool Factory: searchResources (NO rate limiting - unlimited internal search)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function createSearchResourcesTool(
@@ -88,21 +89,6 @@ export function createSearchResourcesTool(
     description: originalTool.description,
     parameters: originalTool.parameters,
     execute: async (args: any) => {
-      // Check rate limit
-      const rateLimitResult = await checkAndIncrementSearchUsage(
-        userId,
-        userRole,
-      );
-
-      if (!rateLimitResult.allowed) {
-        return {
-          error: rateLimitResult.message,
-          found: 0,
-          resources: [],
-        };
-      }
-
-      // Call original tool
       return originalTool.execute(args);
     },
   } as any);
@@ -116,24 +102,33 @@ export function createSerperSearchTool(
   userId: string,
   userRole: UserRole,
   originalTool: any,
+  ipAddress?: string | null,
+  isGuest = false,
 ) {
   return tool({
     description: originalTool.description,
     parameters: originalTool.parameters,
     execute: async (args: any) => {
-      // Check rate limit
-      const rateLimitResult = await checkAndIncrementSearchUsage(
-        userId,
-        userRole,
-      );
-
-      if (!rateLimitResult.allowed) {
-        return {
-          error: rateLimitResult.message,
-        };
+      if (isGuest && ipAddress) {
+        const rateLimitResult =
+          await checkAndIncrementGuestSearchUsage(ipAddress);
+        if (!rateLimitResult.allowed) {
+          return {
+            error: rateLimitResult.message,
+          };
+        }
+      } else {
+        const rateLimitResult = await checkAndIncrementSearchUsage(
+          userId,
+          userRole,
+        );
+        if (!rateLimitResult.allowed) {
+          return {
+            error: rateLimitResult.message,
+          };
+        }
       }
 
-      // Call original tool
       return originalTool.execute(args);
     },
   } as any);
@@ -147,24 +142,33 @@ export function createExaSearchTool(
   userId: string,
   userRole: UserRole,
   originalTool: any,
+  ipAddress?: string | null,
+  isGuest = false,
 ) {
   return tool({
     description: originalTool.description,
     parameters: originalTool.parameters,
     execute: async (args: any) => {
-      // Check rate limit
-      const rateLimitResult = await checkAndIncrementSearchUsage(
-        userId,
-        userRole,
-      );
-
-      if (!rateLimitResult.allowed) {
-        return {
-          error: rateLimitResult.message,
-        };
+      if (isGuest && ipAddress) {
+        const rateLimitResult =
+          await checkAndIncrementGuestSearchUsage(ipAddress);
+        if (!rateLimitResult.allowed) {
+          return {
+            error: rateLimitResult.message,
+          };
+        }
+      } else {
+        const rateLimitResult = await checkAndIncrementSearchUsage(
+          userId,
+          userRole,
+        );
+        if (!rateLimitResult.allowed) {
+          return {
+            error: rateLimitResult.message,
+          };
+        }
       }
 
-      // Call original tool
       return originalTool.execute(args);
     },
   } as any);
@@ -178,24 +182,33 @@ export function createTavilySearchTool(
   userId: string,
   userRole: UserRole,
   originalTool: any,
+  ipAddress?: string | null,
+  isGuest = false,
 ) {
   return tool({
     description: originalTool.description,
     parameters: originalTool.parameters,
     execute: async (args: any) => {
-      // Check rate limit
-      const rateLimitResult = await checkAndIncrementSearchUsage(
-        userId,
-        userRole,
-      );
-
-      if (!rateLimitResult.allowed) {
-        return {
-          error: rateLimitResult.message,
-        };
+      if (isGuest && ipAddress) {
+        const rateLimitResult =
+          await checkAndIncrementGuestSearchUsage(ipAddress);
+        if (!rateLimitResult.allowed) {
+          return {
+            error: rateLimitResult.message,
+          };
+        }
+      } else {
+        const rateLimitResult = await checkAndIncrementSearchUsage(
+          userId,
+          userRole,
+        );
+        if (!rateLimitResult.allowed) {
+          return {
+            error: rateLimitResult.message,
+          };
+        }
       }
 
-      // Call original tool
       return originalTool.execute(args);
     },
   } as any);

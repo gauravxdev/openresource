@@ -1,45 +1,54 @@
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { auth } from "@/lib/auth";
 import { ChatError } from "@/lib/chat/errors";
-import {
-    getChatsByUserId,
-    deleteAllChatsByUserId,
-} from "@/lib/chat/queries";
+import { getChatsByUserId, deleteAllChatsByUserId } from "@/lib/chat/queries";
 import { headers } from "next/headers";
+import { getClientIp } from "@/lib/chat/guest-rate-limit";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET handler - Paginated chat history
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
-    try {
-        const headersList = await headers();
-        const session = await auth.api.getSession({
-            headers: headersList,
-        });
+  try {
+    const headersList = await headers();
+    const session = await auth.api.getSession({
+      headers: headersList,
+    });
 
-        if (!session?.user) {
-            return new ChatError("unauthorized:chat").toResponse();
-        }
+    let userId: string | undefined;
 
-        const { searchParams } = new URL(request.url);
-        const limit = Math.min(
-            Number.parseInt(searchParams.get("limit") || "20"),
-            50,
-        );
-        const endingBefore = searchParams.get("ending_before");
-
-        const { chats, hasMore } = await getChatsByUserId({
-            userId: session.user.id,
-            limit,
-            cursor: endingBefore || undefined,
-        });
-
-        return Response.json({ chats, hasMore });
-    } catch (error) {
-        console.error("Failed to fetch chat history:", error);
-        return new ChatError("bad_request:api").toResponse();
+    if (session?.user) {
+      userId = session.user.id;
+    } else {
+      const ipAddress = await getClientIp(headersList);
+      if (ipAddress) {
+        userId = `guest_${ipAddress}`;
+      }
     }
+
+    if (!userId) {
+      return new ChatError("bad_request:api").toResponse();
+    }
+
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(
+      Number.parseInt(searchParams.get("limit") || "20"),
+      50,
+    );
+    const endingBefore = searchParams.get("ending_before");
+
+    const { chats, hasMore } = await getChatsByUserId({
+      userId,
+      limit,
+      cursor: endingBefore || undefined,
+    });
+
+    return Response.json({ chats, hasMore });
+  } catch (error) {
+    console.error("Failed to fetch chat history:", error);
+    return new ChatError("bad_request:api").toResponse();
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -47,23 +56,23 @@ export async function GET(request: Request) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function DELETE() {
-    try {
-        const headersList = await headers();
-        const session = await auth.api.getSession({
-            headers: headersList,
-        });
+  try {
+    const headersList = await headers();
+    const session = await auth.api.getSession({
+      headers: headersList,
+    });
 
-        if (!session?.user) {
-            return new ChatError("unauthorized:chat").toResponse();
-        }
-
-        const result = await deleteAllChatsByUserId({
-            userId: session.user.id,
-        });
-
-        return Response.json({ success: true, ...result });
-    } catch (error) {
-        console.error("Failed to delete all chats:", error);
-        return new ChatError("bad_request:api").toResponse();
+    if (!session?.user) {
+      return new ChatError("unauthorized:chat").toResponse();
     }
+
+    const result = await deleteAllChatsByUserId({
+      userId: session.user.id,
+    });
+
+    return Response.json({ success: true, ...result });
+  } catch (error) {
+    console.error("Failed to delete all chats:", error);
+    return new ChatError("bad_request:api").toResponse();
+  }
 }

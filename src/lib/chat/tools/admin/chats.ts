@@ -69,9 +69,9 @@ export const searchChatsAdmin = (adminUserId: string, userRole: string) =>
             title: c.title,
             visibility: c.visibility,
             isPinned: c.isPinned,
-            userName: c.user.name,
-            userEmail: c.user.email,
-            userRole: c.user.role,
+            userName: c.user?.name ?? "Guest",
+            userEmail: c.user?.email ?? "N/A",
+            userRole: c.user?.role ?? "user",
             messageCount: c._count.messages,
             createdAt: c.createdAt,
             updatedAt: c.updatedAt,
@@ -82,7 +82,7 @@ export const searchChatsAdmin = (adminUserId: string, userRole: string) =>
         return { error: "Failed to search chats" };
       }
     },
-      } as any);
+  } as any);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // deleteChatAdmin
@@ -124,12 +124,12 @@ export const deleteChatAdmin = (adminUserId: string, userRole: string) =>
 
         return {
           success: true,
-          message: `Chat "${chat.title}" (${chat._count.messages} messages) owned by ${chat.user.name ?? chat.user.email} has been deleted`,
+          message: `Chat "${chat.title}" (${chat._count.messages} messages) owned by ${chat.user?.name ?? chat.user?.email ?? "Guest"} has been deleted`,
           deletedChat: {
             id: chat.id,
             title: chat.title,
-            ownerName: chat.user.name,
-            ownerEmail: chat.user.email,
+            ownerName: chat.user?.name ?? "Guest",
+            ownerEmail: chat.user?.email ?? "N/A",
             messageCount: chat._count.messages,
           },
         };
@@ -138,4 +138,4 @@ export const deleteChatAdmin = (adminUserId: string, userRole: string) =>
         return { error: "Failed to delete chat" };
       }
     },
-      } as any);
+  } as any);

@@ -27,11 +27,17 @@ export type AuditAction =
   | "ADMIN_VIEW_RECENT_ACTIVITY"
   | "ADMIN_SEARCH_CHATS"
   | "ADMIN_DELETE_CHAT"
-  | "ADMIN_VIEW_SYSTEM_HEALTH";
+  | "ADMIN_VIEW_SYSTEM_HEALTH"
+  | "GUEST_CHAT_STARTED"
+  | "GUEST_CHAT_LIMIT_EXCEEDED"
+  | "GUEST_SEARCH_LIMIT_EXCEEDED"
+  | "USER_SEARCH_LIMIT_EXCEEDED"
+  | "USER_CHAT_LIMIT_EXCEEDED";
 
 interface CreateAuditLogParams {
   action: AuditAction;
   userId?: string;
+  ipAddress?: string;
   resourceId?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   details?: any;
@@ -40,6 +46,7 @@ interface CreateAuditLogParams {
 export async function logAudit({
   action,
   userId,
+  ipAddress,
   resourceId,
   details,
 }: CreateAuditLogParams) {
@@ -48,13 +55,13 @@ export async function logAudit({
       data: {
         action,
         userId,
+        ipAddress,
         resourceId,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        details: details ? JSON.parse(JSON.stringify(details)) : undefined, // Ensure it's valid JSON for Prisma
+        details: details ? JSON.parse(JSON.stringify(details)) : undefined,
       },
     });
   } catch (error) {
-    // We catch and log to console so an audit failure doesn't break the main business logic
     console.error("Failed to create audit log:", error);
   }
 }

@@ -13,7 +13,7 @@ export const getDashboardStats = (adminUserId: string, userRole: string) =>
     description:
       "Get overall platform statistics: total users, resources (approved/pending/rejected), chats, bookmarks, recent signups, and recent activity.",
     parameters: z.object({}),
-        execute: async (_args: any) => {
+    execute: async (_args: any) => {
       requireAdmin(userRole);
       await logAdminToolAudit("ADMIN_VIEW_DASHBOARD_STATS", adminUserId);
 
@@ -156,7 +156,7 @@ export const getUsageStats = (adminUserId: string, userRole: string) =>
             orderBy: { date: "desc" },
             select: {
               date: true,
-              count: true,
+              searchCount: true,
               user: {
                 select: { name: true, email: true, role: true },
               },
@@ -164,13 +164,13 @@ export const getUsageStats = (adminUserId: string, userRole: string) =>
           }),
           db.searchUsage.aggregate({
             where: { date: { gte: startDate } },
-            _sum: { count: true },
+            _sum: { searchCount: true },
           }),
           db.searchUsage.groupBy({
             by: ["userId"],
             where: { date: { gte: startDate } },
-            _sum: { count: true },
-            orderBy: { _sum: { count: "desc" } },
+            _sum: { searchCount: true },
+            orderBy: { _sum: { searchCount: "desc" } },
             take: 10,
           }),
         ]);
@@ -178,7 +178,10 @@ export const getUsageStats = (adminUserId: string, userRole: string) =>
         const dailyMap = new Map<string, number>();
         for (const record of usageRecords) {
           const dateStr = record.date.toISOString().split("T")[0] ?? "";
-          dailyMap.set(dateStr, (dailyMap.get(dateStr) ?? 0) + record.count);
+          dailyMap.set(
+            dateStr,
+            (dailyMap.get(dateStr) ?? 0) + record.searchCount,
+          );
         }
 
         const topUserDetails = await Promise.all(
@@ -191,14 +194,14 @@ export const getUsageStats = (adminUserId: string, userRole: string) =>
               name: user?.name,
               email: user?.email,
               role: user?.role,
-              totalSearches: u._sum.count ?? 0,
+              totalSearches: u._sum.searchCount ?? 0,
             };
           }),
         );
 
         return {
           period: `${cappedDays} days`,
-          totalSearches: totalSearches._sum.count ?? 0,
+          totalSearches: totalSearches._sum.searchCount ?? 0,
           dailyUsage: Array.from(dailyMap.entries())
             .map(([date, count]) => ({ date, count }))
             .sort((a, b) => b.date.localeCompare(a.date)),
@@ -220,7 +223,7 @@ export const getFeedbackStats = (adminUserId: string, userRole: string) =>
     description:
       "Get AI feedback statistics: overall satisfaction rate, feedback by tool, best/worst performing tools, and feedback trends.",
     parameters: z.object({}),
-        execute: async (_args: any) => {
+    execute: async (_args: any) => {
       requireAdmin(userRole);
       await logAdminToolAudit("ADMIN_VIEW_FEEDBACK_STATS", adminUserId);
 
@@ -289,4 +292,4 @@ export const getFeedbackStats = (adminUserId: string, userRole: string) =>
         return { error: "Failed to get feedback stats" };
       }
     },
-      } as any);
+  } as any);
