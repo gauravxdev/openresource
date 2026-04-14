@@ -41,7 +41,7 @@ export const recommendResources = tool({
           categories: { select: { name: true } },
         },
         orderBy: { stars: "desc" },
-        take: 50,
+        take: 100,
       });
 
       if (candidates.length === 0) {
@@ -54,7 +54,7 @@ export const recommendResources = tool({
       const resourceList = candidates
         .map(
           (r, i) =>
-            `${i + 1}. [${r.name}] (${r.slug}): ${r.shortDescription ?? r.oneLiner ?? "No description"} | Tags: ${r.tags.join(", ")} | Categories: ${r.categories.map((c) => c.name).join(", ")} | Stars: ${r.stars}${r.alternative ? ` | Alt to: ${r.alternative}` : ""}`,
+            `${i + 1}. [${r.name}] (${r.slug}): ${r.shortDescription ?? r.oneLiner ?? "No description"} | Tags: ${r.tags.join(", ")} | Categories: ${r.categories.map((c) => c.name).join(", ")} | Stars: ${r.stars}${r.alternative ? ` | Alternative to: ${r.alternative}` : ""}`,
         )
         .join("\n");
 
@@ -68,8 +68,9 @@ ${resourceList}
 Analyze the user's need and select the TOP ${args.limit} most relevant resources. Consider:
 1. Does the resource's purpose match the user's need?
 2. Do the tags and categories align?
-3. Is it an alternative to what the user might be replacing?
+3. **CRITICAL**: If the user is looking for an alternative to a specific product (e.g., "alternative to Figma", "free version of Higgsfield"), PRIORITIZE resources that have "Alternative to: [that product]" in their listing. This is the strongest signal.
 4. Is it actively maintained (higher stars generally = more reliable)?
+5. If no exact alternative match exists, find resources that serve the same purpose.
 
 Return ONLY a JSON array of slugs in order of relevance (most relevant first):
 ["slug1", "slug2", "slug3"]

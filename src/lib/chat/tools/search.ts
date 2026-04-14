@@ -161,6 +161,8 @@ const KEYWORD_SYNONYMS: Record<string, string[]> = {
   app: ["app", "application", "software", "tool"],
   mobile: ["mobile", "ios", "android", "phone", "tablet"],
   desktop: ["desktop", "windows", "macos", "linux"],
+  alternative: ["alternative", "replacement", "substitute"],
+  replacement: ["alternative", "replacement", "substitute"],
 };
 
 const STOP_WORDS = new Set([
@@ -222,15 +224,7 @@ const STOP_WORDS = new Set([
   "this",
   "some",
   "any",
-  "free",
-  "open",
-  "source",
-  "tool",
-  "app",
-  "application",
-  "software",
   "about",
-  "like",
   "there",
   "here",
   "use",
@@ -240,12 +234,52 @@ const STOP_WORDS = new Set([
   "something",
   "things",
   "good",
-  "best",
   "great",
-  "new",
   "help",
-  "me",
 ]);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// "Alternative to X" Pattern Detection
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ALTERNATIVE_PATTERNS: RegExp[] = [
+  /alternative\s+(?:to|for)\s+(.+)/i,
+  /(.+?)\s+alternative/i,
+  /free\s+(?:version|alternative)\s+(?:of|for|to)\s+(.+)/i,
+  /(?:free|open[- ]?source)\s+(.+)/i,
+  /(?:like|similar\s+to)\s+(.+?)(?:\s+but\s+(?:free|open|better))?$/i,
+  /replace(?:ment)?\s+(?:for|of|to)\s+(.+)/i,
+  /instead\s+of\s+(.+)/i,
+  /(.+?)\s+(?:replacement|substitute|clone|rival)/i,
+];
+
+/**
+ * Extract the target product name from queries like:
+ * - "alternative to Higgsfield"
+ * - "free version of Figma"
+ * - "something like Notion but free"
+ * - "Higgsfield alternative"
+ * Returns the cleaned product name or null if no pattern matches.
+ */
+function extractAlternativeTarget(query: string): string | null {
+  const trimmed = query.trim();
+  for (const pattern of ALTERNATIVE_PATTERNS) {
+    const match = pattern.exec(trimmed);
+    if (match?.[1]) {
+      // Clean up the extracted product name
+      const target = match[1]
+        .trim()
+        .replace(/[?.!,;:]+$/g, "") // strip trailing punctuation
+        .replace(
+          /^(?:a|an|the|any|some|open[- ]?source|free|best|good)\s+/gi,
+          "",
+        ) // strip leading articles/adjectives
+        .trim();
+      if (target.length >= 2) return target;
+    }
+  }
+  return null;
+}
 
 function extractSearchTerms(query: string): string[] {
   const lower = query.toLowerCase();
@@ -305,6 +339,7 @@ function scoreResource(
     categories: { name: string; slug: string }[];
   },
   searchTerms: string[],
+  alternativeTarget?: string | null,
 ): number {
   const searchableTags = resource.tags.map((t) => t.toLowerCase());
   const searchableCategories = resource.categories
@@ -313,12 +348,42 @@ function scoreResource(
   let score = 0;
   let matchedTerms = 0;
 
+  // ── Alternative field match (highest priority) ──
+  // If user is looking for an alternative to a specific product,
+  // give massive bonus for matching the `alternative` field.
+  if (alternativeTarget && resource.alternative) {
+    const lowerAlt = resource.alternative.toLowerCase();
+    const lowerTarget = alternativeTarget.toLowerCase();
+    if (lowerAlt === lowerTarget) {
+      // Exact match: "Higgsfield" === "Higgsfield"
+      score += 50;
+    } else if (
+      lowerAlt.includes(lowerTarget) ||
+      lowerTarget.includes(lowerAlt)
+    ) {
+      // Partial match: "Higgsfield AI" contains "Higgsfield"
+      score += 35;
+    } else {
+      // Check comma/slash-separated alternatives: "Figma, Canva"
+      const altParts = lowerAlt.split(/[,/|;]+/).map((s) => s.trim());
+      if (altParts.some((p) => p === lowerTarget || p.includes(lowerTarget))) {
+        score += 40;
+      }
+    }
+  }
+
   for (const term of searchTerms) {
     const lowerTerm = term.toLowerCase();
     let termMatched = false;
 
+    // Name match (high value)
     if (resource.name.toLowerCase().includes(lowerTerm)) {
       score += 10;
+      termMatched = true;
+    }
+    // Alternative field match for each search term
+    if (resource.alternative?.toLowerCase().includes(lowerTerm)) {
+      score += 15;
       termMatched = true;
     }
     if (
@@ -449,6 +514,14 @@ const SELECT_FIELDS = {
 } as const;
 
 function buildFieldOR(word: string): Prisma.ResourceWhereInput[] {
+  // Build case variants for tag matching (tags use hasSome which is case-sensitive)
+  const tagVariants = [
+    word,
+    word.toLowerCase(),
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+  ];
+  const uniqueTagVariants = [...new Set(tagVariants)];
+
   return [
     { name: { contains: word, mode: Prisma.QueryMode.insensitive } },
     { description: { contains: word, mode: Prisma.QueryMode.insensitive } },
@@ -457,7 +530,7 @@ function buildFieldOR(word: string): Prisma.ResourceWhereInput[] {
     },
     { oneLiner: { contains: word, mode: Prisma.QueryMode.insensitive } },
     { alternative: { contains: word, mode: Prisma.QueryMode.insensitive } },
-    { tags: { hasSome: [word] } },
+    { tags: { hasSome: uniqueTagVariants } },
   ];
 }
 
@@ -467,7 +540,7 @@ function buildFieldOR(word: string): Prisma.ResourceWhereInput[] {
 
 export const searchResources = tool({
   description:
-    "Search the OpenResource database for free and open-source tools, apps, and resources. Use this FIRST when a user is looking for a tool, app, or resource. Uses intelligent keyword expansion (e.g. 'terminal ide' matches 'cli', 'command-line', 'editor'). Returns results sorted by relevance score. When user asks for a specific platform, check the supportedPlatforms field. Use 1-3 key concepts for best results (e.g. 'terminal ide' not 'ide which i can run on command line').",
+    "Search the OpenResource database for free and open-source tools, apps, and resources. Use this FIRST when a user is looking for a tool, app, or resource. Supports 'alternative to X' queries — if user asks for a free version, alternative, or replacement for a proprietary tool, just pass the product name as the query (e.g. query='higgsfield' if user says 'free version of higgsfield'). Uses intelligent keyword expansion. Returns results sorted by relevance score. When user asks for a specific platform, check the supportedPlatforms field.",
   parameters: searchResourcesParams,
   execute: async (args: z.infer<typeof searchResourcesParams>) => {
     try {
@@ -475,6 +548,9 @@ export const searchResources = tool({
       const limit = Math.max(1, Math.min(15, args.limit ?? 10));
       const searchTerms = query?.trim() ? extractSearchTerms(query) : [];
       const queryPlatforms = detectQueryPlatforms(query ?? "");
+      const alternativeTarget = query?.trim()
+        ? extractAlternativeTarget(query)
+        : null;
 
       const originalWords = query?.trim()
         ? query
@@ -504,48 +580,72 @@ export const searchResources = tool({
           break;
       }
 
-      // ── Query Level 1: AND across original words (strictest) ──
-      const conditions: Prisma.ResourceWhereInput[] = [{ status: "APPROVED" }];
+      // ── Query Level 0: Direct alternative field search (highest priority) ──
+      // If user is looking for "alternative to X" or "free version of X",
+      // search the alternative field directly first.
+      let rawResources: any[] = [];
 
-      if (originalWords.length > 0) {
-        for (const word of originalWords) {
-          conditions.push({ OR: buildFieldOR(word) });
-        }
-      }
-
-      if (category?.trim()) {
-        conditions.push({
-          categories: {
-            some: {
-              OR: [
-                {
-                  name: {
-                    equals: category.trim(),
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  slug: {
-                    equals: category.trim(),
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-              ],
+      if (alternativeTarget) {
+        rawResources = await db.resource.findMany({
+          where: {
+            status: "APPROVED",
+            alternative: {
+              contains: alternativeTarget,
+              mode: Prisma.QueryMode.insensitive,
             },
           },
+          select: SELECT_FIELDS,
+          orderBy,
+          take: Math.max(limit * 3, 30),
         });
       }
 
-      if (tag?.trim()) {
-        conditions.push({ tags: { has: tag.trim().toLowerCase() } });
-      }
+      // ── Query Level 1: AND across original words (strictest) ──
+      if (rawResources.length === 0) {
+        const conditions: Prisma.ResourceWhereInput[] = [
+          { status: "APPROVED" },
+        ];
 
-      let rawResources = await db.resource.findMany({
-        where: { AND: conditions },
-        select: SELECT_FIELDS,
-        orderBy,
-        take: Math.max(limit * 3, 30),
-      });
+        if (originalWords.length > 0) {
+          for (const word of originalWords) {
+            conditions.push({ OR: buildFieldOR(word) });
+          }
+        }
+
+        if (category?.trim()) {
+          conditions.push({
+            categories: {
+              some: {
+                OR: [
+                  {
+                    name: {
+                      equals: category.trim(),
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    slug: {
+                      equals: category.trim(),
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              },
+            },
+          });
+        }
+
+        if (tag?.trim()) {
+          conditions.push({ tags: { has: tag.trim().toLowerCase() } });
+        }
+
+        rawResources = await db.resource.findMany({
+          where: { AND: conditions },
+          select: SELECT_FIELDS,
+          orderBy,
+          take: Math.max(limit * 3, 30),
+        });
+      }
 
       let usedFallback = false;
 
@@ -562,7 +662,7 @@ export const searchResources = tool({
           }
         }
         rawResources = await db.resource.findMany({
-          where: { OR: pairConditions },
+          where: { AND: [{ status: "APPROVED" }, { OR: pairConditions }] },
           select: SELECT_FIELDS,
           orderBy,
           take: Math.max(limit * 3, 30),
@@ -574,7 +674,10 @@ export const searchResources = tool({
       if (rawResources.length === 0 && originalWords.length > 0) {
         rawResources = await db.resource.findMany({
           where: {
-            OR: originalWords.flatMap((w) => buildFieldOR(w)),
+            AND: [
+              { status: "APPROVED" },
+              { OR: originalWords.flatMap((w) => buildFieldOR(w)) },
+            ],
           },
           select: SELECT_FIELDS,
           orderBy,
@@ -587,7 +690,14 @@ export const searchResources = tool({
       if (rawResources.length === 0 && searchTerms.length > 0) {
         rawResources = await db.resource.findMany({
           where: {
-            OR: searchTerms.flatMap((term) => buildFieldOR(term.toLowerCase())),
+            AND: [
+              { status: "APPROVED" },
+              {
+                OR: searchTerms.flatMap((term) =>
+                  buildFieldOR(term.toLowerCase()),
+                ),
+              },
+            ],
           },
           select: SELECT_FIELDS,
           orderBy,
@@ -608,9 +718,9 @@ export const searchResources = tool({
       // ── Score, filter, and rank ──
       const termsForScoring =
         searchTerms.length > 0 ? searchTerms : originalWords;
-      let scoredResources = rawResources.map((r) => ({
+      let scoredResources = rawResources.map((r: any) => ({
         ...r,
-        score: scoreResource(r, termsForScoring),
+        score: scoreResource(r, termsForScoring, alternativeTarget),
       }));
 
       // Filter out resources with score 0 (completely irrelevant)
@@ -662,7 +772,10 @@ export const searchResources = tool({
         ...(queryPlatforms.length > 0
           ? { requestedPlatforms: queryPlatforms }
           : {}),
-        resources: scoredResources.map((r) => formatResource(r, r.score)),
+        ...(alternativeTarget
+          ? { alternativeSearch: alternativeTarget }
+          : {}),
+        resources: scoredResources.map((r: any) => formatResource(r, r.score)),
       };
     } catch (error) {
       console.error("[Chat Tool] searchResources primary error:", error);
