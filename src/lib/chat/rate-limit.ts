@@ -199,7 +199,7 @@ export async function getUserUsageStats(userId: string) {
     if (!usage) {
       return {
         chatCount: 0,
-        chatLimit: 5,
+        chatLimit: Infinity,
         searchCount: 0,
         searchLimit: 5,
       };
@@ -215,7 +215,7 @@ export async function getUserUsageStats(userId: string) {
     console.error("[Usage Stats] Error:", error);
     return {
       chatCount: 0,
-      chatLimit: 5,
+      chatLimit: Infinity,
       searchCount: 0,
       searchLimit: 5,
     };

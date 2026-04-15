@@ -45,10 +45,10 @@ async function NewChatPage({ initialPrompt }: { initialPrompt?: string }) {
     if (ipAddress) {
       const usageInfo = await getGuestUsageInfo(ipAddress);
       if (usageInfo) {
-        chatLimitInfo = { used: usageInfo.chatCount, limit: 5 };
+        chatLimitInfo = { used: usageInfo.chatCount, limit: 10 };
         searchLimitInfo = { used: usageInfo.searchCount, limit: 1 };
       } else {
-        chatLimitInfo = { used: 0, limit: 5 };
+        chatLimitInfo = { used: 0, limit: 10 };
         searchLimitInfo = { used: 0, limit: 1 };
       }
     }

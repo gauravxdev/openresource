@@ -17,9 +17,10 @@ function PureChatHeader({
   chatLimitInfo?: { used: number; limit: number } | null;
 }) {
   const router = useRouter();
-  const remainingChats = chatLimitInfo
-    ? chatLimitInfo.limit - chatLimitInfo.used
-    : null;
+  const remainingChats =
+    chatLimitInfo && chatLimitInfo.limit !== Infinity
+      ? chatLimitInfo.limit - chatLimitInfo.used
+      : null;
 
   return (
     <header className="border-border/50 bg-background/80 sticky top-0 z-20 flex items-center border-b backdrop-blur-sm">
@@ -34,13 +35,17 @@ function PureChatHeader({
               Guest
             </span>
           )}
-          {chatLimitInfo && remainingChats !== null && (
+          {chatLimitInfo && remainingChats !== null ? (
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${remainingChats <= 1 ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
             >
               {remainingChats}/{chatLimitInfo.limit} chats left
             </span>
-          )}
+          ) : chatLimitInfo?.limit === Infinity ? (
+            <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">
+              Unlimited
+            </span>
+          ) : null}
         </div>
 
         <Button
