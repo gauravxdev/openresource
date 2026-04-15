@@ -541,7 +541,7 @@ function buildFieldOR(word: string): Prisma.ResourceWhereInput[] {
 export const searchResources = tool({
   description:
     "Search the OpenResource database for free and open-source tools, apps, and resources. Use this FIRST when a user is looking for a tool, app, or resource. Supports 'alternative to X' queries — if user asks for a free version, alternative, or replacement for a proprietary tool, just pass the product name as the query (e.g. query='higgsfield' if user says 'free version of higgsfield'). Uses intelligent keyword expansion. Returns results sorted by relevance score. When user asks for a specific platform, check the supportedPlatforms field.",
-  parameters: searchResourcesParams,
+  inputSchema: searchResourcesParams,
   execute: async (args: z.infer<typeof searchResourcesParams>) => {
     try {
       const { query, category, tag, sortBy } = args;
@@ -583,7 +583,9 @@ export const searchResources = tool({
       // ── Query Level 0: Direct alternative field search (highest priority) ──
       // If user is looking for "alternative to X" or "free version of X",
       // search the alternative field directly first.
-      let rawResources: any[] = [];
+      let rawResources: Prisma.ResourceGetPayload<{
+        select: typeof SELECT_FIELDS;
+      }>[] = [];
 
       if (alternativeTarget) {
         rawResources = await db.resource.findMany({
@@ -718,7 +720,7 @@ export const searchResources = tool({
       // ── Score, filter, and rank ──
       const termsForScoring =
         searchTerms.length > 0 ? searchTerms : originalWords;
-      let scoredResources = rawResources.map((r: any) => ({
+      let scoredResources = rawResources.map((r) => ({
         ...r,
         score: scoreResource(r, termsForScoring, alternativeTarget),
       }));
@@ -772,10 +774,10 @@ export const searchResources = tool({
         ...(queryPlatforms.length > 0
           ? { requestedPlatforms: queryPlatforms }
           : {}),
-        ...(alternativeTarget
-          ? { alternativeSearch: alternativeTarget }
-          : {}),
-        resources: scoredResources.map((r: any) => formatResource(r, r.score)),
+        ...(alternativeTarget ? { alternativeSearch: alternativeTarget } : {}),
+        resources: scoredResources.map((r) =>
+          formatResource(r as unknown as ResourceResult, r.score),
+        ),
       };
     } catch (error) {
       console.error("[Chat Tool] searchResources primary error:", error);
@@ -800,7 +802,9 @@ export const searchResources = tool({
               return {
                 found: simpleResults.length,
                 note: "Search encountered an issue, showing basic keyword matches.",
-                resources: simpleResults.map((r) => formatResource(r, 0)),
+                resources: simpleResults.map((r) =>
+                  formatResource(r as unknown as ResourceResult, 0),
+                ),
               };
             }
           }

@@ -5,24 +5,26 @@ import { db } from "@/server/db";
 import { generateText } from "ai";
 import { getLanguageModel } from "@/lib/chat/providers";
 
+const recommendResourcesParams = z.object({
+  useCase: z
+    .string()
+    .min(5)
+    .describe(
+      "Natural language description of what the user needs (e.g. 'free music streaming app for Android with offline download').",
+    ),
+  limit: z
+    .number()
+    .min(1)
+    .max(10)
+    .default(5)
+    .describe("Number of recommendations to return (1-10)."),
+});
+
 export const recommendResources = tool({
   description:
     "Smart recommendation tool. Describe what you need in natural language and get the best matching resources. Uses AI to understand your use case and find the most relevant tools. Use this when the user describes a need rather than searching by name (e.g. 'I need a free video editor for Linux', 'something like Notion but open source', 'a privacy-focused browser').",
-  parameters: z.object({
-    useCase: z
-      .string()
-      .min(5)
-      .describe(
-        "Natural language description of what the user needs (e.g. 'free music streaming app for Android with offline download').",
-      ),
-    limit: z
-      .number()
-      .min(1)
-      .max(10)
-      .default(5)
-      .describe("Number of recommendations to return (1-10)."),
-  }),
-  execute: async (args: { useCase: string; limit: number }) => {
+  parameters: recommendResourcesParams,
+  execute: async (args: z.infer<typeof recommendResourcesParams>) => {
     try {
       const candidates = await db.resource.findMany({
         where: { status: "APPROVED" },
