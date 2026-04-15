@@ -30,7 +30,7 @@ export async function getClientIp(headers: Headers): Promise<string | null> {
 export async function checkAndIncrementGuestChatUsage(
   ipAddress: string,
 ): Promise<GuestRateLimitResult> {
-  const limit = 5;
+  const limit = 10;
   const now = new Date();
   const expiresAt = new Date(now.getTime() + HOURS_24_MS);
 

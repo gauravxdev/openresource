@@ -19,8 +19,8 @@ const SEARCH_LIMITS: Record<UserRole, number> = {
 };
 
 const CHAT_LIMITS: Record<UserRole, number> = {
-  user: 5,
-  contributor: 5,
+  user: Infinity,
+  contributor: Infinity,
   admin: Infinity,
 };
 
