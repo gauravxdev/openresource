@@ -24,10 +24,10 @@ function PureChatHeader({
 
   return (
     <header className="border-border/50 bg-background/80 sticky top-0 z-20 flex items-center border-b backdrop-blur-sm">
-      <div className="mx-auto flex h-full w-full max-w-[1152px] items-center gap-2 px-5 py-2 md:px-6">
+      <div className="mx-auto flex h-full w-full max-w-[1152px] items-center gap-1.5 px-3 py-2 md:gap-2 md:px-6">
         <SidebarToggle />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           <SparklesIcon size={16} />
           <span className="text-sm font-semibold">OpenResource AI</span>
           {isGuest && (
@@ -39,7 +39,8 @@ function PureChatHeader({
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${remainingChats <= 1 ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
             >
-              {remainingChats}/{chatLimitInfo.limit} chats left
+              {remainingChats}/{chatLimitInfo.limit}
+              <span className="ml-1 hidden sm:inline">chats left</span>
             </span>
           ) : chatLimitInfo?.limit === Infinity ? (
             <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">
