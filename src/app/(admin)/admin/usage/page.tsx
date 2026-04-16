@@ -76,13 +76,13 @@ export default async function UsagePage() {
                 <TableCell>
                   <span
                     className={
-                      guest.chatCount >= 5 ? "font-bold text-red-500" : ""
+                      guest.chatCount >= 10 ? "font-bold text-red-500" : ""
                     }
                   >
                     {guest.chatCount}
                   </span>
                 </TableCell>
-                <TableCell>5</TableCell>
+                <TableCell>10</TableCell>
                 <TableCell>
                   <span
                     className={
