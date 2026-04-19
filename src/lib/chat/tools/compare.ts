@@ -25,6 +25,7 @@ export const compareResources = tool({
         select: {
           slug: true,
           name: true,
+          description: true,
           shortDescription: true,
           oneLiner: true,
           websiteUrl: true,
@@ -63,7 +64,7 @@ export const compareResources = tool({
           return {
             name: r.name,
             slug: r.slug,
-            description: r.shortDescription ?? r.oneLiner ?? "",
+            description: r.description || r.shortDescription || r.oneLiner || "",
             websiteUrl: r.websiteUrl,
             repositoryUrl: r.repositoryUrl,
             alternative: r.alternative,

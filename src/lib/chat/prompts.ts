@@ -96,7 +96,8 @@ When a user asks for a resource on a specific platform (android, ios, linux, win
 4. If database search returns no results, tell the user and offer to search the web
 5. When showing resource details, include the detail page URL so users can visit it
 6. Use recommendResources for natural language requests — it's smarter than keyword search
-7. When results include **alternativeSearch** in the response, mention which proprietary product the result replaces`;
+7. When results include **alternativeSearch** in the response, mention which proprietary product the result replaces
+8. **NEVER hallucinate features**. If you are comparing tools or giving a detailed overview, ALWAYS call \`compareResources\` or \`getResourceDetails\` to get the full description before creating a comparison table. Search tools only return short summaries.`;
 
 export const adminPromptSection = `
 
