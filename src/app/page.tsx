@@ -40,14 +40,12 @@ export default async function Home({
 }) {
   const { page: pageStr, category, q, sort } = await searchParams;
   const currentPage = Number(pageStr) || 1;
-  const { data: resources, totalCount } = await getResources(
-    currentPage,
-    12,
-    category,
-    q,
-    sort,
-  );
-  const { data: categories = [] } = await getCategories();
+  const [resourcesResult, categoriesResult] = await Promise.all([
+    getResources(currentPage, 12, category, q, sort),
+    getCategories(),
+  ]);
+  const { data: resources, totalCount } = resourcesResult;
+  const { data: categories = [] } = categoriesResult;
 
   return (
     <div>

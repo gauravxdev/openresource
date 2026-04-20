@@ -32,6 +32,22 @@ export async function getCategories(includeAllStatuses = false) {
   }
 }
 
+export async function getCategoryBySlug(slug: string) {
+  try {
+    const category = await db.category.findUnique({
+      where: { slug, status: "APPROVED" },
+      select: { name: true },
+    });
+    if (!category) {
+      return { success: false, categoryName: null };
+    }
+    return { success: true, categoryName: category.name };
+  } catch (error) {
+    console.error("[Categories] Get By Slug Error:", error);
+    return { success: false, categoryName: null };
+  }
+}
+
 export async function getAdminCategories(params?: {
   page?: number;
   limit?: number;

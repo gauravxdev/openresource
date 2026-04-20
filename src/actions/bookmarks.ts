@@ -126,3 +126,38 @@ export async function checkBookmarkStatus(resourceId: string): Promise<{
     return { success: false, bookmarked: false };
   }
 }
+
+export async function checkBookmarkStatusBatch(resourceIds: string[]): Promise<{
+  success: boolean;
+  bookmarkedIds: Set<string>;
+}> {
+  if (resourceIds.length === 0) {
+    return { success: true, bookmarkedIds: new Set() };
+  }
+
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { success: true, bookmarkedIds: new Set() };
+    }
+
+    const bookmarks = await db.bookmark.findMany({
+      where: {
+        userId: session.user.id,
+        resourceId: { in: resourceIds },
+      },
+      select: { resourceId: true },
+    });
+
+    return {
+      success: true,
+      bookmarkedIds: new Set(bookmarks.map((b) => b.resourceId)),
+    };
+  } catch (error) {
+    console.error("[Bookmarks] Batch Check Error:", error);
+    return { success: false, bookmarkedIds: new Set() };
+  }
+}

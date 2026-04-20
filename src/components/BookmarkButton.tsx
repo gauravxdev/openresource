@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 import { toggleBookmark, checkBookmarkStatus } from "@/actions/bookmarks";
+import { useBookmarkStatus } from "./BookmarkStatusContext";
 
 interface BookmarkItem {
   id: string | number;
@@ -50,34 +51,44 @@ interface BookmarkButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
 }
 
-export function BookmarkButton({ 
-  resource, 
-  className, 
+export function BookmarkButton({
+  resource,
+  className,
   showLabel = false,
-  size = "sm"
+  size = "sm",
 }: BookmarkButtonProps) {
   const { data: session, isPending: sessionLoading } = useSession();
   const isLoggedIn = !!session?.user;
   const resourceId = String(resource.id);
+  const { getBookmarkStatus } = useBookmarkStatus();
 
   const [isBookmarked, setIsBookmarked] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [initialStatusChecked, setInitialStatusChecked] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
 
     if (isLoggedIn) {
-      void checkBookmarkStatus(resourceId).then((result) => {
-        if (result.success) {
-          setIsBookmarked(result.bookmarked);
-        }
-      });
+      const contextStatus = getBookmarkStatus(resourceId);
+      if (contextStatus) {
+        setIsBookmarked(true);
+        setInitialStatusChecked(true);
+      } else {
+        void checkBookmarkStatus(resourceId).then((result) => {
+          if (result.success) {
+            setIsBookmarked(result.bookmarked);
+          }
+          setInitialStatusChecked(true);
+        });
+      }
     } else {
       const bookmarks = getLocalBookmarks();
       setIsBookmarked(bookmarks.some((item) => String(item.id) === resourceId));
+      setInitialStatusChecked(true);
     }
-  }, [resourceId, isLoggedIn]);
+  }, [resourceId, isLoggedIn, getBookmarkStatus]);
 
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -154,7 +165,7 @@ export function BookmarkButton({
     <Button
       variant="outline"
       size={size}
-      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "bg-black text-white border-black hover:bg-neutral-800 hover:text-white dark:bg-white dark:text-black dark:border-white dark:hover:bg-neutral-200 dark:hover:text-black" : ""} ${className ?? ""}`}
+      className={`border-border hover:bg-accent shrink-0 ${isBookmarked ? "border-black bg-black text-white hover:bg-neutral-800 hover:text-white dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 dark:hover:text-black" : ""} ${className ?? ""}`}
       onClick={handleBookmarkClick}
       disabled={loading}
       title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
@@ -162,9 +173,7 @@ export function BookmarkButton({
     >
       <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
       {showLabel && (
-        <span className="ml-2">
-          {isBookmarked ? "Bookmarked" : "Bookmark"}
-        </span>
+        <span className="ml-2">{isBookmarked ? "Bookmarked" : "Bookmark"}</span>
       )}
     </Button>
   );

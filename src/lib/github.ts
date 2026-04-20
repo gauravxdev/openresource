@@ -1,11 +1,14 @@
 import { Octokit } from "octokit";
 import dotenv from "dotenv";
+import { githubCache, createCacheKey } from "./cache";
 
 dotenv.config();
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
+
+const CONTRIBUTOR_CACHE_TTL = 60 * 60 * 1000;
 
 export interface RepoDetails {
   name: string;
@@ -216,12 +219,17 @@ export interface Contributor {
 /**
  * Fetches contributors for a repository.
  * Returns top contributors sorted by contribution count.
+ * Results are cached for 1 hour to reduce GitHub API calls.
  */
 export async function getContributors(
   owner: string,
   repo: string,
   limit = 10,
 ): Promise<Contributor[]> {
+  const cacheKey = createCacheKey(owner, repo, `contributors:${limit}`);
+  const cached = githubCache.get<Contributor[]>(cacheKey);
+  if (cached) return cached;
+
   try {
     const { data } = await octokit.request(
       "GET /repos/{owner}/{repo}/contributors",
@@ -232,7 +240,7 @@ export async function getContributors(
       },
     );
 
-    return data
+    const contributors = data
       .filter(
         (
           c,
@@ -251,6 +259,9 @@ export async function getContributors(
         html_url: contributor.html_url,
         contributions: contributor.contributions,
       }));
+
+    githubCache.set(cacheKey, contributors, CONTRIBUTOR_CACHE_TTL);
+    return contributors;
   } catch {
     return [];
   }

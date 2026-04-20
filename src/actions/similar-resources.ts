@@ -71,7 +71,10 @@ function scoreResource(
   }
 
   // License match (weight 0.5)
-  if (currentLicense && currentLicense.toLowerCase() === candidate.license?.toLowerCase()) {
+  if (
+    currentLicense &&
+    currentLicense.toLowerCase() === candidate.license?.toLowerCase()
+  ) {
     score += 0.5;
   }
 
@@ -171,7 +174,7 @@ export async function getSimilarResources(
       });
     }
 
-    // 3. Fetch candidate resources
+    // 3. Fetch candidate resources (fetch 50 to get ~6 good matches after scoring)
     const candidates = await db.resource.findMany({
       where: {
         status: "APPROVED",
@@ -204,7 +207,7 @@ export async function getSimilarResources(
         categories: { select: { name: true, slug: true } },
       },
       orderBy: { stars: "desc" },
-      take: 200,
+      take: 50,
     });
 
     if (candidates.length === 0) {

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getResourcesByCategory } from "@/actions/resources";
+import { getCategoryBySlug } from "@/actions/categories";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,7 +22,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ?? "https://openresource.site";
-  const { success, categoryName } = await getResourcesByCategory(slug, 1);
+  const { success, categoryName } = await getCategoryBySlug(slug);
 
   if (!success || !categoryName) {
     return {
