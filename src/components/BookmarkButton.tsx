@@ -65,7 +65,6 @@ export function BookmarkButton({
   const [isBookmarked, setIsBookmarked] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [initialStatusChecked, setInitialStatusChecked] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -74,19 +73,16 @@ export function BookmarkButton({
       const contextStatus = getBookmarkStatus(resourceId);
       if (contextStatus) {
         setIsBookmarked(true);
-        setInitialStatusChecked(true);
       } else {
         void checkBookmarkStatus(resourceId).then((result) => {
           if (result.success) {
             setIsBookmarked(result.bookmarked);
           }
-          setInitialStatusChecked(true);
         });
       }
     } else {
       const bookmarks = getLocalBookmarks();
       setIsBookmarked(bookmarks.some((item) => String(item.id) === resourceId));
-      setInitialStatusChecked(true);
     }
   }, [resourceId, isLoggedIn, getBookmarkStatus]);
 

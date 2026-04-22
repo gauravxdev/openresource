@@ -10,7 +10,7 @@ interface BookmarkStatusContextValue {
 
 const BookmarkStatusContext = React.createContext<BookmarkStatusContextValue>({
   getBookmarkStatus: () => false,
-  preloadBookmarks: () => {},
+  preloadBookmarks: () => undefined,
 });
 
 export function useBookmarkStatus() {
