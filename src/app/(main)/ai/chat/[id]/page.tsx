@@ -38,8 +38,7 @@ export default async function Page({
   } else {
     const ipAddress = await getClientIp(headersList);
     if (ipAddress) {
-      const guestUserId = `guest_${ipAddress}`;
-      isAuthorized = chat.userId === guestUserId;
+      isAuthorized = chat.userId === null;
       isGuest = isAuthorized;
     }
   }

@@ -120,7 +120,7 @@ export async function POST(request: Request) {
       headers: headersList,
     });
 
-    let userId: string;
+    let userId: string | null;
     let userRole: UserRole;
     let isGuest = false;
     let ipAddress: string | null = null;
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
         return new ChatError("guest_limit:chat").toResponse();
       }
 
-      userId = `guest_${ipAddress}`;
+      userId = null;
       userRole = "user";
       isGuest = true;
     } else {
@@ -382,28 +382,28 @@ export async function POST(request: Request) {
     };
 
     if (isAdmin) {
-      tools.searchUsers = searchUsers(userId, userRole);
-      tools.getUserDetails = getUserDetails(userId, userRole);
-      tools.updateUserRoleTool = updateUserRoleTool(userId, userRole);
-      tools.updateUserStatusTool = updateUserStatusTool(userId, userRole);
-      tools.searchResourcesAdmin = searchResourcesAdmin(userId, userRole);
+      tools.searchUsers = searchUsers(userId!, userRole);
+      tools.getUserDetails = getUserDetails(userId!, userRole);
+      tools.updateUserRoleTool = updateUserRoleTool(userId!, userRole);
+      tools.updateUserStatusTool = updateUserStatusTool(userId!, userRole);
+      tools.searchResourcesAdmin = searchResourcesAdmin(userId!, userRole);
       tools.updateResourceStatusTool = updateResourceStatusTool(
-        userId,
+        userId!,
         userRole,
       );
       tools.updateResourceFieldsTool = updateResourceFieldsTool(
-        userId,
+        userId!,
         userRole,
       );
-      tools.getPendingResources = getPendingResources(userId, userRole);
-      tools.getDashboardStats = getDashboardStats(userId, userRole);
-      tools.getUsageStats = getUsageStats(userId, userRole);
-      tools.getFeedbackStats = getFeedbackStats(userId, userRole);
-      tools.searchAuditLogs = searchAuditLogs(userId, userRole);
-      tools.getRecentActivity = getRecentActivity(userId, userRole);
-      tools.searchChatsAdmin = searchChatsAdmin(userId, userRole);
-      tools.deleteChatAdmin = deleteChatAdmin(userId, userRole);
-      tools.getSystemHealth = getSystemHealth(userId, userRole);
+      tools.getPendingResources = getPendingResources(userId!, userRole);
+      tools.getDashboardStats = getDashboardStats(userId!, userRole);
+      tools.getUsageStats = getUsageStats(userId!, userRole);
+      tools.getFeedbackStats = getFeedbackStats(userId!, userRole);
+      tools.searchAuditLogs = searchAuditLogs(userId!, userRole);
+      tools.getRecentActivity = getRecentActivity(userId!, userRole);
+      tools.searchChatsAdmin = searchChatsAdmin(userId!, userRole);
+      tools.deleteChatAdmin = deleteChatAdmin(userId!, userRole);
+      tools.getSystemHealth = getSystemHealth(userId!, userRole);
     }
 
     const stream = createUIMessageStream({

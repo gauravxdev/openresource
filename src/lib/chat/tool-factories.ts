@@ -12,7 +12,20 @@ import { checkAndIncrementGuestSearchUsage } from "@/lib/chat/guest-rate-limit";
 // Tool Factory: getUserBookmarks (with user context)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function createGetUserBookmarksTool(userId: string) {
+export function createGetUserBookmarksTool(userId: string | null) {
+  if (!userId) {
+    return tool({
+      description: "Get the current user's bookmarked/saved resources.",
+      parameters: z.object({}),
+      execute: async () => {
+        return {
+          found: 0,
+          message: "Guest users cannot have bookmarks. Please log in to use bookmarks.",
+          resources: [],
+        };
+      },
+    } as any);
+  }
   return tool({
     description:
       "Get the current user's bookmarked/saved resources. Use this when the user asks to see their bookmarks, saved resources, or favorites.",
@@ -81,7 +94,7 @@ export function createGetUserBookmarksTool(userId: string) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function createSearchResourcesTool(
-  userId: string,
+  userId: string | null,
   userRole: UserRole,
   originalTool: any,
 ) {
@@ -99,7 +112,7 @@ export function createSearchResourcesTool(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function createSerperSearchTool(
-  userId: string,
+  userId: string | null,
   userRole: UserRole,
   originalTool: any,
   ipAddress?: string | null,
@@ -117,7 +130,7 @@ export function createSerperSearchTool(
             error: rateLimitResult.message,
           };
         }
-      } else {
+      } else if (userId) {
         const rateLimitResult = await checkAndIncrementSearchUsage(
           userId,
           userRole,
@@ -139,7 +152,7 @@ export function createSerperSearchTool(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function createExaSearchTool(
-  userId: string,
+  userId: string | null,
   userRole: UserRole,
   originalTool: any,
   ipAddress?: string | null,
@@ -157,7 +170,7 @@ export function createExaSearchTool(
             error: rateLimitResult.message,
           };
         }
-      } else {
+      } else if (userId) {
         const rateLimitResult = await checkAndIncrementSearchUsage(
           userId,
           userRole,
@@ -179,7 +192,7 @@ export function createExaSearchTool(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function createTavilySearchTool(
-  userId: string,
+  userId: string | null,
   userRole: UserRole,
   originalTool: any,
   ipAddress?: string | null,
@@ -197,7 +210,7 @@ export function createTavilySearchTool(
             error: rateLimitResult.message,
           };
         }
-      } else {
+      } else if (userId) {
         const rateLimitResult = await checkAndIncrementSearchUsage(
           userId,
           userRole,
