@@ -103,6 +103,7 @@ export async function writeDescriptionWithLLM(
 ): Promise<LLMWriterOutput> {
     const { object, response } = await generateObject({
         model: mistral(MODEL),
+        maxRetries: 5,
         temperature: TEMPERATURE,
         system: SYSTEM_MESSAGE,
         prompt: input.prompt,

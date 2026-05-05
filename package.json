@@ -27,6 +27,7 @@
     "@ai-sdk/provider-utils": "^4.0.15",
     "@ai-sdk/react": "^3.0.107",
     "@hookform/resolvers": "^5.2.2",
+    "@modelcontextprotocol/server-redis": "^2025.4.25",
     "@prisma/client": "^6.5.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.10",

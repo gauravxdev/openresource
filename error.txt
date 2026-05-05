@@ -1,0 +1,71 @@
+2026-05-05 17:20:53.884 [error] Error [AI_RetryError]: Failed after 3 attempts. Last error: Rate limit exceeded
+    at cD (.next/server/chunks/4763.js:26:5382)
+    at async E (.next/server/chunks/4763.js:28:28251)
+    at async Object.flush (.next/server/chunks/4763.js:28:37293) {
+  cause: undefined,
+  reason: 'maxRetriesExceeded',
+  errors: [Array],
+  lastError: Error [AI_APICallError]: Rate limit exceeded
+      at <unknown> (.next/server/chunks/4763.js:40:15522)
+      at async aG (.next/server/chunks/4763.js:40:14071)
+      at async n.doStream (.next/server/chunks/4763.js:40:23915)
+      at async fn (.next/server/chunks/4763.js:28:29100)
+      at async (.next/server/chunks/4763.js:26:1477)
+      at async cD (.next/server/chunks/4763.js:26:5280)
+      at async E (.next/server/chunks/4763.js:28:28251)
+      at async Object.flush (.next/server/chunks/4763.js:28:37293) {
+    cause: undefined,
+    url: 'https://api.mistral.ai/v1/chat/completions',
+    requestBodyValues: {
+      model: 'mistral-large-latest',
+      safe_prompt: undefined,
+      max_tokens: undefined,
+      temperature: undefined,
+      top_p: undefined,
+      random_seed: undefined,
+      reasoning_effort: undefined,
+      response_format: undefined,
+      document_image_limit: undefined,
+      document_page_limit: undefined,
+      messages: [Array],
+      tools: [Array],
+      tool_choice: 'auto',
+      stream: true
+    },
+    statusCode: 429,
+    responseHeaders: {
+      'access-control-allow-origin': '*',
+      'alt-svc': 'h3=":443"; ma=86400',
+      'cf-cache-status': 'DYNAMIC',
+      'cf-ray': '9f716b1f8b87dddf-IAD',
+      connection: 'keep-alive',
+      'content-length': '121',
+      'content-type': 'application/json',
+      date: 'Tue, 05 May 2026 17:20:53 GMT',
+      'mistral-correlation-id': '019df928-2ffb-74ff-abe4-52cf96f6708a',
+      server: 'cloudflare',
+      'set-cookie': '_cfuvid=lxqBRRRptWYUULFflliaGKU.gHihgHKIgL.SSMn1AuM-1778001653.6968954-1.0.1.1-0R4oMHVtiYSBRFSSHisp7RRlhEXe8wF3nCBXkaQ1d6Q; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai',
+      'strict-transport-security': 'max-age=15552000; includeSubDomains; preload',
+      'x-content-type-options': 'nosniff',
+      'x-envoy-upstream-service-time': '8',
+      'x-kong-proxy-latency': '14',
+      'x-kong-request-id': '019df928-2ffb-74ff-abe4-52cf96f6708a',
+      'x-kong-upstream-latency': '28',
+      'x-ratelimit-limit-req-minute': '4',
+      'x-ratelimit-remaining-req-minute': '0'
+    },
+    responseBody: '{"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300","raw_status_code":429}',
+    isRetryable: true,
+    data: {
+      object: 'error',
+      message: 'Rate limit exceeded',
+      type: 'rate_limited',
+      param: null,
+      code: '1300'
+    }
+  }
+}
+2026-05-05 17:20:53.885 [error] Chat stream error: Error: Failed after 3 attempts. Last error: Rate limit exceeded
+    at <unknown> (.next/server/chunks/4763.js:28:10699)
+    at runUpdateMessageJob (.next/server/chunks/4763.js:28:11289)
+    at Object.transform (.next/server/chunks/4763.js:28:2128)
